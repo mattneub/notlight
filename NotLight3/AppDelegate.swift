@@ -3,35 +3,44 @@ import AppKit
 @MainActor
 var services: Services = Services()
 
-@main
 class AppDelegate: NSObject, NSApplicationDelegate {
+    var window: NSWindow!
+
     var rootCoordinator: RootCoordinatorType = RootCoordinator()
 
-    /// Object that will tell the root coordinator to create the main module, only once in the
-    /// lifetime of the app.
-    private lazy var moduleCreation = Oncer { [weak self] in
-        if let mainViewController = NSApplication.shared.mainWindow?.contentViewController as? MainViewController {
-            self?.rootCoordinator.createMainModule(mainViewController: mainViewController)
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
+        unlessTesting {
+            bootstrap()
         }
     }
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
+    func bootstrap() {
+        window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 480, height: 270),
+            styleMask: [.miniaturizable, .closable, .resizable, .titled],
+            backing: .buffered,
+            defer: false
+        )
+        window.center()
+        window.title = "NotLight"
+        window.makeKeyAndOrderFront(nil)
+        // The Empty.xib file prevents automatic finding of the MainMenu.xib file,
+        // so we can now load it ourselves as part of the bootstrap
+        // but I don't want to do that even when testing this method, because of the massive console dump it causes
+        unlessTesting {
+            Bundle.main.loadNibNamed("MainMenu", owner: NSApplication.shared, topLevelObjects: nil)
+        }
+        rootCoordinator.createMainModule(window: window)
     }
 
     func applicationDidBecomeActive(_ notif: Notification) {
-        // Create module here because `didFinishLaunching` is too soon to know the main window
-        unlessTesting {
-            try? moduleCreation.doYourThing(Void()) // ensure the main module is created
-        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
     }
 
-//    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
-//        return true
-//    }
-
-
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        true
+    }
 }
 

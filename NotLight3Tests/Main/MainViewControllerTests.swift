@@ -11,6 +11,11 @@ private struct MainViewControllerTests {
         subject.processor = processor
     }
 
+    @Test("nibName: is correct")
+    func nibName() {
+        #expect(subject.nibName == "Main")
+    }
+
     @Test("doSearchTextField: sends processor returnInSearchField with text field string value")
     func doSearchTextField() async {
         let field = NSTextField()

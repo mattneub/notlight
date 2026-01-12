@@ -1,0 +1,30 @@
+{
+  "configurations" : [
+    {
+      "id" : "21033F55-F2E1-49A8-8611-446C21AAD187",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:NotLight3.xcodeproj",
+      "identifier" : "3F366E712F12F5CE0010786B",
+      "name" : "NotLight3"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:NotLight3.xcodeproj",
+        "identifier" : "3F1EE2DB2F1415CE002D28AA",
+        "name" : "NotLight3Tests"
+      }
+    }
+  ],
+  "version" : 1
+}

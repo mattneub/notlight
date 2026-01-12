@@ -7,12 +7,13 @@ private struct RootCoordinatorTests {
 
     @Test("createMainModule: creates the main module")
     func createMainModule() throws {
-        let viewController = MainViewController()
-        subject.createMainModule(mainViewController: viewController)
+        let window = NSWindow()
+        subject.createMainModule(window: window)
         let processor = try #require(subject.mainProcessor as? MainProcessor)
         #expect(processor.coordinator === subject)
-        #expect(processor.presenter === viewController)
+        let viewController = try #require(processor.presenter as? MainViewController)
         #expect(viewController.processor === processor)
         #expect(subject.mainViewController === viewController)
+        #expect(window.contentViewController === viewController)
     }
 }

@@ -23,6 +23,7 @@
 /* Begin PBXFileReference section */
 		3F1EE2DC2F1415CE002D28AA /* NotLight3Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotLight3Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F366E722F12F5CE0010786B /* NotLight3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotLight3.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F9501AA2F14674600D83369 /* NotLight3.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = NotLight3.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -60,6 +61,7 @@
 		3F366E692F12F5CE0010786B = {
 			isa = PBXGroup;
 			children = (
+				3F9501AA2F14674600D83369 /* NotLight3.xctestplan */,
 				3F366E742F12F5CE0010786B /* NotLight3 */,
 				3F1EE2DD2F1415CE002D28AA /* NotLight3Tests */,
 				3F366E732F12F5CE0010786B /* Products */,
@@ -391,7 +393,8 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSMainNibFile = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -427,7 +430,8 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSMainNibFile = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = "";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

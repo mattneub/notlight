@@ -3,15 +3,11 @@ import AppKit
 class MainViewController: NSViewController, ReceiverPresenter {
     weak var processor: (any Receiver<MainAction>)?
 
+    override var nibName: String { "Main" }
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-
-//    override var representedObject: Any? {
-//        didSet {
-//        // Update the view, if already loaded.
-//        }
-//    }
 
     func present(_ state: MainState) async {}
 
@@ -20,6 +16,5 @@ class MainViewController: NSViewController, ReceiverPresenter {
             await processor?.receive(.returnInSearchField(sender.stringValue))
         }
     }
-
 }
 
