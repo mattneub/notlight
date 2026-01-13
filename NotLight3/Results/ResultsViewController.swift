@@ -7,6 +7,8 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
 
     @IBOutlet weak var tableView: NSTableView!
 
+    @IBOutlet weak var itemsFoundLabel: NSTextField!
+
     lazy var datasource: (any ResultsDatasourceType<Void, ResultsState>) = ResultsDatasource(tableView: tableView, processor: processor)
 
     override func viewDidLoad() {
@@ -23,6 +25,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
     }
 
     func present(_ state: ResultsState) async {
+        configureItemsFoundLabel(state)
         await datasource.present(state)
     }
 
@@ -30,6 +33,14 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
         Task {
             await processor?.receive(.close)
         }
+    }
+
+    func configureItemsFoundLabel(_ state: ResultsState) {
+        itemsFoundLabel.stringValue = String(
+            AttributedString(
+                localized: "^[\(state.results.count) \("item")](inflect: true) found:"
+            ).characters
+        )
     }
 
     @objc func doDoubleAction(_ sender: NSTableView) {

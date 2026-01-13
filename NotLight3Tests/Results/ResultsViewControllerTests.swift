@@ -54,6 +54,20 @@ private struct ResultsViewControllerTests {
         #expect(datasource.statePresented == state)
     }
 
+    @Test("present: configures the items found label")
+    func presentItemsFound() async {
+        subject.loadViewIfNeeded()
+        var state = ResultsState(results: [.init(displayName: "name", path: "path")])
+        await subject.present(state)
+        #expect(subject.itemsFoundLabel.stringValue == "1 item found:")
+        state = ResultsState(results: [
+            .init(displayName: "name", path: "path"),
+            .init(displayName: "name", path: "path")
+        ])
+        await subject.present(state)
+        #expect(subject.itemsFoundLabel.stringValue == "2 items found:")
+    }
+
     @Test("doClose: sends processor close")
     func close() async {
         subject.doClose(self)
