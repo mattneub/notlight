@@ -1,0 +1,70 @@
+import AppKit
+
+/// Protocol describing the view controller's interaction with the datasource, so we can
+/// mock it for testing.
+protocol ResultsDatasourceType<Received, State>: ReceiverPresenter, NSTableViewDelegate {
+    associatedtype State
+    associatedtype Received
+}
+
+/// Table view data source and delegate for the view controller's table view.
+final class ResultsDatasource: NSObject, ResultsDatasourceType {
+    typealias State = ResultsState
+    typealias Received = Void
+
+    /// Processor to whom we can send action messages.
+    weak var processor: (any Receiver<ResultsAction>)?
+
+    /// Weak reference to the table view.
+    weak var tableView: NSTableView?
+
+    init(tableView: NSTableView, processor: (any Receiver<ResultsAction>)?) {
+        self.tableView = tableView
+        self.processor = processor
+        super.init()
+        datasource = createDataSource(tableView: tableView)
+        tableView.dataSource = datasource
+        tableView.delegate = self
+    }
+
+    /// Type alias for the type of the data source, for convenience.
+    typealias DatasourceType = NSTableViewDiffableDataSource<String, UUID>
+
+    /// Retain the diffable data source.
+    var datasource: DatasourceType!
+
+    func createDataSource(tableView: NSTableView) -> DatasourceType {
+        let datasource = DatasourceType.init(
+            tableView: tableView
+        ) { [unowned self] tableView, tableColumn, row, identifier in
+            viewProvider(tableView, tableColumn, row, identifier)
+        }
+        return datasource
+    }
+
+    var data = [SearchResult]()
+
+    func present(_ state: ResultsState) async {
+        configureData(state)
+    }
+
+    func configureData(_ state: ResultsState) {
+        data = state.results
+        var snapshot = datasource.snapshot()
+        snapshot.appendSections(["dummy"])
+        snapshot.appendItems(data.map(\.id))
+        datasource.apply(snapshot, animatingDifferences: false)
+    }
+
+    func viewProvider(_ tableView: NSTableView, _ tableColumn: NSTableColumn, _ row: Int, _ identifier: UUID) -> NSView {
+        let view = tableView.makeView(withIdentifier: tableColumn.identifier, owner: tableView) as? NSTableCellView
+        let result = data[row]
+        let value = switch tableColumn.identifier.rawValue {
+        case "displayName": result.displayName
+        case "path": result.path
+        default: ""
+        }
+        view?.textField?.stringValue = value
+        return view ?? NSView()
+    }
+}

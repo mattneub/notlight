@@ -30,6 +30,8 @@ private struct SearcherTests {
         NotificationCenter.default.post(NSMetadataQuery.DidFinishGatheringMessage(), subject: query)
         await #while(query.methodsCalled.isEmpty)
         #expect(query.methodsCalled == ["stop()"])
-        #expect(searchResults == [SearchResult(displayName: "name", path: "path")])
+        #expect(searchResults.count == 1)
+        #expect(searchResults[0].displayName == "name")
+        #expect(searchResults[0].path == "path")
     }
 }

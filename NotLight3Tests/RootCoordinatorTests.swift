@@ -16,4 +16,30 @@ private struct RootCoordinatorTests {
         #expect(subject.mainViewController === viewController)
         #expect(window.contentViewController === viewController)
     }
+
+    @Test("showResults: assembles the results module, sets the state, presents the view controller")
+    func showResults() throws {
+        let state = ResultsState(results: [.init(displayName: "name", path: "path")])
+        let mainViewController = NSViewController()
+        makeWindow(viewController: mainViewController)
+        subject.mainViewController = mainViewController
+        subject.showResults(state: state)
+        let processor = try #require(subject.resultsProcessor as? ResultsProcessor)
+        #expect(processor.coordinator === subject)
+        let viewController = try #require(processor.presenter as? ResultsViewController)
+        #expect(viewController.processor === processor)
+        #expect(mainViewController.presentedViewControllers?.first === viewController)
+    }
+
+    @Test("dismiss: dismisses the presented view controller")
+    func dismiss() throws {
+        let mainViewController = NSViewController()
+        makeWindow(viewController: mainViewController)
+        subject.mainViewController = mainViewController
+        let presented = NSViewController()
+        mainViewController.presentAsSheet(presented)
+        #expect(mainViewController.presentedViewControllers?.count == 1)
+        subject.dismiss()
+        #expect(mainViewController.presentedViewControllers?.count == 0)
+    }
 }
