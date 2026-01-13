@@ -16,9 +16,9 @@ private struct SearcherTests {
         query._resultCount = 1
         query._results = [MockQueryItem(displayName: "name", path: "path")]
         // part one
-        var searchResults = [SearchResult]()
+        var searchInfo: SearchInfo?
         Task {
-            searchResults = try await subject.doSearch("testing")
+            searchInfo = try await subject.doSearch("testing")
         }
         await #while(query.methodsCalled.isEmpty)
         let predicate = try #require(query._predicate)
@@ -30,8 +30,9 @@ private struct SearcherTests {
         NotificationCenter.default.post(NSMetadataQuery.DidFinishGatheringMessage(), subject: query)
         await #while(query.methodsCalled.isEmpty)
         #expect(query.methodsCalled == ["stop()"])
-        #expect(searchResults.count == 1)
-        #expect(searchResults[0].displayName == "name")
-        #expect(searchResults[0].path == "path")
+        #expect(searchInfo?.queryString == "kMDItemDisplayName == \"testing\"cdw")
+        #expect(searchInfo?.results.count == 1)
+        #expect(searchInfo?.results[0].displayName == "name")
+        #expect(searchInfo?.results[0].path == "path")
     }
 }

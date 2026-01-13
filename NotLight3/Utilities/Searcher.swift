@@ -1,7 +1,7 @@
 import AppKit
 
 protocol SearcherType {
-    func doSearch(_ term: String) async throws(SearcherError) -> [SearchResult]
+    func doSearch(_ term: String) async throws(SearcherError) -> SearchInfo
 }
 
 final class Searcher: SearcherType {
@@ -14,7 +14,7 @@ final class Searcher: SearcherType {
     var finishedObserver: NotificationCenter.ObservationToken?
 
     /// Public method.
-    func doSearch(_ term: String) async throws(SearcherError) -> [SearchResult] {
+    func doSearch(_ term: String) async throws(SearcherError) -> SearchInfo {
         let query = services.queryFactory.makeQuery()
         self.query = query
         let queryString = "kMDItemDisplayName == \"\(term)\"cdw" // NB! no space before modifiers!!!!!
@@ -45,7 +45,7 @@ final class Searcher: SearcherType {
         if let finishedObserver {
             NotificationCenter.default.removeObserver(finishedObserver)
         }
-        return results
+        return SearchInfo(queryString: queryString, results: results)
     }
 
     /// Ancillary method that gathers the results from the query and reduces them into

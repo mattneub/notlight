@@ -49,6 +49,8 @@ private struct ResultsDatasourceTests {
 private final class MyViewController: NSViewController {
     override var nibName: String? { get {"Results"} set {}}
     @IBOutlet var tableView: NSTableView!
+    @IBOutlet var itemsFoundLabel: NSTextField!
+    @IBOutlet var queryStringLabel: NSTextField!
     @IBAction func doClose(_ sender: Any) {}
 }
 

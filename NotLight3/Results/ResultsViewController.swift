@@ -7,7 +7,17 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
 
     @IBOutlet weak var tableView: NSTableView!
 
-    @IBOutlet weak var itemsFoundLabel: NSTextField!
+    @IBOutlet weak var itemsFoundLabel: NSTextField! {
+        didSet {
+            itemsFoundLabel?.stringValue = "" // prevent nib value from appearing
+        }
+    }
+
+    @IBOutlet weak var queryStringLabel: NSTextField! {
+        didSet {
+            queryStringLabel?.stringValue = "" // prevent nib value from appearing
+        }
+    }
 
     lazy var datasource: (any ResultsDatasourceType<Void, ResultsState>) = ResultsDatasource(tableView: tableView, processor: processor)
 
@@ -26,6 +36,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
 
     func present(_ state: ResultsState) async {
         configureItemsFoundLabel(state)
+        queryStringLabel.stringValue = state.queryString
         await datasource.present(state)
     }
 

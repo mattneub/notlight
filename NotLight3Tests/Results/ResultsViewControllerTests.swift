@@ -49,6 +49,7 @@ private struct ResultsViewControllerTests {
 
     @Test("present: presents to the datasource")
     func present() async {
+        subject.loadViewIfNeeded()
         let state = ResultsState(results: [.init(displayName: "name", path: "path")])
         await subject.present(state)
         #expect(datasource.statePresented == state)
@@ -66,6 +67,14 @@ private struct ResultsViewControllerTests {
         ])
         await subject.present(state)
         #expect(subject.itemsFoundLabel.stringValue == "2 items found:")
+    }
+
+    @Test("present: configures the query string label")
+    func presentQueryString() async {
+        subject.loadViewIfNeeded()
+        let state = ResultsState(queryString: "howdy")
+        await subject.present(state)
+        #expect(subject.queryStringLabel.stringValue == "howdy")
     }
 
     @Test("doClose: sends processor close")

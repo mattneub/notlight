@@ -11,8 +11,8 @@ final class MainProcessor: Processor {
             if term.isEmpty {
                 return
             }
-            if let results = try? await services.searcher.doSearch(term) {
-                let resultsState = ResultsState(results: results)
+            if let result = try? await services.searcher.doSearch(term) {
+                let resultsState = ResultsState(queryString: result.queryString, results: result.results)
                 coordinator?.showResults(state: resultsState)
             }
         }
