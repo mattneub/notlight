@@ -30,9 +30,10 @@ private struct ResultsViewControllerTests {
         #expect(datasource.tableView === subject.tableView)
     }
 
-    @Test("viewDidLoad: sends processor initialData")
+    @Test("viewDidLoad: sets things up, sends processor initialData")
     func viewDidLoad() async {
         subject.loadViewIfNeeded()
+        #expect(subject.tableView.doubleAction == #selector(subject.doDoubleAction))
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
     }
@@ -59,4 +60,28 @@ private struct ResultsViewControllerTests {
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.close])
     }
+
+    @Test("doDoubleAction: sends table selected rows to revealItems")
+    func doDoubleAction() async {
+        let tableView = MockTableView()
+        subject.doDoubleAction(tableView)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.revealItems(forRows: [0, 1, 2])])
+    }
+
+    @Test("doDoubleAction: if table clicked row is -1, does nothing")
+    func doDoubleActionNoRow() async {
+        let tableView = MockTableView()
+        tableView._clickedRow = -1
+        subject.doDoubleAction(tableView)
+        try? await Task.sleep(for: .seconds(0.1))
+        #expect(processor.thingsReceived.isEmpty)
+    }
+}
+
+private final class MockTableView: NSTableView {
+    var _clickedRow = 0
+    var _selectedRowIndexes: IndexSet = [0, 1, 2]
+    override var clickedRow: Int { _clickedRow }
+    override var selectedRowIndexes: IndexSet { _selectedRowIndexes }
 }

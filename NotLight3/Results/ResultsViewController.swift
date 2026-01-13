@@ -11,6 +11,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.doubleAction = #selector(doDoubleAction) // target is found via nil-targeting
         Task {
             await processor?.receive(.initialData)
         }
@@ -28,6 +29,17 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
     @IBAction func doClose(_ sender: Any) {
         Task {
             await processor?.receive(.close)
+        }
+    }
+
+    @objc func doDoubleAction(_ sender: NSTableView) {
+        let row = sender.clickedRow
+        guard row != -1 else { // e.g. maybe user double clicked a column header
+            return
+        }
+        let selectedRows = sender.selectedRowIndexes
+        Task {
+            await processor?.receive(.revealItems(forRows: selectedRows))
         }
     }
 }
