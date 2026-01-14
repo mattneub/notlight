@@ -9,6 +9,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="ResultsViewController" customModule="NotLight3" customModuleProvider="target">
             <connections>
                 <outlet property="itemsFoundLabel" destination="WvR-wr-Efm" id="46Y-XU-hwy"/>
+                <outlet property="pathLabel" destination="OZ0-ow-YMD" id="rrG-6b-9Kz"/>
                 <outlet property="queryStringLabel" destination="qcn-yc-O0W" id="my5-qX-FGw"/>
                 <outlet property="tableView" destination="DYA-F7-mxn" id="wEB-Y7-IfL"/>
                 <outlet property="view" destination="c22-O7-iKe" id="U6M-Gm-eaf"/>
@@ -106,7 +107,7 @@
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="750" id="e9c-ch-6Z1"/>
                     </constraints>
                     <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="89P-Gx-xmb">
-                        <rect key="frame" x="1" y="352" width="172" height="17"/>
+                        <rect key="frame" x="1" y="352" width="938" height="17"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="rKD-67-5ff">
@@ -129,20 +130,28 @@
                     </connections>
                 </button>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="WvR-wr-Efm" userLabel="Items found">
-                    <rect key="frame" x="28" y="428" width="504" height="14"/>
-                    <constraints>
-                        <constraint firstAttribute="width" constant="500" id="Rpx-YK-ggr"/>
-                    </constraints>
+                    <rect key="frame" x="28" y="428" width="95" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Items found label" usesSingleLineMode="YES" id="ip8-6M-9rF">
-                        <font key="font" metaFont="system" size="11"/>
+                        <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qcn-yc-O0W" userLabel="Query string">
                     <rect key="frame" x="28" y="452" width="944" height="36"/>
-                    <textFieldCell key="cell" lineBreakMode="clipping" selectable="YES" title="Query string label" id="Q4a-AR-ef6">
+                    <textFieldCell key="cell" selectable="YES" title="Query string label" id="Q4a-AR-ef6">
                         <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField focusRingType="none" horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="OZ0-ow-YMD">
+                    <rect key="frame" x="28" y="12" width="853" height="28"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="28" id="aI7-ej-15s"/>
+                    </constraints>
+                    <textFieldCell key="cell" selectable="YES" title="Path label" id="NgS-xp-GOO">
+                        <font key="font" metaFont="system" size="11"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -153,13 +162,16 @@
                 <constraint firstAttribute="trailing" secondItem="Xe0-pt-m1g" secondAttribute="trailing" constant="30" id="FHG-bq-XMT"/>
                 <constraint firstAttribute="bottom" secondItem="Xe0-pt-m1g" secondAttribute="bottom" constant="50" id="Gcu-1f-qex"/>
                 <constraint firstAttribute="bottom" secondItem="xlW-Xn-0d6" secondAttribute="bottom" constant="13" id="IUP-Rq-b5t"/>
+                <constraint firstItem="OZ0-ow-YMD" firstAttribute="top" secondItem="Xe0-pt-m1g" secondAttribute="bottom" constant="10" id="LKR-Bq-HLu"/>
                 <constraint firstItem="WvR-wr-Efm" firstAttribute="top" secondItem="qcn-yc-O0W" secondAttribute="bottom" constant="10" id="RJe-nP-Q28"/>
+                <constraint firstItem="OZ0-ow-YMD" firstAttribute="leading" secondItem="WvR-wr-Efm" secondAttribute="leading" id="UYR-IZ-DkX"/>
                 <constraint firstAttribute="trailing" secondItem="xlW-Xn-0d6" secondAttribute="trailing" constant="33" id="kel-Z7-R5P"/>
                 <constraint firstItem="Xe0-pt-m1g" firstAttribute="top" secondItem="WvR-wr-Efm" secondAttribute="bottom" constant="8" symbolic="YES" id="ogV-n2-jRk"/>
                 <constraint firstItem="Xe0-pt-m1g" firstAttribute="leading" secondItem="WvR-wr-Efm" secondAttribute="leading" id="pdA-cA-J2V"/>
                 <constraint firstItem="WvR-wr-Efm" firstAttribute="leading" secondItem="qcn-yc-O0W" secondAttribute="leading" id="q0M-ao-k2m"/>
                 <constraint firstItem="qcn-yc-O0W" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="12" id="qS1-5B-nqE"/>
                 <constraint firstItem="Xe0-pt-m1g" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="80" id="sdx-SQ-hnp"/>
+                <constraint firstItem="xlW-Xn-0d6" firstAttribute="leading" secondItem="OZ0-ow-YMD" secondAttribute="trailing" constant="30" id="uN2-5o-aWq"/>
                 <constraint firstItem="Xe0-pt-m1g" firstAttribute="trailing" secondItem="qcn-yc-O0W" secondAttribute="trailing" id="wUH-K7-hJm"/>
             </constraints>
             <point key="canvasLocation" x="-188" y="-120"/>

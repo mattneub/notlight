@@ -33,6 +33,11 @@ private struct ResultsViewControllerTests {
     @Test("viewDidLoad: sets things up, sends processor initialData")
     func viewDidLoad() async {
         subject.loadViewIfNeeded()
+        #expect(subject.itemsFoundLabel?.stringValue == "")
+        #expect(subject.itemsFoundLabel?.maximumNumberOfLines == 1)
+        #expect(subject.queryStringLabel?.stringValue == "")
+        #expect(subject.pathLabel?.stringValue == "")
+        #expect(subject.pathLabel?.maximumNumberOfLines == 2)
         #expect(subject.tableView.doubleAction == #selector(subject.doDoubleAction))
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
@@ -75,6 +80,14 @@ private struct ResultsViewControllerTests {
         let state = ResultsState(queryString: "howdy")
         await subject.present(state)
         #expect(subject.queryStringLabel.stringValue == "howdy")
+    }
+
+    @Test("present: configures the path label")
+    func presentPath() async {
+        subject.loadViewIfNeeded()
+        let state = ResultsState(selectedPath: "howdy")
+        await subject.present(state)
+        #expect(subject.pathLabel.stringValue == "howdy")
     }
 
     @Test("doClose: sends processor close")

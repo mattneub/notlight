@@ -49,8 +49,13 @@ final class ResultsDatasource: NSObject, ResultsDatasourceType {
     }
 
     func configureData(_ state: ResultsState) {
-        data = state.results
+        let data = state.results
+        if data == self.data {
+            return // nothing to do, don't update the table unnecessarily
+        }
+        self.data = data
         var snapshot = datasource.snapshot()
+        snapshot.deleteAllItems()
         snapshot.appendSections(["dummy"])
         snapshot.appendItems(data.map(\.id))
         datasource.apply(snapshot, animatingDifferences: false)
@@ -66,5 +71,13 @@ final class ResultsDatasource: NSObject, ResultsDatasourceType {
         }
         view?.textField?.stringValue = value
         return view ?? NSView()
+    }
+}
+
+extension ResultsDatasource { // table view delegate methods
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        Task {
+            await processor?.receive(.selectedRow(tableView?.selectedRow ?? -1))
+        }
     }
 }

@@ -11,6 +11,9 @@ final class ResultsProcessor: Processor {
             coordinator?.dismiss()
         case .initialData:
             await presenter?.present(state)
+        case .selectedRow(let row):
+            state.selectedPath = state.results[row].path
+            await presenter?.present(state)
         case .revealItems(let rows):
             let paths = rows.map { state.results[$0] }.map(\.path) // TODO: this will break with sort
             // TODO: deal with possible multiple selection being too large

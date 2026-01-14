@@ -27,6 +27,14 @@ private struct ResultsProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
+    @Test("receive selectedRow: sets state selectedPath, presents")
+    func selectedRow() async {
+        subject.state.results = [.init(displayName: "name", path: "path")]
+        await subject.receive(.selectedRow(0))
+        #expect(subject.state.selectedPath == "path")
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
     @Test("receive revealItems: calls workspace activate with urls for paths")
     func revealItems() async {
         subject.state.results = [

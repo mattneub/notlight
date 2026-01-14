@@ -10,12 +10,20 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
     @IBOutlet weak var itemsFoundLabel: NSTextField! {
         didSet {
             itemsFoundLabel?.stringValue = "" // prevent nib value from appearing
+            itemsFoundLabel?.maximumNumberOfLines = 1 // no place to set this in xib?
         }
     }
 
     @IBOutlet weak var queryStringLabel: NSTextField! {
         didSet {
             queryStringLabel?.stringValue = "" // prevent nib value from appearing
+        }
+    }
+
+    @IBOutlet weak var pathLabel: NSTextField! {
+        didSet {
+            pathLabel?.stringValue = "" // prevent nib value from appearing
+            pathLabel?.maximumNumberOfLines = 2 // no place to set this in xib?
         }
     }
 
@@ -37,6 +45,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
     func present(_ state: ResultsState) async {
         configureItemsFoundLabel(state)
         queryStringLabel.stringValue = state.queryString
+        pathLabel.stringValue = state.selectedPath
         await datasource.present(state)
     }
 

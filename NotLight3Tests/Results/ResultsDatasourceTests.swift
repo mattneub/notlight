@@ -43,6 +43,16 @@ private struct ResultsDatasourceTests {
         let view2 = try #require(tableView.view(atColumn: 1, row: 0, makeIfNecessary: false) as? NSTableCellView)
         #expect(view2.textField?.stringValue == "path")
     }
+
+    @Test("selectionChanged: sends selectedRow to processor")
+    func selectionChanged() async {
+        let tableView = MockTableView()
+        tableView._selectedRow = 3
+        subject.tableView = tableView
+        subject.tableViewSelectionDidChange(Notification(name: .init("dummy")))
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.selectedRow(3)])
+    }
 }
 
 /// Ersatz view controller used to dumpster-dive the Results nib.
@@ -51,6 +61,11 @@ private final class MyViewController: NSViewController {
     @IBOutlet var tableView: NSTableView!
     @IBOutlet var itemsFoundLabel: NSTextField!
     @IBOutlet var queryStringLabel: NSTextField!
+    @IBOutlet var pathLabel: NSTextField!
     @IBAction func doClose(_ sender: Any) {}
 }
 
+private final class MockTableView: NSTableView {
+    var _selectedRow: Int = 0
+    override var selectedRow: Int { _selectedRow }
+}
