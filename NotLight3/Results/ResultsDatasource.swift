@@ -28,7 +28,7 @@ final class ResultsDatasource: NSObject, ResultsDatasourceType {
     }
 
     /// Type alias for the type of the data source, for convenience.
-    typealias DatasourceType = NSTableViewDiffableDataSource<String, UUID>
+    typealias DatasourceType = SortableDiffableDataSource
 
     /// Retain the diffable data source.
     var datasource: DatasourceType!
@@ -39,6 +39,7 @@ final class ResultsDatasource: NSObject, ResultsDatasourceType {
         ) { [unowned self] tableView, tableColumn, row, identifier in
             viewProvider(tableView, tableColumn, row, identifier)
         }
+        datasource.processor = processor
         return datasource
     }
 
@@ -78,6 +79,18 @@ extension ResultsDatasource { // table view delegate methods
     func tableViewSelectionDidChange(_ notification: Notification) {
         Task {
             await processor?.receive(.selectedRow(tableView?.selectedRow ?? -1))
+        }
+    }
+}
+
+nonisolated
+final class SortableDiffableDataSource: NSTableViewDiffableDataSource<String, UUID> {
+    weak var processor: (any Receiver<ResultsAction>)?
+
+    /// NSTableViewDataSource optional method.
+    @objc func tableView(_ tableView: NSTableView, sortDescriptorsDidChange _: [NSSortDescriptor]) {
+        Task { @MainActor in
+            await processor?.receive(.updateResults(tableView.sortDescriptors))
         }
     }
 }

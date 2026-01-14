@@ -27,14 +27,6 @@ private struct ResultsProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
-    @Test("receive selectedRow: sets state selectedPath, presents")
-    func selectedRow() async {
-        subject.state.results = [.init(displayName: "name", path: "path")]
-        await subject.receive(.selectedRow(0))
-        #expect(subject.state.selectedPath == "path")
-        #expect(presenter.statesPresented == [subject.state])
-    }
-
     @Test("receive revealItems: calls workspace activate with urls for paths")
     func revealItems() async {
         subject.state.results = [
@@ -45,5 +37,24 @@ private struct ResultsProcessorTests {
         await subject.receive(.revealItems(forRows: indexSet))
         #expect(workspace.methodsCalled == ["activateFileViewerSelecting(_:)"])
         #expect(workspace.urls == [URL(string: "file:///container1/path1")])
+    }
+
+    @Test("receive selectedRow: sets state selectedPath, presents")
+    func selectedRow() async {
+        subject.state.results = [.init(displayName: "name", path: "path")]
+        await subject.receive(.selectedRow(0))
+        #expect(subject.state.selectedPath == "path")
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("updateResults: sorts results according to sort descriptor, presents")
+    func updateResults() async {
+        let result1 = SearchResult(displayName: "harpo", path: "/container1/path1")
+        let result2 = SearchResult(displayName: "groucho", path: "/container2/path2")
+        subject.state.results = [result1, result2]
+        let sortDescriptor = NSSortDescriptor(key: "displayName", ascending: true)
+        await subject.receive(.updateResults([sortDescriptor]))
+        #expect(subject.state.results.map(\.displayName) == ["groucho", "harpo"])
+        #expect(presenter.statesPresented == [subject.state])
     }
 }

@@ -53,6 +53,19 @@ private struct ResultsDatasourceTests {
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.selectedRow(3)])
     }
+
+    @Test("datasource sortDescriptorsDidChange: sends updateResults to processor")
+    func sortDescriptorsDidChange() async throws {
+        let tableView = MockTableView()
+        let sortDescriptor = NSSortDescriptor(key: "howdy", ascending: false)
+        tableView._sortDescriptors = [sortDescriptor]
+        let datasource = try #require(subject.datasource)
+        let datasourceProcessor = try #require(datasource.processor)
+        #expect(datasourceProcessor === processor)
+        datasource.tableView(tableView, sortDescriptorsDidChange: [])
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.updateResults([sortDescriptor])])
+    }
 }
 
 /// Ersatz view controller used to dumpster-dive the Results nib.
@@ -67,5 +80,10 @@ private final class MyViewController: NSViewController {
 
 private final class MockTableView: NSTableView {
     var _selectedRow: Int = 0
+    var _sortDescriptors: [NSSortDescriptor] = []
     override var selectedRow: Int { _selectedRow }
+    override var sortDescriptors: [NSSortDescriptor] {
+        get { _sortDescriptors }
+        set {}
+    }
 }

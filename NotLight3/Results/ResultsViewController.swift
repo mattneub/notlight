@@ -27,7 +27,10 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
         }
     }
 
-    lazy var datasource: (any ResultsDatasourceType<Void, ResultsState>) = ResultsDatasource(tableView: tableView, processor: processor)
+    lazy var datasource: (any ResultsDatasourceType<Void, ResultsState>) = ResultsDatasource(
+        tableView: tableView,
+        processor: processor
+    )
 
     override func viewDidLoad() {
         super.viewDidLoad()
