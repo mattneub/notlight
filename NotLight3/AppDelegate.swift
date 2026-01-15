@@ -17,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func bootstrap() {
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 480, height: 270),
-            styleMask: [.miniaturizable, .closable, .resizable, .titled],
+            styleMask: [.miniaturizable, .closable, .titled],
             backing: .buffered,
             defer: false
         )

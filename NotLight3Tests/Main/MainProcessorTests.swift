@@ -67,4 +67,10 @@ private struct MainProcessorTests {
         #expect(searcher.term == "howdy")
         #expect(coordinator.methodsCalled.isEmpty)
     }
+
+    @Test("receive stop: calls searcher stop")
+    func stop() async {
+        await subject.receive(.stop)
+        #expect(searcher.methodsCalled == ["stop()"])
+    }
 }

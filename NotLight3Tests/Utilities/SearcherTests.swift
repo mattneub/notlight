@@ -39,4 +39,23 @@ private struct SearcherTests {
         #expect(searchInfo?.results[0].displayName == "name")
         #expect(searchInfo?.results[0].path == "path")
     }
+
+    @Test("stop: stops search, throws into continuation")
+    func stop() async throws {
+        var searchError: (any Error)?
+        Task {
+            do {
+                _ = try await subject.doSearch("testing")
+            } catch {
+                searchError = error
+            }
+        }
+        await #while(query.methodsCalled.isEmpty)
+        #expect(query.methodsCalled == ["start()"])
+        query.methodsCalled = []
+        subject.stop()
+        await #while(searchError == nil)
+        #expect(searchError as? SearcherError == .userStopped)
+        #expect(query.methodsCalled == ["stop()"])
+    }
 }

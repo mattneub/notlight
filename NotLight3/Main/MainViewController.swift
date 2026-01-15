@@ -13,6 +13,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    @IBOutlet var stopButton: NSButton! {
+        didSet {
+            stopButton.isEnabled = false
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -21,15 +27,23 @@ class MainViewController: NSViewController, ReceiverPresenter {
         if state.progress > 0 {
             progressLabel.stringValue = "\(String(state.progress)) results found..."
             progressSpinner.startAnimation(self)
+            stopButton.isEnabled = true
         } else {
             progressLabel.stringValue = ""
             progressSpinner.stopAnimation(self)
+            stopButton.isEnabled = false
         }
     }
 
     @IBAction func doSearchTextField(_ sender: NSTextField) {
         Task {
             await processor?.receive(.returnInSearchField(sender.stringValue))
+        }
+    }
+
+    @IBAction func doStop(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.stop)
         }
     }
 }

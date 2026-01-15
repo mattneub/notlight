@@ -9,7 +9,7 @@ final class MockSearcher: SearcherType {
 
     var searchProgress = SearchProgress()
 
-    func doSearch(_ term: String) async throws(SearcherError) -> SearchInfo {
+    func doSearch(_ term: String) async throws -> SearchInfo {
         methodsCalled.append(#function)
         self.term = term
         if timeToSleep > 0 {
@@ -19,6 +19,10 @@ final class MockSearcher: SearcherType {
             throw errorToThrow
         }
         return resultToReturn
+    }
+
+    func stop() {
+        methodsCalled.append(#function)
     }
 
 }

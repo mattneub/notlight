@@ -22,12 +22,15 @@ private struct MainViewControllerTests {
         let spinner = try #require(subject.progressSpinner as? MyProgressIndicator) // purely to give it an `isAnimating` property!
         #expect(spinner.isAnimating == false)
         #expect(subject.progressLabel.stringValue == "")
+        #expect(subject.stopButton.isEnabled == false)
         await subject.present(MainState(progress: 2))
         #expect(spinner.isAnimating == true)
         #expect(subject.progressLabel.stringValue == "2 results found...")
+        #expect(subject.stopButton.isEnabled == true)
         await subject.present(MainState(progress: 0))
         #expect(spinner.isAnimating == false)
         #expect(subject.progressLabel.stringValue == "")
+        #expect(subject.stopButton.isEnabled == false)
     }
 
     @Test("doSearchTextField: sends processor returnInSearchField with text field string value")
@@ -37,5 +40,12 @@ private struct MainViewControllerTests {
         subject.doSearchTextField(field)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.returnInSearchField("howdy")])
+    }
+
+    @Test("doStop: sends processor stop")
+    func doStop() async {
+        subject.doStop(NSButton())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.stop])
     }
 }

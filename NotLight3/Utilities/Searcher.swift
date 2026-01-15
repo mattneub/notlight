@@ -2,7 +2,8 @@ import AppKit
 
 protocol SearcherType {
     var searchProgress: SearchProgress { get }
-    func doSearch(_ term: String) async throws(SearcherError) -> SearchInfo
+    func doSearch(_ term: String) async throws -> SearchInfo
+    func stop()
 }
 
 final class Searcher: SearcherType {
@@ -20,8 +21,11 @@ final class Searcher: SearcherType {
     /// Observer that notifies us that the query has finished.
     var finishedObserver: NotificationCenter.ObservationToken?
 
+    /// Private exposure of the finished observer continuation, so we can interrupt by throwing.
+    var continuation: CheckedContinuation<[SearchResult], any Error>?
+
     /// Public method.
-    func doSearch(_ term: String) async throws(SearcherError) -> SearchInfo {
+    func doSearch(_ term: String) async throws -> SearchInfo {
         searchProgress.count = 0
         let query = services.queryFactory.makeQuery()
         self.query = query
@@ -35,7 +39,7 @@ final class Searcher: SearcherType {
                 _ = NSPredicate(fromMetadataQueryString: queryString)
             }
         } catch {
-            throw .badQuery
+            throw SearcherError.badQuery
         }
         query.predicate = NSPredicate(fromMetadataQueryString: queryString)
         query.searchScopes = [NSMetadataQueryLocalComputerScope]
@@ -47,7 +51,8 @@ final class Searcher: SearcherType {
                 await updateProgress()
             }
         }
-        let results = await withCheckedContinuation { continuation in
+        let results = try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation // so that `stop` can throw into it
             finishedObserver = NotificationCenter.default.addObserver(
                 of: query,
                 for: NSMetadataQuery.DidFinishGatheringMessage.self
@@ -56,13 +61,7 @@ final class Searcher: SearcherType {
             }
         }
         // clean up and we're out of here
-        query.stop()
-        if let finishedObserver {
-            NotificationCenter.default.removeObserver(finishedObserver)
-        }
-        if let gatheringObserver {
-            NotificationCenter.default.removeObserver(gatheringObserver)
-        }
+        cleanup()
         return SearchInfo(queryString: queryString, results: results)
     }
 
@@ -93,10 +92,28 @@ final class Searcher: SearcherType {
     func updateProgress() {
         searchProgress.count = query?.resultCount ?? 0
     }
+
+    /// Public method that interrupts a search in progress.
+    func stop() {
+        continuation?.resume(throwing: SearcherError.userStopped)
+        cleanup()
+    }
+
+    /// Utility method that provides the coda to a search, completed or interrupted.
+    func cleanup() {
+        if let finishedObserver {
+            NotificationCenter.default.removeObserver(finishedObserver)
+        }
+        if let gatheringObserver {
+            NotificationCenter.default.removeObserver(gatheringObserver)
+        }
+        query?.stop()
+    }
 }
 
 enum SearcherError: Error {
     case badQuery
+    case userStopped
 }
 
 @Observable

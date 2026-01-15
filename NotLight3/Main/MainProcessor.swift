@@ -14,6 +14,7 @@ final class MainProcessor: Processor {
                 return
             }
             watchProgress()
+            // TODO: If we get a bad query error here, show an alert
             if let result = try? await services.searcher.doSearch(term) {
                 let resultsState = ResultsState(queryString: result.queryString, results: result.results)
                 coordinator?.showResults(state: resultsState)
@@ -21,6 +22,8 @@ final class MainProcessor: Processor {
             progressWatchingTask?.cancel()
             state.progress = 0
             await presenter?.present(state)
+        case .stop:
+            services.searcher.stop()
         }
     }
 
