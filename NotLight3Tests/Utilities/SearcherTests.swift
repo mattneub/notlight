@@ -15,7 +15,7 @@ private struct SearcherTests {
     func doSearch() async throws {
         query._resultCount = 1
         query._results = [MockQueryItem(displayName: "name", path: "path")]
-        // part one
+        // part one: the search begins
         var searchInfo: SearchInfo?
         Task {
             searchInfo = try await subject.doSearch("testing")
@@ -25,7 +25,11 @@ private struct SearcherTests {
         #expect(predicate.description == "kMDItemDisplayName ==[cdlw] \"testing\"")
         #expect(query._searchScopes as? [String] == [NSMetadataQueryLocalComputerScope])
         #expect(query.methodsCalled == ["start()"])
-        // part two
+        // part two: gathering progress
+        NotificationCenter.default.post(name: .NSMetadataQueryGatheringProgress, object: query)
+        await #while(subject.searchProgress.count == 0)
+        #expect(subject.searchProgress.count == 1)
+        // part three: the search ends
         query.methodsCalled = []
         NotificationCenter.default.post(NSMetadataQuery.DidFinishGatheringMessage(), subject: query)
         await #while(query.methodsCalled.isEmpty)

@@ -16,6 +16,20 @@ private struct MainViewControllerTests {
         #expect(subject.nibName == "Main")
     }
 
+    @Test("present: sets progress spinner and label")
+    func presentProgressSpinnerLabel() async throws {
+        subject.loadViewIfNeeded()
+        let spinner = try #require(subject.progressSpinner as? MyProgressIndicator) // purely to give it an `isAnimating` property!
+        #expect(spinner.isAnimating == false)
+        #expect(subject.progressLabel.stringValue == "")
+        await subject.present(MainState(progress: 2))
+        #expect(spinner.isAnimating == true)
+        #expect(subject.progressLabel.stringValue == "2 results found...")
+        await subject.present(MainState(progress: 0))
+        #expect(spinner.isAnimating == false)
+        #expect(subject.progressLabel.stringValue == "")
+    }
+
     @Test("doSearchTextField: sends processor returnInSearchField with text field string value")
     func doSearchTextField() async {
         let field = NSTextField()

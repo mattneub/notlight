@@ -1,6 +1,7 @@
 import AppKit
 
 protocol SearcherType {
+    var searchProgress: SearchProgress { get }
     func doSearch(_ term: String) async throws(SearcherError) -> SearchInfo
 }
 
@@ -10,11 +11,18 @@ final class Searcher: SearcherType {
     /// have to worry about the fact that an NSMetadataQuery is not Sendable.
     var query: NSMetadataQuery?
 
+    /// Public observable object that publishes the growing count of found results.
+    let searchProgress = SearchProgress()
+
+    /// Observer that notifies us periodically that the query is ongoing.
+    var gatheringObserver: (any NSObjectProtocol)?
+
     /// Observer that notifies us that the query has finished.
     var finishedObserver: NotificationCenter.ObservationToken?
 
     /// Public method.
     func doSearch(_ term: String) async throws(SearcherError) -> SearchInfo {
+        searchProgress.count = 0
         let query = services.queryFactory.makeQuery()
         self.query = query
         let queryString = "kMDItemDisplayName == \"\(term)\"cdw" // NB! no space before modifiers!!!!!
@@ -32,6 +40,13 @@ final class Searcher: SearcherType {
         query.predicate = NSPredicate(fromMetadataQueryString: queryString)
         query.searchScopes = [NSMetadataQueryLocalComputerScope]
         query.start()
+        gatheringObserver = NotificationCenter.default.addObserver(
+            forName: .NSMetadataQueryGatheringProgress, object: query, queue: nil
+        ) { [unowned self] _ in
+            Task {
+                await updateProgress()
+            }
+        }
         let results = await withCheckedContinuation { continuation in
             finishedObserver = NotificationCenter.default.addObserver(
                 of: query,
@@ -44,6 +59,9 @@ final class Searcher: SearcherType {
         query.stop()
         if let finishedObserver {
             NotificationCenter.default.removeObserver(finishedObserver)
+        }
+        if let gatheringObserver {
+            NotificationCenter.default.removeObserver(gatheringObserver)
         }
         return SearchInfo(queryString: queryString, results: results)
     }
@@ -58,7 +76,7 @@ final class Searcher: SearcherType {
         }
         // how to cycle; do _not_ retain the `results` property
         for index in 0..<query.resultCount {
-            if let result = query.result(at: index) as? QueryItemType {
+            if let result = query.result(at: index) as? any QueryItemType {
                 guard let displayName = result.displayName else {
                     continue
                 }
@@ -70,10 +88,18 @@ final class Searcher: SearcherType {
         }
         return searchResults
     }
+
+    /// Method called periodically during a search, to update our observable progress.
+    func updateProgress() {
+        searchProgress.count = query?.resultCount ?? 0
+    }
 }
 
 enum SearcherError: Error {
     case badQuery
 }
 
-
+@Observable
+final class SearchProgress {
+    var count: Int = 0
+}

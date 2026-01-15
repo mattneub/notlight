@@ -8,7 +8,7 @@ protocol ResultsDatasourceType<Received, State>: ReceiverPresenter, NSTableViewD
 }
 
 /// Table view data source and delegate for the view controller's table view.
-final class ResultsDatasource: NSObject, ResultsDatasourceType {
+final class ResultsDatasource: NSObject, @MainActor ResultsDatasourceType {
     typealias State = ResultsState
     typealias Received = Void
 
@@ -83,13 +83,18 @@ extension ResultsDatasource { // table view delegate methods
     }
 }
 
-nonisolated
 final class SortableDiffableDataSource: NSTableViewDiffableDataSource<String, UUID> {
     weak var processor: (any Receiver<ResultsAction>)?
 
+    /// We have to implement this to prevent the compiler throwing a wobbly.
+    nonisolated
+    override init(tableView: NSTableView, cellProvider: @escaping NSTableViewDiffableDataSource<String, UUID>.CellProvider) {
+        super.init(tableView: tableView, cellProvider: cellProvider)
+    }
+
     /// NSTableViewDataSource optional method.
     @objc func tableView(_ tableView: NSTableView, sortDescriptorsDidChange _: [NSSortDescriptor]) {
-        Task { @MainActor in
+        Task {
             await processor?.receive(.updateResults(tableView.sortDescriptors))
         }
     }

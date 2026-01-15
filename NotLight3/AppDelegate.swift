@@ -6,7 +6,7 @@ var services: Services = Services()
 class AppDelegate: NSObject, NSApplicationDelegate {
     var window: NSWindow!
 
-    var rootCoordinator: RootCoordinatorType = RootCoordinator()
+    var rootCoordinator: any RootCoordinatorType = RootCoordinator()
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         unlessTesting {
