@@ -18,11 +18,11 @@ private struct SearcherTests {
         // part one: the search begins
         var searchInfo: SearchInfo?
         Task {
-            searchInfo = try await subject.doSearch("testing")
+            searchInfo = try await subject.doSearch("kMDItemDisplayName == \"testing\"cdw")
         }
         await #while(query.methodsCalled.isEmpty)
         let predicate = try #require(query._predicate)
-        #expect(predicate.description == "kMDItemDisplayName ==[cdlw] \"testing\"")
+        #expect(predicate.description == "kMDItemDisplayName ==[cdlw] \"testing\"") // I have no idea what the "l" is
         #expect(query._searchScopes as? [String] == [NSMetadataQueryLocalComputerScope])
         #expect(query.methodsCalled == ["start()"])
         // part two: gathering progress
@@ -45,7 +45,7 @@ private struct SearcherTests {
         var searchError: (any Error)?
         Task {
             do {
-                _ = try await subject.doSearch("testing")
+                _ = try await subject.doSearch("kMDItemDisplayName == \"testing\"cdw")
             } catch {
                 searchError = error
             }

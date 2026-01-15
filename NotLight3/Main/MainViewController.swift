@@ -19,11 +19,22 @@ class MainViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    @IBOutlet var wordBasedCheckbox: NSButton!
+    @IBOutlet var caseInsensitiveCheckbox: NSButton!
+    @IBOutlet var diacriticInsensitiveCheckbox: NSButton!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        Task {
+            await processor?.receive(.initialState)
+        }
     }
 
     func present(_ state: MainState) async {
+        wordBasedCheckbox.state = state.wordBased ? .on : .off
+        caseInsensitiveCheckbox.state = state.caseInsensitive ? .on : .off
+        diacriticInsensitiveCheckbox.state = state.diacriticInsensitive ? .on : .off
+
         if state.progress > 0 {
             progressLabel.stringValue = "\(String(state.progress)) results found..."
             progressSpinner.startAnimation(self)
@@ -44,6 +55,24 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @IBAction func doStop(_ sender: NSButton) {
         Task {
             await processor?.receive(.stop)
+        }
+    }
+
+    @IBAction func doCaseInsensitive(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.caseInsensitive(sender.state == .on))
+        }
+    }
+
+    @IBAction func doDiacriticInsensitive(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.diacriticInsensitive(sender.state == .on))
+        }
+    }
+
+    @IBAction func doWordBased(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.wordBased(sender.state == .on))
         }
     }
 }

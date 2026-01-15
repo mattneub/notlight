@@ -5,6 +5,7 @@ import WaitWhile
 
 private struct MainProcessorTests {
     let subject = MainProcessor()
+    let builder = MockQueryStringBuilder()
     let searcher = MockSearcher()
     let coordinator = MockRootCoordinator()
     let presenter = MockReceiverPresenter<Void, MainState>()
@@ -13,15 +14,52 @@ private struct MainProcessorTests {
         subject.coordinator = coordinator
         subject.presenter = presenter
         services.searcher = searcher
+        services.queryStringBuilder = builder
+    }
+
+    @Test("receive caseInsensitive: sets the state caseInsensitive")
+    func caseInsensitive() async {
+        await subject.receive(.caseInsensitive(true))
+        #expect(subject.state.caseInsensitive == true)
+        await subject.receive(.caseInsensitive(false))
+        #expect(subject.state.caseInsensitive == false)
+    }
+    
+    @Test("receive diacriticInsensitive: sets the state diacriticInsensisive")
+    func diacriticInsensitive() async {
+        await subject.receive(.diacriticInsensitive(true))
+        #expect(subject.state.diacriticInsensitive == true)
+        await subject.receive(.diacriticInsensitive(false))
+        #expect(subject.state.diacriticInsensitive == false)
+    }
+
+    @Test("receive initialState: presents")
+    func initialState() async {
+        subject.state.caseInsensitive = true
+        await subject.receive(.initialState)
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("receive returnInSearchField: calls builder makeQuery with term and state values")
+    func returnInSearchFieldBuilder() async {
+        subject.state.caseInsensitive = true
+        builder.queryStringToReturn = "queryString"
+        await subject.receive(.returnInSearchField("howdy"))
+        #expect(builder.methodsCalled == ["makeQuery(term:caseInsensitive:diacriticInsensitive:wordBased:)"])
+        #expect(builder.term == "howdy")
+        #expect(builder.caseInsensitive == true)
+        #expect(builder.diacriticInsensitive == false)
+        #expect(builder.wordBased == false)
     }
 
     @Test("receive returnInSearchField: calls searcher doSearch")
     func returnInSearchField() async {
+        builder.queryStringToReturn = "queryString"
         let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path")])
         searcher.resultToReturn = result
         await subject.receive(.returnInSearchField("howdy"))
         #expect(searcher.methodsCalled == ["doSearch(_:)"])
-        #expect(searcher.term == "howdy")
+        #expect(searcher.term == "queryString")
         #expect(coordinator.methodsCalled == ["showResults(state:)"])
         #expect(coordinator.resultsState?.queryString == result.queryString)
         #expect(coordinator.resultsState?.results == result.results)
@@ -55,7 +93,17 @@ private struct MainProcessorTests {
     @Test("receive returnInSearchField: if term is empty, does nothing")
     func returnInSearchFieldEmpty() async {
         await subject.receive(.returnInSearchField(""))
+        #expect(builder.methodsCalled.isEmpty)
         #expect(searcher.methodsCalled.isEmpty)
+        #expect(coordinator.methodsCalled.isEmpty)
+    }
+
+    @Test("receive returnInSearchField: if builder throws, does nothing")
+    func returnInSearchFieldBuilderThrow() async {
+        builder.errorToThrow = SearcherError.badQuery
+        await subject.receive(.returnInSearchField("howdy"))
+        #expect(searcher.methodsCalled.isEmpty)
+        #expect(searcher.term == nil)
         #expect(coordinator.methodsCalled.isEmpty)
     }
 
@@ -64,7 +112,7 @@ private struct MainProcessorTests {
         searcher.errorToThrow = .badQuery
         await subject.receive(.returnInSearchField("howdy"))
         #expect(searcher.methodsCalled == ["doSearch(_:)"])
-        #expect(searcher.term == "howdy")
+        #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
     }
 
@@ -73,4 +121,13 @@ private struct MainProcessorTests {
         await subject.receive(.stop)
         #expect(searcher.methodsCalled == ["stop()"])
     }
+
+    @Test("receive wordBased: sets the state wordBased")
+    func wordBased() async {
+        await subject.receive(.wordBased(true))
+        #expect(subject.state.wordBased == true)
+        await subject.receive(.wordBased(false))
+        #expect(subject.state.wordBased == false)
+    }
+
 }

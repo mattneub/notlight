@@ -25,22 +25,10 @@ final class Searcher: SearcherType {
     var continuation: CheckedContinuation<[SearchResult], any Error>?
 
     /// Public method.
-    func doSearch(_ term: String) async throws -> SearchInfo {
+    func doSearch(_ queryString: String) async throws -> SearchInfo {
         searchProgress.count = 0
         let query = services.queryFactory.makeQuery()
         self.query = query
-        let queryString = "kMDItemDisplayName == \"\(term)\"cdw" // NB! no space before modifiers!!!!!
-        // unfortunately there's a long-standing bug: NSPredicate `init?(forMetadataQueryString)`
-        // with a bad string does not gracefully return nil but raises an NSException
-        // so we dry run the proposed string in the domain of our Objective-C exception catcher
-        // and if it raises, we throw in good order
-        do {
-            try ExceptionCatcher.catchException {
-                _ = NSPredicate(fromMetadataQueryString: queryString)
-            }
-        } catch {
-            throw SearcherError.badQuery
-        }
         query.predicate = NSPredicate(fromMetadataQueryString: queryString)
         query.searchScopes = [NSMetadataQueryLocalComputerScope]
         query.start()

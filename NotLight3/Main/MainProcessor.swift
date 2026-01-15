@@ -9,13 +9,25 @@ final class MainProcessor: Processor {
 
     func receive(_ action: MainAction) async {
         switch action {
+        case .caseInsensitive(let on):
+            state.caseInsensitive = on
+        case .diacriticInsensitive(let on):
+            state.diacriticInsensitive = on
+        case .initialState:
+            await presenter?.present(state)
         case .returnInSearchField(let term):
             if term.isEmpty {
                 return
             }
             watchProgress()
             // TODO: If we get a bad query error here, show an alert
-            if let result = try? await services.searcher.doSearch(term) {
+            let queryString = try? services.queryStringBuilder.makeQuery(
+                term: term,
+                caseInsensitive: state.caseInsensitive,
+                diacriticInsensitive: state.diacriticInsensitive,
+                wordBased: state.wordBased
+            )
+            if let queryString, let result = try? await services.searcher.doSearch(queryString) {
                 let resultsState = ResultsState(queryString: result.queryString, results: result.results)
                 coordinator?.showResults(state: resultsState)
             }
@@ -24,6 +36,8 @@ final class MainProcessor: Processor {
             await presenter?.present(state)
         case .stop:
             services.searcher.stop()
+        case .wordBased(let on):
+            state.wordBased = on
         }
     }
 

@@ -16,6 +16,41 @@ private struct MainViewControllerTests {
         #expect(subject.nibName == "Main")
     }
 
+    @Test("viewDidLoad: sends initialState")
+    func viewDidLoad() async {
+        subject.loadViewIfNeeded()
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.initialState])
+    }
+
+    @Test("present: sets checkboxes")
+    func presentCheckBoxes() async {
+        subject.loadViewIfNeeded()
+        subject.wordBasedCheckbox.state = .on
+        subject.caseInsensitiveCheckbox.state = .on
+        subject.diacriticInsensitiveCheckbox.state = .on
+        var state = MainState()
+        await subject.present(state)
+        #expect(subject.wordBasedCheckbox.state == .off)
+        #expect(subject.caseInsensitiveCheckbox.state == .off)
+        #expect(subject.diacriticInsensitiveCheckbox.state == .off)
+        state.wordBased = true
+        await subject.present(state)
+        #expect(subject.wordBasedCheckbox.state == .on)
+        #expect(subject.caseInsensitiveCheckbox.state == .off)
+        #expect(subject.diacriticInsensitiveCheckbox.state == .off)
+        state.caseInsensitive = true
+        await subject.present(state)
+        #expect(subject.wordBasedCheckbox.state == .on)
+        #expect(subject.caseInsensitiveCheckbox.state == .on)
+        #expect(subject.diacriticInsensitiveCheckbox.state == .off)
+        state.diacriticInsensitive = true
+        await subject.present(state)
+        #expect(subject.wordBasedCheckbox.state == .on)
+        #expect(subject.caseInsensitiveCheckbox.state == .on)
+        #expect(subject.diacriticInsensitiveCheckbox.state == .on)
+    }
+
     @Test("present: sets progress spinner and label")
     func presentProgressSpinnerLabel() async throws {
         subject.loadViewIfNeeded()
@@ -47,5 +82,47 @@ private struct MainViewControllerTests {
         subject.doStop(NSButton())
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.stop])
+    }
+
+    @Test("doCaseInsensitive: sends caseInsensitive")
+    func caseInsensitive() async {
+        let button = NSButton()
+        button.state = .off
+        subject.doCaseInsensitive(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.caseInsensitive(false)])
+        processor.thingsReceived = []
+        button.state = .on
+        subject.doCaseInsensitive(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.caseInsensitive(true)])
+    }
+
+    @Test("doDiacriticInsensitive: sends diacriticInsensitive")
+    func diacriticInsensitive() async {
+        let button = NSButton()
+        button.state = .off
+        subject.doDiacriticInsensitive(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.diacriticInsensitive(false)])
+        processor.thingsReceived = []
+        button.state = .on
+        subject.doDiacriticInsensitive(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.diacriticInsensitive(true)])
+    }
+
+    @Test("doWordBased: sends wordBased")
+    func wordBased() async {
+        let button = NSButton()
+        button.state = .off
+        subject.doWordBased(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.wordBased(false)])
+        processor.thingsReceived = []
+        button.state = .on
+        subject.doWordBased(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.wordBased(true)])
     }
 }
