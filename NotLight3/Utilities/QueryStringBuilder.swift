@@ -3,8 +3,9 @@ protocol QueryStringBuilderType {
         term: String,
         caseInsensitive: Bool,
         diacriticInsensitive: Bool,
-        wordBased: Bool
-    ) throws -> String
+        wordBased: Bool,
+        type: String
+    ) -> String
 }
 
 final class QueryStringBuilder: QueryStringBuilderType {
@@ -12,9 +13,10 @@ final class QueryStringBuilder: QueryStringBuilderType {
         term: String,
         caseInsensitive: Bool,
         diacriticInsensitive: Bool,
-        wordBased: Bool
-    ) throws -> String {
-        var queryString = "kMDItemDisplayName == \"\(term)\""
+        wordBased: Bool,
+        type: String
+    ) -> String {
+        var queryString = "\(type) == \"\(term)\""
         // add modifiers; NB! no space before modifiers!!!!!
         if caseInsensitive {
             queryString.append("c")
@@ -24,17 +26,6 @@ final class QueryStringBuilder: QueryStringBuilderType {
         }
         if wordBased {
             queryString.append("w")
-        }
-        // unfortunately there's a long-standing bug: NSPredicate `init?(forMetadataQueryString)`
-        // with a bad string does not gracefully return nil but raises an NSException
-        // so we dry run the proposed string in the domain of our Objective-C exception catcher
-        // and if it raises, we throw in good order
-        do {
-            try ExceptionCatcher.catchException {
-                _ = NSPredicate(fromMetadataQueryString: queryString)
-            }
-        } catch {
-            throw SearcherError.badQuery
         }
         return queryString
     }

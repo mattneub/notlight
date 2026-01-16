@@ -29,7 +29,17 @@ final class Searcher: SearcherType {
         searchProgress.count = 0
         let query = services.queryFactory.makeQuery()
         self.query = query
-        query.predicate = NSPredicate(fromMetadataQueryString: queryString)
+        do {
+            try ExceptionCatcher.catchException {
+                // unfortunately there's a long-standing bug: NSPredicate `init?(forMetadataQueryString)`
+                // with a bad string does not gracefully return nil but raises an NSException
+                // so we form the predicate in the domain of our Objective-C exception catcher
+                // and if _that_ raises, we throw in good order
+                query.predicate = NSPredicate(fromMetadataQueryString: queryString)
+            }
+        } catch {
+            throw SearcherError.badQuery
+        }
         query.searchScopes = [NSMetadataQueryLocalComputerScope]
         query.start()
         gatheringObserver = NotificationCenter.default.addObserver(

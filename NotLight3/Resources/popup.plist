@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>blurb</key>
+		<string>Searches are exact. But an asterisk (*) is a wild card. So, for example, to find matches that start with your term, end your term with an asterisk. To find matches that contain your term, start and end your term with an asterisk.</string>
+		<key>key</key>
+		<string>kMDItemDisplayName</string>
+		<key>title</key>
+		<string>Display Name</string>
+	</dict>
+	<dict>
+		<key>blurb</key>
+		<string>The Full Name is opposed to the Display Name which is localized and may omit the extension. Full Name searches are automatically case-insensitive and much slower than Display Name (probably HFS+ and not indexed by Spotlight).</string>
+		<key>key</key>
+		<string>kMDItemFSName</string>
+		<key>title</key>
+		<string>Full Name</string>
+	</dict>
+	<dict>
+		<key>blurb</key>
+		<string>Content searches are apparently case- and diacritic-insensitive by default, and they are automatically word-based, so the checkboxes are effectively ignored. You can use an asterisk (*) as a wild card.</string>
+		<key>key</key>
+		<string>kMDItemTextContent</string>
+		<key>title</key>
+		<string>Content</string>
+	</dict>
+	<dict>
+		<key>blurb</key>
+		<string>Finder comments are edited in the Finder&apos;s Get Info dialog. They are typically several words, and the match is exact, so you will almost certainly want to check the Word-based checkbox and/or use the asterisk (*) wild card.</string>
+		<key>key</key>
+		<string>kMDItemFinderComment</string>
+		<key>title</key>
+		<string>Finder Comment</string>
+	</dict>
+	<dict>
+		<key>blurb</key>
+		<string>Do not use a period (.) or wildcard (*) in an Extension search. Spotlight doesn&apos;t actually do extension searches; an attempt will be made to translate your extension into a UTI.</string>
+		<key>key</key>
+		<string>kMDItemContentType</string>
+		<key>title</key>
+		<string>Extension</string>
+	</dict>
+    <dict>
+        <key>blurb</key>
+        <string>The type code is a four-character code, from the pre-Mac OS X days. The four-character code that you provide will be translated into a number (an OSType).</string>
+        <key>key</key>
+        <string>kMDItemFSTypeCode</string>
+        <key>title</key>
+        <string>Type Code</string>
+    </dict>
+    <dict>
+        <key>blurb</key>
+        <string>The creator code is a four-character code, from the pre-Mac OS X days. The four-character code that you provide will be translated into a number (an OSType).</string>
+        <key>key</key>
+        <string>kMDItemFSCreatorCode</string>
+        <key>title</key>
+        <string>Creator Code</string>
+    </dict>
+	<dict>
+		<key>blurb</key>
+		<string>Dates must be entered using special &quot;$time&quot; notation or as seconds since January, 2001; use the Date Assistant window to help. Dates are exact date-times, so you will probably want an inexact operator (e.g. &gt;=).</string>
+		<key>key</key>
+		<string>kMDItemFSContentChangeDate</string>
+		<key>title</key>
+		<string>Modified Date</string>
+	</dict>
+</array>
+</plist>

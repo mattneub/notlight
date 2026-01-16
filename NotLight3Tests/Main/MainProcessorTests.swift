@@ -7,12 +7,14 @@ private struct MainProcessorTests {
     let subject = MainProcessor()
     let builder = MockQueryStringBuilder()
     let searcher = MockSearcher()
+    let bundle = MockBundle()
     let coordinator = MockRootCoordinator()
     let presenter = MockReceiverPresenter<Void, MainState>()
 
     init() {
         subject.coordinator = coordinator
         subject.presenter = presenter
+        services.bundle = bundle
         services.searcher = searcher
         services.queryStringBuilder = builder
     }
@@ -33,23 +35,32 @@ private struct MainProcessorTests {
         #expect(subject.state.diacriticInsensitive == false)
     }
 
-    @Test("receive initialState: presents")
+    @Test("receive initialState: fetches popup plist, sets state, presents")
     func initialState() async {
+        let list: [[String: String]] = [["hey": "ho"]]
+        let url = Bundle(for: MockBundle.self).url(forResource: "fake", withExtension: "plist")!
+        bundle.urlToReturn = url
         subject.state.caseInsensitive = true
         await subject.receive(.initialState)
+        #expect(bundle.methodsCalled == ["url(forResource:withExtension:)"])
+        #expect(bundle.name == "popup")
+        #expect(bundle.ext == "plist")
+        #expect(subject.state.searchTypePopupContents == list)
         #expect(presenter.statesPresented == [subject.state])
     }
 
     @Test("receive returnInSearchField: calls builder makeQuery with term and state values")
     func returnInSearchFieldBuilder() async {
         subject.state.caseInsensitive = true
+        subject.state.searchTypePopupContents = [["key": "kMDItemDisplayName"]]
         builder.queryStringToReturn = "queryString"
         await subject.receive(.returnInSearchField("howdy"))
-        #expect(builder.methodsCalled == ["makeQuery(term:caseInsensitive:diacriticInsensitive:wordBased:)"])
+        #expect(builder.methodsCalled == ["makeQuery(term:caseInsensitive:diacriticInsensitive:wordBased:type:)"])
         #expect(builder.term == "howdy")
         #expect(builder.caseInsensitive == true)
         #expect(builder.diacriticInsensitive == false)
         #expect(builder.wordBased == false)
+        #expect(builder.type == "kMDItemDisplayName")
     }
 
     @Test("receive returnInSearchField: calls searcher doSearch")
@@ -98,15 +109,6 @@ private struct MainProcessorTests {
         #expect(coordinator.methodsCalled.isEmpty)
     }
 
-    @Test("receive returnInSearchField: if builder throws, does nothing")
-    func returnInSearchFieldBuilderThrow() async {
-        builder.errorToThrow = SearcherError.badQuery
-        await subject.receive(.returnInSearchField("howdy"))
-        #expect(searcher.methodsCalled.isEmpty)
-        #expect(searcher.term == nil)
-        #expect(coordinator.methodsCalled.isEmpty)
-    }
-
     @Test("receive returnInSearchField: if search throws, does nothing")
     func returnInSearchFieldThrow() async {
         searcher.errorToThrow = .badQuery
@@ -114,6 +116,13 @@ private struct MainProcessorTests {
         #expect(searcher.methodsCalled == ["doSearch(_:)"])
         #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
+    }
+
+    @Test("receive searchType: changes state popup index, presents")
+    func searchType() async {
+        await subject.receive(.searchType(3))
+        #expect(subject.state.searchTypePopupCurrentItemIndex == 3)
+        #expect(presenter.statesPresented == [subject.state])
     }
 
     @Test("receive stop: calls searcher stop")

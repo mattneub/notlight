@@ -6,23 +6,22 @@ final class MockQueryStringBuilder: QueryStringBuilderType {
     var caseInsensitive: Bool?
     var diacriticInsensitive: Bool?
     var wordBased: Bool?
+    var type: String?
     var queryStringToReturn = ""
-    var errorToThrow: (any Error)?
 
     func makeQuery(
         term: String,
         caseInsensitive: Bool,
         diacriticInsensitive: Bool,
-        wordBased: Bool
-    ) throws -> String {
+        wordBased: Bool,
+        type: String
+    ) -> String {
         methodsCalled.append(#function)
         self.term = term
         self.caseInsensitive = caseInsensitive
         self.diacriticInsensitive = diacriticInsensitive
         self.wordBased = wordBased
-        if let errorToThrow {
-            throw errorToThrow
-        }
+        self.type = type
         return queryStringToReturn
     }
 

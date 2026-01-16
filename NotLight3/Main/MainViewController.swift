@@ -5,11 +5,20 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     override var nibName: String { "Main" }
 
+    @IBOutlet var searchTypePopup: NSPopUpButton!
+
     @IBOutlet var progressSpinner: NSProgressIndicator!
 
     @IBOutlet var progressLabel: NSTextField! {
         didSet {
             progressLabel?.stringValue = "" // Prevent user seeing value from nib.
+        }
+    }
+
+    @IBOutlet var blurbLabel: NSTextField! {
+        didSet {
+            blurbLabel?.stringValue = "" // Prevent user seeing value from nib.
+            blurbLabel.maximumNumberOfLines = 3
         }
     }
 
@@ -31,6 +40,13 @@ class MainViewController: NSViewController, ReceiverPresenter {
     }
 
     func present(_ state: MainState) async {
+        if searchTypePopup.itemArray.count < 4 { // there are three in the nib
+            searchTypePopup.removeAllItems()
+            for item in state.searchTypePopupContents {
+                searchTypePopup.addItem(withTitle: item["title"] ?? "Title")
+            }
+        }
+        blurbLabel.stringValue = state.searchType["blurb"] ?? ""
         wordBasedCheckbox.state = state.wordBased ? .on : .off
         caseInsensitiveCheckbox.state = state.caseInsensitive ? .on : .off
         diacriticInsensitiveCheckbox.state = state.diacriticInsensitive ? .on : .off
@@ -73,6 +89,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @IBAction func doWordBased(_ sender: NSButton) {
         Task {
             await processor?.receive(.wordBased(sender.state == .on))
+        }
+    }
+
+    @IBAction func doSearchTypePopup(_ sender: NSPopUpButton) {
+        Task {
+            await processor?.receive(.searchType(sender.indexOfSelectedItem))
         }
     }
 }

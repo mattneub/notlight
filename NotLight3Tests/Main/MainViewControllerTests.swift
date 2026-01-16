@@ -16,11 +16,39 @@ private struct MainViewControllerTests {
         #expect(subject.nibName == "Main")
     }
 
+    @Test("blurbLabel: is correctly prepared")
+    func blurbLabel() {
+        subject.loadViewIfNeeded()
+        #expect(subject.blurbLabel.stringValue == "")
+        #expect(subject.blurbLabel.maximumNumberOfLines == 3)
+    }
+
     @Test("viewDidLoad: sends initialState")
     func viewDidLoad() async {
         subject.loadViewIfNeeded()
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialState])
+    }
+
+    @Test("present: configures popup")
+    func presentPopup() async {
+        var state = MainState()
+        state.searchTypePopupContents = [["title": "ho"], ["title": "ha"]]
+        subject.loadViewIfNeeded()
+        await subject.present(state)
+        #expect(subject.searchTypePopup.itemArray.map {$0.title} == ["ho", "ha"])
+    }
+
+    @Test("present: sets blurb text")
+    func presentBlurb() async {
+        var state = MainState()
+        state.searchTypePopupContents = [["blurb": "ho"], ["blurb": "ha"]]
+        subject.loadViewIfNeeded()
+        await subject.present(state)
+        #expect(subject.blurbLabel.stringValue == "ho")
+        state.searchTypePopupCurrentItemIndex = 1
+        await subject.present(state)
+        #expect(subject.blurbLabel.stringValue == "ha")
     }
 
     @Test("present: sets checkboxes")
@@ -124,5 +152,16 @@ private struct MainViewControllerTests {
         subject.doWordBased(button)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.wordBased(true)])
+    }
+
+    @Test("doSearchTypePopup: sends searchType")
+    func searchTypePopup() async {
+        let button = NSPopUpButton()
+        button.addItem(withTitle: "hey")
+        button.addItem(withTitle: "ho")
+        button.selectItem(at: 1)
+        subject.doSearchTypePopup(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.searchType(1)])
     }
 }

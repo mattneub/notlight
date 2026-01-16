@@ -40,6 +40,13 @@ private struct SearcherTests {
         #expect(searchInfo?.results[0].path == "path")
     }
 
+    @Test("doSearch: with bad search, throws badQuery")
+    func doSearchBad() async throws {
+        await #expect(throws: SearcherError.badQuery) {
+            _ = try await subject.doSearch("howdy")
+        }
+    }
+
     @Test("stop: stops search, throws into continuation")
     func stop() async throws {
         var searchError: (any Error)?
@@ -58,4 +65,5 @@ private struct SearcherTests {
         #expect(searchError as? SearcherError == .userStopped)
         #expect(query.methodsCalled == ["stop()"])
     }
+
 }
