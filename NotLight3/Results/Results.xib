@@ -139,7 +139,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qcn-yc-O0W" userLabel="Query string">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="qcn-yc-O0W" userLabel="Query string">
                     <rect key="frame" x="28" y="452" width="944" height="36"/>
                     <textFieldCell key="cell" selectable="YES" title="Query string label" id="Q4a-AR-ef6">
                         <font key="font" metaFont="smallSystem"/>
@@ -147,7 +147,7 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <textField horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="OZ0-ow-YMD">
+                <textField horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="OZ0-ow-YMD">
                     <rect key="frame" x="28" y="12" width="853" height="28"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="28" id="aI7-ej-15s"/>

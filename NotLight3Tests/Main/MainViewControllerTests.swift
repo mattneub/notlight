@@ -30,13 +30,23 @@ private struct MainViewControllerTests {
         #expect(processor.thingsReceived == [.initialState])
     }
 
-    @Test("present: configures popup")
-    func presentPopup() async {
+    @Test("present: configures search type popup")
+    func presentSearchTypePopup() async {
         var state = MainState()
         state.searchTypePopupContents = [["title": "ho"], ["title": "ha"]]
         subject.loadViewIfNeeded()
         await subject.present(state)
         #expect(subject.searchTypePopup.itemArray.map {$0.title} == ["ho", "ha"])
+    }
+
+    @Test("present: sets search type popup selection")
+    func presentSearchTypePopupSelection() async {
+        var state = MainState()
+        state.searchTypePopupContents = [["title": "ho"], ["title": "ha"]]
+        state.searchTypePopupCurrentItemIndex = 1
+        subject.loadViewIfNeeded()
+        await subject.present(state)
+        #expect(subject.searchTypePopup.titleOfSelectedItem == "ha")
     }
 
     @Test("present: sets blurb text")
@@ -49,6 +59,15 @@ private struct MainViewControllerTests {
         state.searchTypePopupCurrentItemIndex = 1
         await subject.present(state)
         #expect(subject.blurbLabel.stringValue == "ha")
+    }
+
+    @Test("presents: sets operator popup selection")
+    func presentOperator() async {
+        var state = MainState()
+        state.searchOperator = "<="
+        subject.loadViewIfNeeded()
+        await subject.present(state)
+        #expect(subject.operatorPopup.titleOfSelectedItem == "<=")
     }
 
     @Test("present: sets checkboxes")
@@ -163,5 +182,16 @@ private struct MainViewControllerTests {
         subject.doSearchTypePopup(button)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.searchType(1)])
+    }
+
+    @Test("doOperatorPopup: sends operator")
+    func operatorPopup() async {
+        let button = NSPopUpButton()
+        button.addItem(withTitle: "hey")
+        button.addItem(withTitle: "ho")
+        button.selectItem(at: 1)
+        subject.doOperatorPopup(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.operator("ho")])
     }
 }

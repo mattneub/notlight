@@ -10,6 +10,7 @@
                 <outlet property="blurbLabel" destination="8vV-U4-Dsf" id="ckQ-De-0ep"/>
                 <outlet property="caseInsensitiveCheckbox" destination="ugU-pF-GT8" id="uLy-Q8-kjW"/>
                 <outlet property="diacriticInsensitiveCheckbox" destination="QCS-M8-A8y" id="4jW-yq-1Sf"/>
+                <outlet property="operatorPopup" destination="pKn-Yg-Chk" id="7hn-UG-o8j"/>
                 <outlet property="progressLabel" destination="DTS-o5-xYT" id="qSg-Kc-5zi"/>
                 <outlet property="progressSpinner" destination="y6J-dv-1OF" id="dpi-Vr-6wq"/>
                 <outlet property="searchTypePopup" destination="FuA-BQ-UYP" id="7hc-gc-nyG"/>
@@ -109,7 +110,7 @@
                         <constraint firstAttribute="height" constant="42" id="57u-9j-gP3"/>
                     </constraints>
                     <textFieldCell key="cell" id="PKR-Lr-cXO">
-                        <font key="font" metaFont="system" size="11"/>
+                        <font key="font" metaFont="smallSystem"/>
                         <string key="title">Label
 Label
 Label</string>
@@ -117,9 +118,28 @@ Label</string>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pKn-Yg-Chk" userLabel="Operator">
+                    <rect key="frame" x="213" y="179" width="54" height="20"/>
+                    <popUpButtonCell key="cell" type="push" title="==" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="US8-OR-I6d" id="11F-g4-SVv">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" id="NZj-Un-kNd">
+                            <items>
+                                <menuItem title="==" state="on" id="US8-OR-I6d" userLabel="=="/>
+                                <menuItem title="!=" id="hJc-0R-vom"/>
+                                <menuItem title="&gt;=" id="eDj-4q-GAF"/>
+                                <menuItem title="&lt;=" id="enH-Tc-z2Q"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="doOperatorPopup:" target="-2" id="O6a-wn-Rj6"/>
+                    </connections>
+                </popUpButton>
             </subviews>
             <constraints>
                 <constraint firstItem="ugU-pF-GT8" firstAttribute="top" secondItem="mqW-rA-31S" secondAttribute="bottom" constant="6" id="4ht-tp-afQ"/>
+                <constraint firstItem="pKn-Yg-Chk" firstAttribute="centerX" secondItem="c22-O7-iKe" secondAttribute="centerX" id="9L8-2w-i6n"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="trailing" secondItem="FIj-ed-s4j" secondAttribute="trailing" id="9kL-ZM-Iq1"/>
                 <constraint firstItem="QCS-M8-A8y" firstAttribute="top" secondItem="ugU-pF-GT8" secondAttribute="bottom" constant="6" id="AcK-4C-Jf8"/>
                 <constraint firstItem="y6J-dv-1OF" firstAttribute="centerY" secondItem="DTS-o5-xYT" secondAttribute="centerY" id="HE9-wF-4aG"/>
@@ -136,6 +156,7 @@ Label</string>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="width" secondItem="FIj-ed-s4j" secondAttribute="width" multiplier="0.5" constant="-12" id="kSY-kU-bES"/>
                 <constraint firstItem="8vV-U4-Dsf" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" symbolic="YES" id="l2u-0q-RWb"/>
                 <constraint firstItem="mqW-rA-31S" firstAttribute="leading" secondItem="FIj-ed-s4j" secondAttribute="leading" id="lmh-SF-94N"/>
+                <constraint firstItem="pKn-Yg-Chk" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="qhm-6u-MUK"/>
                 <constraint firstItem="y6J-dv-1OF" firstAttribute="leading" secondItem="FuA-BQ-UYP" secondAttribute="trailing" constant="10" id="vNd-tF-OB9"/>
                 <constraint firstItem="8vV-U4-Dsf" firstAttribute="top" secondItem="QCS-M8-A8y" secondAttribute="bottom" constant="8" id="xrz-c4-rV1"/>
                 <constraint firstItem="FIj-ed-s4j" firstAttribute="centerX" secondItem="c22-O7-iKe" secondAttribute="centerX" id="yOf-gb-JMn"/>

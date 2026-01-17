@@ -49,18 +49,27 @@ private struct MainProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
+    @Test("receive operator: sets state operator, presents")
+    func searchOperator() async {
+        await subject.receive(.operator("op"))
+        #expect(subject.state.searchOperator == "op")
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
     @Test("receive returnInSearchField: calls builder makeQuery with term and state values")
     func returnInSearchFieldBuilder() async {
         subject.state.caseInsensitive = true
         subject.state.searchTypePopupContents = [["key": "kMDItemDisplayName"]]
+        subject.state.searchOperator = "!="
         builder.queryStringToReturn = "queryString"
         await subject.receive(.returnInSearchField("howdy"))
-        #expect(builder.methodsCalled == ["makeQuery(term:caseInsensitive:diacriticInsensitive:wordBased:type:)"])
+        #expect(builder.methodsCalled == ["makeQuery(term:caseInsensitive:diacriticInsensitive:wordBased:type:operator:)"])
         #expect(builder.term == "howdy")
         #expect(builder.caseInsensitive == true)
         #expect(builder.diacriticInsensitive == false)
         #expect(builder.wordBased == false)
         #expect(builder.type == "kMDItemDisplayName")
+        #expect(builder.operatorString == "!=")
     }
 
     @Test("receive returnInSearchField: calls searcher doSearch")

@@ -23,6 +23,9 @@ final class MainProcessor: Processor {
                 }
             }
             await presenter?.present(state)
+        case .operator(let searchOperator):
+            state.searchOperator = searchOperator
+            await presenter?.present(state)
         case .returnInSearchField(let term):
             if term.isEmpty {
                 return
@@ -33,7 +36,8 @@ final class MainProcessor: Processor {
                 caseInsensitive: state.caseInsensitive,
                 diacriticInsensitive: state.diacriticInsensitive,
                 wordBased: state.wordBased,
-                type: state.searchType["key"] ?? ""
+                type: state.searchType["key"] ?? "",
+                operator: state.searchOperator
             )
             // TODO: If we get a bad query error here, show an alert
             if let result = try? await services.searcher.doSearch(queryString) {

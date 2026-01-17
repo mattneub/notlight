@@ -4,7 +4,8 @@ protocol QueryStringBuilderType {
         caseInsensitive: Bool,
         diacriticInsensitive: Bool,
         wordBased: Bool,
-        type: String
+        type: String,
+        operator: String
     ) -> String
 }
 
@@ -14,9 +15,10 @@ final class QueryStringBuilder: QueryStringBuilderType {
         caseInsensitive: Bool,
         diacriticInsensitive: Bool,
         wordBased: Bool,
-        type: String
+        type: String,
+        operator: String
     ) -> String {
-        var queryString = "\(type) == \"\(term)\""
+        var queryString = "\(type) \(`operator`) \"\(term)\""
         // add modifiers; NB! no space before modifiers!!!!!
         if caseInsensitive {
             queryString.append("c")

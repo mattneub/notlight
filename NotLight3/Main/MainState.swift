@@ -12,6 +12,8 @@ struct MainState: Equatable {
         return ["key": "value"]
     }
 
+    var searchOperator: String = "=="
+
     var wordBased: Bool = false
     var caseInsensitive: Bool = false
     var diacriticInsensitive: Bool = false

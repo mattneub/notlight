@@ -7,6 +7,8 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     @IBOutlet var searchTypePopup: NSPopUpButton!
 
+    @IBOutlet var operatorPopup: NSPopUpButton!
+
     @IBOutlet var progressSpinner: NSProgressIndicator!
 
     @IBOutlet var progressLabel: NSTextField! {
@@ -46,7 +48,18 @@ class MainViewController: NSViewController, ReceiverPresenter {
                 searchTypePopup.addItem(withTitle: item["title"] ?? "Title")
             }
         }
+        let currentSearchType = searchTypePopup.titleOfSelectedItem
+        if currentSearchType != state.searchType["title"] {
+            searchTypePopup.selectItem(at: state.searchTypePopupCurrentItemIndex)
+        }
+
         blurbLabel.stringValue = state.searchType["blurb"] ?? ""
+
+        let currentOperator = operatorPopup.titleOfSelectedItem
+        if currentOperator != state.searchOperator {
+            operatorPopup.selectItem(withTitle: state.searchOperator)
+        }
+
         wordBasedCheckbox.state = state.wordBased ? .on : .off
         caseInsensitiveCheckbox.state = state.caseInsensitive ? .on : .off
         diacriticInsensitiveCheckbox.state = state.diacriticInsensitive ? .on : .off
@@ -95,6 +108,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @IBAction func doSearchTypePopup(_ sender: NSPopUpButton) {
         Task {
             await processor?.receive(.searchType(sender.indexOfSelectedItem))
+        }
+    }
+
+    @IBAction func doOperatorPopup(_ sender: NSPopUpButton) {
+        Task {
+            await processor?.receive(.operator(sender.titleOfSelectedItem ?? "=="))
         }
     }
 }

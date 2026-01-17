@@ -11,9 +11,23 @@ private struct QueryStringBuilderTests {
             caseInsensitive: false,
             diacriticInsensitive: false,
             wordBased: false,
-            type: "howdy"
+            type: "howdy",
+            operator: "=="
         )
         #expect(result == "howdy == \"testing\"")
+    }
+
+    @Test("makeQuery: uses operator")
+    func makeQueryOperator() throws {
+        let result = subject.makeQuery(
+            term: "testing",
+            caseInsensitive: false,
+            diacriticInsensitive: false,
+            wordBased: false,
+            type: "howdy",
+            operator: "!="
+        )
+        #expect(result == "howdy != \"testing\"")
     }
 
     @Test("makeQuery: if caseInsensitive, adds c")
@@ -23,7 +37,8 @@ private struct QueryStringBuilderTests {
             caseInsensitive: true,
             diacriticInsensitive: false,
             wordBased: false,
-            type: "kMDItemDisplayName"
+            type: "kMDItemDisplayName",
+            operator: "=="
         )
         #expect(result == "kMDItemDisplayName == \"testing\"c")
     }
@@ -35,7 +50,8 @@ private struct QueryStringBuilderTests {
             caseInsensitive: false,
             diacriticInsensitive: true,
             wordBased: false,
-            type: "kMDItemDisplayName"
+            type: "kMDItemDisplayName",
+            operator: "=="
         )
         #expect(result == "kMDItemDisplayName == \"testing\"d")
     }
@@ -47,7 +63,8 @@ private struct QueryStringBuilderTests {
             caseInsensitive: false,
             diacriticInsensitive: false,
             wordBased: true,
-            type: "kMDItemDisplayName"
+            type: "kMDItemDisplayName",
+            operator: "=="
         )
         #expect(result == "kMDItemDisplayName == \"testing\"w")
     }
@@ -59,7 +76,8 @@ private struct QueryStringBuilderTests {
             caseInsensitive: true,
             diacriticInsensitive: true,
             wordBased: true,
-            type: "kMDItemDisplayName"
+            type: "kMDItemDisplayName",
+            operator: "=="
         )
         #expect(result == "kMDItemDisplayName == \"testing\"cdw")
     }
