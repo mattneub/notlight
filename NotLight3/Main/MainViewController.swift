@@ -5,6 +5,11 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     override var nibName: String { "Main" }
 
+    /// This text field can have a formatter attached to it. This means that the field _displays_
+    /// its `stringValue` but _contains_ its `objectValue`. Therefore it is crucial to communicate
+    /// with the text field in terms of its `objectValue` and _not_ its `stringValue`.
+    /// (The sole exception is when we want to transform the display at the moment
+    /// the formatter is applied or removed.)
     @IBOutlet var termField: NSTextField! {
         didSet {
             termField?.delegate = self
@@ -39,6 +44,7 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @IBOutlet var wordBasedCheckbox: NSButton!
     @IBOutlet var caseInsensitiveCheckbox: NSButton!
     @IBOutlet var diacriticInsensitiveCheckbox: NSButton!
+    @IBOutlet var autoContainsModeCheckbox: NSButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,9 +67,9 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
         blurbLabel.stringValue = state.searchType["blurb"] ?? ""
 
-        let currentSearchTerm = termField.stringValue
+        let currentSearchTerm = termField.objectValue as? String ?? ""
         if currentSearchTerm != state.term {
-            termField.stringValue = state.term
+            termField.objectValue = state.term
         }
 
         let currentOperator = operatorPopup.titleOfSelectedItem
@@ -74,6 +80,9 @@ class MainViewController: NSViewController, ReceiverPresenter {
         wordBasedCheckbox.state = state.wordBased ? .on : .off
         caseInsensitiveCheckbox.state = state.caseInsensitive ? .on : .off
         diacriticInsensitiveCheckbox.state = state.diacriticInsensitive ? .on : .off
+
+        autoContainsModeCheckbox.state = state.autoContainsMode ? .on : .off
+        configureAutoContainsMode(state.autoContainsMode)
 
         if state.progress > 0 {
             progressLabel.stringValue = "\(String(state.progress)) results found..."
@@ -86,9 +95,27 @@ class MainViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    func configureAutoContainsMode(_ isOn: Bool) {
+        if isOn && termField.formatter == nil {
+            let currentValue = termField.objectValue as? String ?? ""
+            termField.formatter = MyStarFormatter()
+            termField.stringValue = currentValue
+            Task {
+                await processor?.receive(.termChanged(termField.objectValue as? String ?? ""))
+            }
+        } else if !isOn && termField.formatter != nil {
+            let currentValue = termField.objectValue as? String ?? ""
+            termField.formatter = nil
+            termField.stringValue = currentValue
+            Task {
+                await processor?.receive(.termChanged(termField.objectValue as? String ?? ""))
+            }
+        }
+    }
+
     @IBAction func doSearchTextField(_ sender: NSTextField) {
         Task {
-            await processor?.receive(.returnInSearchField(sender.stringValue))
+            await processor?.receive(.returnInSearchField(sender.objectValue as? String ?? ""))
         }
     }
 
@@ -113,6 +140,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @IBAction func doWordBased(_ sender: NSButton) {
         Task {
             await processor?.receive(.wordBased(sender.state == .on))
+        }
+    }
+
+    @IBAction func doAutoContainsMode(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.autoContainsMode(sender.state == .on))
         }
     }
 
@@ -144,7 +177,7 @@ extension MainViewController: NSTextFieldDelegate {
             return
         }
         Task {
-            await processor?.receive(.termChanged(termField.stringValue))
+            await processor?.receive(.termChanged(termField.objectValue as? String ?? ""))
         }
     }
 }

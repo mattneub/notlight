@@ -9,6 +9,9 @@ final class MainProcessor: Processor {
 
     func receive(_ action: MainAction) async {
         switch action {
+        case .autoContainsMode(let on):
+            state.autoContainsMode = on
+            await presenter?.present(state)
         case .caseInsensitive(let on):
             state.caseInsensitive = on
         case .diacriticInsensitive(let on):
@@ -56,7 +59,7 @@ final class MainProcessor: Processor {
         case .stop:
             services.searcher.stop()
         case .termChanged(let term):
-            state.term = term
+            state.term = term // and do not present
         case .wordBased(let on):
             state.wordBased = on
         }

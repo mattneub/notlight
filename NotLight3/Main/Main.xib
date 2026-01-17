@@ -7,6 +7,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="MainViewController" customModule="NotLight3" customModuleProvider="target">
             <connections>
+                <outlet property="autoContainsModeCheckbox" destination="HsY-UI-ynR" id="gbf-Kl-zZL"/>
                 <outlet property="blurbLabel" destination="8vV-U4-Dsf" id="ckQ-De-0ep"/>
                 <outlet property="caseInsensitiveCheckbox" destination="ugU-pF-GT8" id="uLy-Q8-kjW"/>
                 <outlet property="diacriticInsensitiveCheckbox" destination="QCS-M8-A8y" id="4jW-yq-1Sf"/>
@@ -26,7 +27,7 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FIj-ed-s4j" customClass="MyTextField" customModule="NotLight3" customModuleProvider="target">
+                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FIj-ed-s4j" customClass="MyTextField" customModule="NotLight3" customModuleProvider="target">
                     <rect key="frame" x="20" y="209" width="440" height="24"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="dNt-YY-CBA">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -37,7 +38,7 @@
                         <action selector="doSearchTextField:" target="-2" id="Wyi-Be-rb1"/>
                     </connections>
                 </textField>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-o5-xYT" userLabel="ProgressLabel">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-o5-xYT" userLabel="ProgressLabel">
                     <rect key="frame" x="250" y="245" width="212" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="4xN-Ic-C1r">
                         <font key="font" metaFont="smallSystem"/>
@@ -105,7 +106,7 @@
                         <action selector="doSearchTypePopup:" target="-2" id="C2m-ar-lmw"/>
                     </connections>
                 </popUpButton>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="8vV-U4-Dsf">
+                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="8vV-U4-Dsf">
                     <rect key="frame" x="18" y="95" width="444" height="42"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="42" id="57u-9j-gP3"/>
@@ -147,12 +148,23 @@ Label</string>
                         <action selector="insertContains:" target="-2" id="ZO3-mB-nNX"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="HsY-UI-ynR">
+                    <rect key="frame" x="294" y="155" width="127" height="14"/>
+                    <buttonCell key="cell" type="check" title="Auto-Contains Mode" bezelStyle="regularSquare" imagePosition="left" controlSize="small" inset="2" id="WDT-fy-hFc">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doAutoContainsMode:" target="-2" id="fsq-0L-NPg"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="ugU-pF-GT8" firstAttribute="top" secondItem="mqW-rA-31S" secondAttribute="bottom" constant="6" id="4ht-tp-afQ"/>
                 <constraint firstItem="pKn-Yg-Chk" firstAttribute="centerX" secondItem="c22-O7-iKe" secondAttribute="centerX" id="9L8-2w-i6n"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="trailing" secondItem="FIj-ed-s4j" secondAttribute="trailing" id="9kL-ZM-Iq1"/>
                 <constraint firstItem="QCS-M8-A8y" firstAttribute="top" secondItem="ugU-pF-GT8" secondAttribute="bottom" constant="6" id="AcK-4C-Jf8"/>
+                <constraint firstItem="HsY-UI-ynR" firstAttribute="top" secondItem="JVN-DG-v0s" secondAttribute="bottom" constant="10" id="DcB-as-8Bt"/>
                 <constraint firstItem="y6J-dv-1OF" firstAttribute="centerY" secondItem="DTS-o5-xYT" secondAttribute="centerY" id="HE9-wF-4aG"/>
                 <constraint firstItem="JVN-DG-v0s" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="IQ5-gc-nLw"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="leading" secondItem="y6J-dv-1OF" secondAttribute="trailing" constant="6" id="ImM-dl-eaf"/>
@@ -175,6 +187,7 @@ Label</string>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="centerY" secondItem="FuA-BQ-UYP" secondAttribute="centerY" id="yd3-9z-y8J"/>
                 <constraint firstItem="pps-04-cgc" firstAttribute="centerY" secondItem="y6J-dv-1OF" secondAttribute="centerY" id="ydt-pO-RaO"/>
                 <constraint firstItem="JVN-DG-v0s" firstAttribute="trailing" secondItem="FIj-ed-s4j" secondAttribute="trailing" id="yvf-bz-fVa"/>
+                <constraint firstItem="HsY-UI-ynR" firstAttribute="leading" secondItem="JVN-DG-v0s" secondAttribute="leading" id="zmY-7G-OmB"/>
             </constraints>
             <point key="canvasLocation" x="139" y="154"/>
         </customView>

@@ -1,4 +1,5 @@
 enum MainAction: Equatable {
+    case autoContainsMode(Bool)
     case caseInsensitive(Bool)
     case diacriticInsensitive(Bool)
     case initialState

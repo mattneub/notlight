@@ -19,6 +19,13 @@ private struct MainProcessorTests {
         services.queryStringBuilder = builder
     }
 
+    @Test("receive autoContainsMode: sets the state autoContainsMode and presents")
+    func autoContainsMode() async {
+        await subject.receive(.autoContainsMode(true))
+        #expect(subject.state.autoContainsMode == true)
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
     @Test("receive caseInsensitive: sets the state caseInsensitive")
     func caseInsensitive() async {
         await subject.receive(.caseInsensitive(true))

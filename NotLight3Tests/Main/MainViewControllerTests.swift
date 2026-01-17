@@ -85,7 +85,7 @@ private struct MainViewControllerTests {
         #expect(subject.operatorPopup.titleOfSelectedItem == "<=")
     }
 
-    @Test("present: sets checkboxes")
+    @Test("present: sets the three checkboxes")
     func presentCheckBoxes() async {
         subject.loadViewIfNeeded()
         subject.wordBasedCheckbox.state = .on
@@ -111,6 +111,51 @@ private struct MainViewControllerTests {
         #expect(subject.wordBasedCheckbox.state == .on)
         #expect(subject.caseInsensitiveCheckbox.state == .on)
         #expect(subject.diacriticInsensitiveCheckbox.state == .on)
+    }
+
+    @Test("present: sets the autoContains checkbox and applies/removes formatter, sets value, sends termChanged")
+    func presentAutoContains() async throws {
+        subject.loadViewIfNeeded()
+        subject.termField.objectValue = "howdy"
+        #expect(subject.termField.formatter == nil)
+        var state = MainState()
+        state.autoContainsMode = true
+        state.term = "howdy"
+        await subject.present(state)
+        #expect(subject.autoContainsModeCheckbox.state == .on)
+        do {
+            let formatter = try #require(subject.termField.formatter)
+            #expect(formatter is MyStarFormatter)
+        }
+        #expect(subject.termField.objectValue as? String == "*howdy*")
+        #expect(subject.termField.stringValue == "howdy")
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
+        // and now, the other way
+        processor.thingsReceived = []
+        state.autoContainsMode = false
+        state.term = "*howdy*"
+        await subject.present(state)
+        #expect(subject.autoContainsModeCheckbox.state == .off)
+        #expect(subject.termField.formatter == nil)
+        #expect(subject.termField.objectValue as? String == "*howdy*")
+        #expect(subject.termField.stringValue == "*howdy*")
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
+        // and now, the _other_ other way
+        processor.thingsReceived = []
+        state.autoContainsMode = true
+        state.term = "*howdy*"
+        await subject.present(state)
+        #expect(subject.autoContainsModeCheckbox.state == .on)
+        do {
+            let formatter = try #require(subject.termField.formatter)
+            #expect(formatter is MyStarFormatter)
+        }
+        #expect(subject.termField.objectValue as? String == "*howdy*")
+        #expect(subject.termField.stringValue == "howdy")
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
     }
 
     @Test("present: sets progress spinner and label")
@@ -186,6 +231,20 @@ private struct MainViewControllerTests {
         subject.doWordBased(button)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.wordBased(true)])
+    }
+
+    @Test("doAutoContainsMode: sends autoContainsMode")
+    func autoContainsMode() async {
+        let button = NSButton()
+        button.state = .off
+        subject.doAutoContainsMode(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.autoContainsMode(false)])
+        processor.thingsReceived = []
+        button.state = .on
+        subject.doAutoContainsMode(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.autoContainsMode(true)])
     }
 
     @Test("doSearchTypePopup: sends searchType")
