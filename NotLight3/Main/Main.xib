@@ -15,6 +15,7 @@
                 <outlet property="progressSpinner" destination="y6J-dv-1OF" id="dpi-Vr-6wq"/>
                 <outlet property="searchTypePopup" destination="FuA-BQ-UYP" id="7hc-gc-nyG"/>
                 <outlet property="stopButton" destination="pps-04-cgc" id="fva-cj-TS8"/>
+                <outlet property="termField" destination="FIj-ed-s4j" id="ke8-FT-Rtc"/>
                 <outlet property="view" destination="c22-O7-iKe" id="xwQ-W0-wIF"/>
                 <outlet property="wordBasedCheckbox" destination="mqW-rA-31S" id="Kiz-Ua-9SD"/>
             </connections>
@@ -25,7 +26,7 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FIj-ed-s4j" customClass="MyTextField" customModule="NotLight3" customModuleProvider="target">
+                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FIj-ed-s4j" customClass="MyTextField" customModule="NotLight3" customModuleProvider="target">
                     <rect key="frame" x="20" y="209" width="440" height="24"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="dNt-YY-CBA">
                         <font key="font" usesAppearanceFont="YES"/>
@@ -36,7 +37,7 @@
                         <action selector="doSearchTextField:" target="-2" id="Wyi-Be-rb1"/>
                     </connections>
                 </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-o5-xYT" userLabel="ProgressLabel">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-o5-xYT" userLabel="ProgressLabel">
                     <rect key="frame" x="250" y="245" width="212" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="4xN-Ic-C1r">
                         <font key="font" metaFont="smallSystem"/>
@@ -104,7 +105,7 @@
                         <action selector="doSearchTypePopup:" target="-2" id="C2m-ar-lmw"/>
                     </connections>
                 </popUpButton>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="8vV-U4-Dsf">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="8vV-U4-Dsf">
                     <rect key="frame" x="18" y="95" width="444" height="42"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="42" id="57u-9j-gP3"/>
@@ -136,6 +137,16 @@ Label</string>
                         <action selector="doOperatorPopup:" target="-2" id="O6a-wn-Rj6"/>
                     </connections>
                 </popUpButton>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JVN-DG-v0s">
+                    <rect key="frame" x="294" y="179" width="166" height="20"/>
+                    <buttonCell key="cell" type="push" title="Insert &quot;Contains&quot; Wildcards" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="y6v-sm-1j9">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="insertContains:" target="-2" id="ZO3-mB-nNX"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="ugU-pF-GT8" firstAttribute="top" secondItem="mqW-rA-31S" secondAttribute="bottom" constant="6" id="4ht-tp-afQ"/>
@@ -143,6 +154,7 @@ Label</string>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="trailing" secondItem="FIj-ed-s4j" secondAttribute="trailing" id="9kL-ZM-Iq1"/>
                 <constraint firstItem="QCS-M8-A8y" firstAttribute="top" secondItem="ugU-pF-GT8" secondAttribute="bottom" constant="6" id="AcK-4C-Jf8"/>
                 <constraint firstItem="y6J-dv-1OF" firstAttribute="centerY" secondItem="DTS-o5-xYT" secondAttribute="centerY" id="HE9-wF-4aG"/>
+                <constraint firstItem="JVN-DG-v0s" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="IQ5-gc-nLw"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="leading" secondItem="y6J-dv-1OF" secondAttribute="trailing" constant="6" id="ImM-dl-eaf"/>
                 <constraint firstItem="FIj-ed-s4j" firstAttribute="top" secondItem="DTS-o5-xYT" secondAttribute="bottom" constant="12" id="L9h-8r-0Jz"/>
                 <constraint firstItem="mqW-rA-31S" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="Nfp-Al-3aZ"/>
@@ -162,6 +174,7 @@ Label</string>
                 <constraint firstItem="FIj-ed-s4j" firstAttribute="centerX" secondItem="c22-O7-iKe" secondAttribute="centerX" id="yOf-gb-JMn"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="centerY" secondItem="FuA-BQ-UYP" secondAttribute="centerY" id="yd3-9z-y8J"/>
                 <constraint firstItem="pps-04-cgc" firstAttribute="centerY" secondItem="y6J-dv-1OF" secondAttribute="centerY" id="ydt-pO-RaO"/>
+                <constraint firstItem="JVN-DG-v0s" firstAttribute="trailing" secondItem="FIj-ed-s4j" secondAttribute="trailing" id="yvf-bz-fVa"/>
             </constraints>
             <point key="canvasLocation" x="139" y="154"/>
         </customView>

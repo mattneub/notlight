@@ -5,6 +5,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     override var nibName: String { "Main" }
 
+    @IBOutlet var termField: NSTextField! {
+        didSet {
+            termField?.delegate = self
+        }
+    }
+
     @IBOutlet var searchTypePopup: NSPopUpButton!
 
     @IBOutlet var operatorPopup: NSPopUpButton!
@@ -54,6 +60,11 @@ class MainViewController: NSViewController, ReceiverPresenter {
         }
 
         blurbLabel.stringValue = state.searchType["blurb"] ?? ""
+
+        let currentSearchTerm = termField.stringValue
+        if currentSearchTerm != state.term {
+            termField.stringValue = state.term
+        }
 
         let currentOperator = operatorPopup.titleOfSelectedItem
         if currentOperator != state.searchOperator {
@@ -116,5 +127,24 @@ class MainViewController: NSViewController, ReceiverPresenter {
             await processor?.receive(.operator(sender.titleOfSelectedItem ?? "=="))
         }
     }
+
+    @IBAction func insertContains(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.insertContains)
+        }
+    }
 }
 
+extension MainViewController: NSTextFieldDelegate {
+    func controlTextDidChange(_ obj: Notification) {
+        guard let editor = obj.userInfo?["NSFieldEditor"] else {
+            return
+        }
+        guard (editor as? NSTextView)?.delegate === termField else {
+            return
+        }
+        Task {
+            await processor?.receive(.termChanged(termField.stringValue))
+        }
+    }
+}

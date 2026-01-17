@@ -49,6 +49,14 @@ private struct MainProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
+    @Test("receive insertContains: inserts asterisks in state term, presents")
+    func insertContains() async {
+        subject.state.term = "howdy"
+        await subject.receive(.insertContains)
+        #expect(subject.state.term == "*howdy*")
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
     @Test("receive operator: sets state operator, presents")
     func searchOperator() async {
         await subject.receive(.operator("op"))
@@ -138,6 +146,13 @@ private struct MainProcessorTests {
     func stop() async {
         await subject.receive(.stop)
         #expect(searcher.methodsCalled == ["stop()"])
+    }
+
+    @Test("receive termChanged: sets state term, does not present")
+    func termChanged() async {
+        await subject.receive(.termChanged("howdy"))
+        #expect(subject.state.term == "howdy")
+        #expect(presenter.statesPresented.isEmpty)
     }
 
     @Test("receive wordBased: sets the state wordBased")

@@ -17,4 +17,6 @@ struct MainState: Equatable {
     var wordBased: Bool = false
     var caseInsensitive: Bool = false
     var diacriticInsensitive: Bool = false
+
+    var term: String = ""
 }

@@ -16,6 +16,12 @@ private struct MainViewControllerTests {
         #expect(subject.nibName == "Main")
     }
 
+    @Test("termField: is correctly prepared")
+    func termField() {
+        subject.loadViewIfNeeded()
+        #expect(subject.termField.delegate === subject)
+    }
+
     @Test("blurbLabel: is correctly prepared")
     func blurbLabel() {
         subject.loadViewIfNeeded()
@@ -47,6 +53,15 @@ private struct MainViewControllerTests {
         subject.loadViewIfNeeded()
         await subject.present(state)
         #expect(subject.searchTypePopup.titleOfSelectedItem == "ha")
+    }
+
+    @Test("present: sets term field")
+    func presentTermField() async {
+        var state = MainState()
+        state.term = "howdy"
+        subject.loadViewIfNeeded()
+        await subject.present(state)
+        #expect(subject.termField.stringValue == "howdy")
     }
 
     @Test("present: sets blurb text")
@@ -193,5 +208,25 @@ private struct MainViewControllerTests {
         subject.doOperatorPopup(button)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.operator("ho")])
+    }
+
+    @Test("insertContains: sends insertContains")
+    func insertContains() async {
+        let button = NSButton()
+        subject.insertContains(button)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.insertContains])
+    }
+
+    @Test("controlTextDidChange: sends termChanged")
+    func controlTextDidChange() async {
+        let window = makeWindow(viewController: subject)
+        subject.termField.stringValue = "howdy"
+        subject.termField.becomeFirstResponder()
+        let textView = window.firstResponder
+        let notification = Notification(name: NSText.didChangeNotification, userInfo: ["NSFieldEditor": textView as Any])
+        subject.controlTextDidChange(notification)
+        await #while(processor.thingsReceived.count < 2)
+        #expect(processor.thingsReceived.last == .termChanged("howdy"))
     }
 }

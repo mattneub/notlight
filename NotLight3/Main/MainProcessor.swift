@@ -23,6 +23,9 @@ final class MainProcessor: Processor {
                 }
             }
             await presenter?.present(state)
+        case .insertContains:
+            state.term = "*" + state.term + "*"
+            await presenter?.present(state)
         case .operator(let searchOperator):
             state.searchOperator = searchOperator
             await presenter?.present(state)
@@ -52,6 +55,8 @@ final class MainProcessor: Processor {
             await presenter?.present(state)
         case .stop:
             services.searcher.stop()
+        case .termChanged(let term):
+            state.term = term
         case .wordBased(let on):
             state.wordBased = on
         }
