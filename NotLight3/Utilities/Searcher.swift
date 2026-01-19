@@ -30,6 +30,7 @@ final class Searcher: SearcherType {
 
     /// Public method.
     func doSearch(_ queryString: String, scopes: [URL], joiner: SearchJoiner) async throws -> SearchInfo {
+        let stopBeforeSearching = services.application.optionKeyDown
         searchProgress.count = 0
         let query = services.queryFactory.makeQuery()
         self.query = query
@@ -54,6 +55,9 @@ final class Searcher: SearcherType {
         }
         previousQueryString = queryString
         query.searchScopes = scopes.isEmpty ? [NSMetadataQueryLocalComputerScope] : scopes
+        if stopBeforeSearching {
+            throw SearcherError.userStopped
+        }
         query.start()
         gatheringObserver = NotificationCenter.default.addObserver(
             forName: .NSMetadataQueryGatheringProgress, object: query, queue: nil

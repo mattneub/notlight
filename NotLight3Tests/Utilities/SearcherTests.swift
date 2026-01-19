@@ -6,9 +6,11 @@ import WaitWhile
 private struct SearcherTests {
     let subject = Searcher()
     let query = MockMetadataQuery()
+    let application = MockApplication()
 
     init() {
         services.queryFactory.factory = { [self] in return query }
+        services.application = application
     }
 
     @Test("doSearch: constructs query from given term, starts it; when finished notif arrives, stops it and returns results")
@@ -44,6 +46,22 @@ private struct SearcherTests {
         #expect(searchInfo?.results.count == 1)
         #expect(searchInfo?.results[0].displayName == "name")
         #expect(searchInfo?.results[0].path == "path")
+    }
+
+    @Test("doSearch: if option key is down, constructs previous query string but stops before searching")
+    func doSearchOptionKeyDown() async throws {
+        subject.previousQueryString = "dummy"
+        Task {
+            _ = try await subject.doSearch(
+                "kMDItemDisplayName == \"testing\"cdw",
+                scopes: [],
+                joiner: .noJoiner
+            )
+        }
+        application.optionKeyDownToReturn = true
+        await #while(subject.previousQueryString == "dummy")
+        #expect(subject.previousQueryString == "kMDItemDisplayName == \"testing\"cdw")
+        #expect(query.methodsCalled.isEmpty)
     }
 
     @Test("doSearch: with scopes, uses scopes")
