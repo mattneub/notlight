@@ -115,7 +115,25 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     @IBAction func doSearchTextField(_ sender: NSTextField) {
         Task {
-            await processor?.receive(.returnInSearchField(sender.objectValue as? String ?? ""))
+            await processor?.receive(.performSearch(sender.objectValue as? String ?? "", .noJoiner))
+        }
+    }
+
+    @IBAction func doSearchButton(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.performSearch(termField.objectValue as? String ?? "", .noJoiner))
+        }
+    }
+
+    @IBAction func doSearchWithinButton(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.performSearch(termField.objectValue as? String ?? "", .and))
+        }
+    }
+
+    @IBAction func doSearchAlsoButton(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.performSearch(termField.objectValue as? String ?? "", .or))
         }
     }
 

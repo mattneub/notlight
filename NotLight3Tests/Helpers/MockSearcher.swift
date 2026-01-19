@@ -7,13 +7,15 @@ final class MockSearcher: SearcherType {
     var errorToThrow: SearcherError?
     var timeToSleep: Double = 0
     var scopes = [URL]()
+    var joiner: SearchJoiner?
 
     var searchProgress = SearchProgress()
 
-    func doSearch(_ term: String, scopes: [URL]) async throws -> SearchInfo {
+    func doSearch(_ term: String, scopes: [URL], joiner: SearchJoiner) async throws -> SearchInfo {
         methodsCalled.append(#function)
         self.term = term
         self.scopes = scopes
+        self.joiner = joiner
         if timeToSleep > 0 {
             try? await Task.sleep(for: .seconds(timeToSleep))
         }

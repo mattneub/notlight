@@ -71,13 +71,13 @@ private struct MainProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
-    @Test("receive returnInSearchField: calls builder makeQuery with term and state values")
-    func returnInSearchFieldBuilder() async {
+    @Test("receive performSearch: calls builder makeQuery with term and state values")
+    func performSearchBuilder() async {
         subject.state.caseInsensitive = true
         subject.state.searchTypePopupContents = [["key": "kMDItemDisplayName"]]
         subject.state.searchOperator = "!="
         builder.queryStringToReturn = "queryString"
-        await subject.receive(.returnInSearchField("howdy"))
+        await subject.receive(.performSearch("howdy", .noJoiner))
         #expect(builder.methodsCalled == ["makeQuery(term:caseInsensitive:diacriticInsensitive:wordBased:type:operator:)"])
         #expect(builder.term == "howdy")
         #expect(builder.caseInsensitive == true)
@@ -87,28 +87,29 @@ private struct MainProcessorTests {
         #expect(builder.operatorString == "!=")
     }
 
-    @Test("receive returnInSearchField: calls searcher doSearch")
-    func returnInSearchField() async {
+    @Test("receive performSearch: calls searcher doSearch with builder's query string and joiner")
+    func performSearch() async {
         subject.state.scopes = [URL(string: "file:///testing")!]
         builder.queryStringToReturn = "queryString"
         let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path")])
         searcher.resultToReturn = result
-        await subject.receive(.returnInSearchField("howdy"))
-        #expect(searcher.methodsCalled == ["doSearch(_:scopes:)"])
+        await subject.receive(.performSearch("howdy", .and))
+        #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
         #expect(searcher.term == "queryString")
         #expect(searcher.scopes == [URL(string: "file:///testing")!])
+        #expect(searcher.joiner == .and)
         #expect(coordinator.methodsCalled == ["showResults(state:)"])
         #expect(coordinator.resultsState?.queryString == result.queryString)
         #expect(coordinator.resultsState?.results == result.results)
     }
 
-    @Test("receive returnInSearchField: if searcher searchProgress publishes, updates state progress, presents")
-    func returnInSearchFieldProgress() async {
+    @Test("receive performSearch: if searcher searchProgress publishes, updates state progress, presents")
+    func performSearchProgress() async {
         let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path")])
         searcher.resultToReturn = result
         searcher.timeToSleep = 1
         Task {
-            await subject.receive(.returnInSearchField("howdy"))
+            await subject.receive(.performSearch("howdy", .noJoiner))
         }
         await #while(subject.progressWatchingTask == nil)
         try? await Task.sleep(for: .seconds(0.1))
@@ -127,19 +128,19 @@ private struct MainProcessorTests {
         #expect(subject.progressWatchingTask?.isCancelled == true)
     }
 
-    @Test("receive returnInSearchField: if term is empty, does nothing")
-    func returnInSearchFieldEmpty() async {
-        await subject.receive(.returnInSearchField(""))
+    @Test("receive performSearch: if term is empty, does nothing")
+    func performSearchEmpty() async {
+        await subject.receive(.performSearch("", .noJoiner))
         #expect(builder.methodsCalled.isEmpty)
         #expect(searcher.methodsCalled.isEmpty)
         #expect(coordinator.methodsCalled.isEmpty)
     }
 
-    @Test("receive returnInSearchField: if search throws, does nothing")
-    func returnInSearchFieldThrow() async {
+    @Test("receive performSearch: if search throws, does nothing")
+    func performSearchThrow() async {
         searcher.errorToThrow = .badQuery
-        await subject.receive(.returnInSearchField("howdy"))
-        #expect(searcher.methodsCalled == ["doSearch(_:scopes:)"])
+        await subject.receive(.performSearch("howdy", .noJoiner))
+        #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
         #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
     }

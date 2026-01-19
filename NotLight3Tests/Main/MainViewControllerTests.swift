@@ -175,13 +175,40 @@ private struct MainViewControllerTests {
         #expect(subject.stopButton.isEnabled == false)
     }
 
-    @Test("doSearchTextField: sends processor returnInSearchField with text field string value")
+    @Test("doSearchTextField: sends processor performSearch with text field object value and no joiner")
     func doSearchTextField() async {
         let field = NSTextField()
-        field.stringValue = "howdy"
+        field.objectValue = "howdy"
         subject.doSearchTextField(field)
         await #while(processor.thingsReceived.isEmpty)
-        #expect(processor.thingsReceived == [.returnInSearchField("howdy")])
+        #expect(processor.thingsReceived == [.performSearch("howdy", .noJoiner)])
+    }
+
+    @Test("doSearchButton: sends processor performSearch with text field object value and no joiner")
+    func doSearchButton() async {
+        subject.loadViewIfNeeded()
+        subject.termField.objectValue = "howdy"
+        subject.doSearchButton(NSButton())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .performSearch("howdy", .noJoiner))
+    }
+
+    @Test("doSearchWithButton: sends processor performSearch with text field object value and .and joiner")
+    func doSearchWithinButton() async {
+        subject.loadViewIfNeeded()
+        subject.termField.objectValue = "howdy"
+        subject.doSearchWithinButton(NSButton())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .performSearch("howdy", .and))
+    }
+
+    @Test("doSearchAlsoButton: sends processor performSearch with text field object value and .or joiner")
+    func doSearchAlsoButton() async {
+        subject.loadViewIfNeeded()
+        subject.termField.objectValue = "howdy"
+        subject.doSearchAlsoButton(NSButton())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .performSearch("howdy", .or))
     }
 
     @Test("doStop: sends processor stop")

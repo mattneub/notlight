@@ -32,7 +32,7 @@ final class MainProcessor: Processor {
         case .operator(let searchOperator):
             state.searchOperator = searchOperator
             await presenter?.present(state)
-        case .returnInSearchField(let term):
+        case .performSearch(let term, let joiner):
             if term.isEmpty {
                 return
             }
@@ -46,8 +46,15 @@ final class MainProcessor: Processor {
                 operator: state.searchOperator
             )
             // TODO: If we get a bad query error here, show an alert
-            if let result = try? await services.searcher.doSearch(queryString, scopes: state.scopes) {
-                let resultsState = ResultsState(queryString: result.queryString, results: result.results)
+            if let result = try? await services.searcher.doSearch(
+                queryString,
+                scopes: state.scopes,
+                joiner: joiner
+            ) {
+                let resultsState = ResultsState(
+                    queryString: result.queryString,
+                    results: result.results
+                )
                 coordinator?.showResults(state: resultsState)
             }
             progressWatchingTask?.cancel()

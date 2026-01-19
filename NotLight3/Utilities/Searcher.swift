@@ -2,7 +2,7 @@ import AppKit
 
 protocol SearcherType {
     var searchProgress: SearchProgress { get }
-    func doSearch(_ term: String, scopes: [URL]) async throws -> SearchInfo
+    func doSearch(_ term: String, scopes: [URL], joiner: SearchJoiner) async throws -> SearchInfo
     func stop()
 }
 
@@ -11,6 +11,10 @@ final class Searcher: SearcherType {
     /// alive, and it maintains it in a place where multiple methods can access it, so we don't
     /// have to worry about the fact that an NSMetadataQuery is not Sendable.
     var query: NSMetadataQuery?
+
+    /// Query string most recently submitted. This persists between searches, allowing us to
+    /// build successive cumulative queries with AND and OR.
+    var previousQueryString: String?
 
     /// Public observable object that publishes the growing count of found results.
     let searchProgress = SearchProgress()
@@ -25,10 +29,18 @@ final class Searcher: SearcherType {
     var continuation: CheckedContinuation<[SearchResult], any Error>?
 
     /// Public method.
-    func doSearch(_ queryString: String, scopes: [URL]) async throws -> SearchInfo {
+    func doSearch(_ queryString: String, scopes: [URL], joiner: SearchJoiner) async throws -> SearchInfo {
         searchProgress.count = 0
         let query = services.queryFactory.makeQuery()
         self.query = query
+        var queryString = queryString
+        if let previousQueryString {
+            queryString = switch joiner {
+            case .and: "(\(previousQueryString)) && (\(queryString))"
+            case .noJoiner: queryString
+            case .or: "(\(previousQueryString)) || (\(queryString))"
+            }
+        }
         do {
             try ExceptionCatcher.catchException {
                 // unfortunately there's a long-standing bug: NSPredicate `init?(forMetadataQueryString)`
@@ -40,6 +52,7 @@ final class Searcher: SearcherType {
         } catch {
             throw SearcherError.badQuery
         }
+        previousQueryString = queryString
         query.searchScopes = scopes.isEmpty ? [NSMetadataQueryLocalComputerScope] : scopes
         query.start()
         gatheringObserver = NotificationCenter.default.addObserver(
@@ -112,6 +125,12 @@ final class Searcher: SearcherType {
 enum SearcherError: Error {
     case badQuery
     case userStopped
+}
+
+enum SearchJoiner {
+    case and
+    case noJoiner
+    case or
 }
 
 @Observable
