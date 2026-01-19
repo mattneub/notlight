@@ -277,6 +277,23 @@ private struct MainViewControllerTests {
         #expect(processor.thingsReceived == [.insertContains])
     }
 
+    @Test("folderTextFieldChanged: sends scopes with file URLs from paths of FolderTextFields")
+    func folderTextFieldChanged() async {
+        subject.loadViewIfNeeded()
+        let field1 = FolderTextField(frame: .zero)
+        let field2 = FolderTextField(frame: .zero)
+        subject.view.addSubview(field1)
+        subject.view.addSubview(field2)
+        field1.stringValue = "/top/testing"
+        field2.stringValue = "/top/testing with space"
+        subject.folderTextFieldChanged(field1)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .scopes([
+            URL(string: "file:///top/testing/")!, // file path, and in particular a directory
+            URL(string: "file:///top/testing%20with%20space/")!,
+        ]))
+    }
+
     @Test("controlTextDidChange: sends termChanged")
     func controlTextDidChange() async {
         let window = makeWindow(viewController: subject)

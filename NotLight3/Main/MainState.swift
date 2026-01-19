@@ -19,5 +19,7 @@ struct MainState: Equatable {
     var diacriticInsensitive: Bool = false
     var autoContainsMode: Bool = false
 
+    var scopes = [URL]()
+
     var term: String = ""
 }

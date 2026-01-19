@@ -6,6 +6,7 @@ enum MainAction: Equatable {
     case insertContains
     case `operator`(String)
     case returnInSearchField(String)
+    case scopes([URL])
     case searchType(Int)
     case stop
     case termChanged(String)

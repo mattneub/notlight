@@ -2,7 +2,7 @@ import AppKit
 
 protocol SearcherType {
     var searchProgress: SearchProgress { get }
-    func doSearch(_ term: String) async throws -> SearchInfo
+    func doSearch(_ term: String, scopes: [URL]) async throws -> SearchInfo
     func stop()
 }
 
@@ -25,7 +25,7 @@ final class Searcher: SearcherType {
     var continuation: CheckedContinuation<[SearchResult], any Error>?
 
     /// Public method.
-    func doSearch(_ queryString: String) async throws -> SearchInfo {
+    func doSearch(_ queryString: String, scopes: [URL]) async throws -> SearchInfo {
         searchProgress.count = 0
         let query = services.queryFactory.makeQuery()
         self.query = query
@@ -40,7 +40,7 @@ final class Searcher: SearcherType {
         } catch {
             throw SearcherError.badQuery
         }
-        query.searchScopes = [NSMetadataQueryLocalComputerScope]
+        query.searchScopes = scopes.isEmpty ? [NSMetadataQueryLocalComputerScope] : scopes
         query.start()
         gatheringObserver = NotificationCenter.default.addObserver(
             forName: .NSMetadataQueryGatheringProgress, object: query, queue: nil

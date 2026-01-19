@@ -1,0 +1,112 @@
+import Cocoa
+
+class FolderTextField: NSTextField {
+    override init(frame: NSRect) {
+        super.init(frame: frame)
+        registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
+        drawsBackground = true
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
+        drawsBackground = true
+    }
+
+    override func draggingEntered(_ sender: any NSDraggingInfo) -> NSDragOperation {
+        let dragPasteboard = sender.draggingPasteboard
+        guard let types = dragPasteboard.types else {
+            return []
+        }
+        guard types.contains(.fileURL) else {
+            return []
+        }
+        guard sender.draggingSourceOperationMask.contains(.generic) else {
+            return []
+        }
+        guard dragPasteboard.pasteboardItems?.count == 1 else {
+            return []
+        }
+        guard let url = NSURL(from: dragPasteboard) as? URL else {
+            return []
+        }
+        guard (try? url.checkResourceIsReachable()) == true else {
+            return []
+        }
+        guard let values = try? url.resourceValues(forKeys: [.isDirectoryKey, .isPackageKey]) else {
+            return []
+        }
+        guard values.isDirectory == true, values.isPackage == false else {
+            return []
+        }
+        // passes all the tests! provide feedback and we're out of here
+        backgroundColor = NSColor(calibratedRed: 1, green: 0.909, blue: 0.684, alpha: 1)
+        return .copy
+    }
+    
+    override func draggingExited(_ sender: (any NSDraggingInfo)?) {
+        finished()
+    }
+    
+    /// If we were editing, this is not called; the field editor just accepts the path, kaboom.
+    /// Therefore we are not editable at all (simplest way out).
+    override func performDragOperation(_ sender: any NSDraggingInfo) -> Bool {
+        defer {
+            finished()
+        }
+        guard let url = NSURL(from: sender.draggingPasteboard) as? URL else {
+            return false
+        }
+        self.stringValue = url.path(percentEncoded: false)
+        sendAction(action, to: target) // we changed the value in code, we have to signal manually
+        return true
+    }
+
+    func finished() {
+        Task {
+            backgroundColor = NSColor.white
+        }
+    }
+
+    override func draw(_: NSRect) {
+        let bounds = self.bounds.insetBy(dx: 1, dy: 1)
+
+        let context = NSGraphicsContext.current
+        context?.shouldAntialias = true
+
+        let path = NSBezierPath(roundedRect: bounds, xRadius: 5, yRadius: 5)
+        path.setClip()
+
+        if let bg = self.backgroundColor {
+            bg.setFill()
+            path.fill()
+        }
+
+        NSGraphicsContext.saveGraphicsState()
+        do {
+            NSColor.black.setStroke()
+            let shadow = NSShadow().applying {
+                $0.shadowOffset = CGSize(width: 2, height: -2)
+                $0.shadowBlurRadius = 3
+                $0.shadowColor = NSColor(calibratedRed: 0, green: 0, blue: 0, alpha: 0.6)
+            }
+            shadow.set()
+            path.lineWidth = 1
+            path.stroke()
+        }
+        NSGraphicsContext.restoreGraphicsState()
+
+        let innerBounds = bounds.insetBy(dx: 5, dy: 3)
+        if self.stringValue == "" {
+            if let s = self.placeholderString {
+                s.draw(in: innerBounds, withAttributes: [.foregroundColor: NSColor.lightGray])
+            }
+        } else {
+            let para = NSMutableParagraphStyle().applying {
+                $0.lineBreakMode = .byTruncatingHead
+                $0.allowsDefaultTighteningForTruncation = false
+            }
+            self.stringValue.draw(in: innerBounds, withAttributes: [.paragraphStyle: para])
+        }
+    }
+}

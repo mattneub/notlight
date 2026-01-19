@@ -89,12 +89,14 @@ private struct MainProcessorTests {
 
     @Test("receive returnInSearchField: calls searcher doSearch")
     func returnInSearchField() async {
+        subject.state.scopes = [URL(string: "file:///testing")!]
         builder.queryStringToReturn = "queryString"
         let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path")])
         searcher.resultToReturn = result
         await subject.receive(.returnInSearchField("howdy"))
-        #expect(searcher.methodsCalled == ["doSearch(_:)"])
+        #expect(searcher.methodsCalled == ["doSearch(_:scopes:)"])
         #expect(searcher.term == "queryString")
+        #expect(searcher.scopes == [URL(string: "file:///testing")!])
         #expect(coordinator.methodsCalled == ["showResults(state:)"])
         #expect(coordinator.resultsState?.queryString == result.queryString)
         #expect(coordinator.resultsState?.results == result.results)
@@ -137,9 +139,15 @@ private struct MainProcessorTests {
     func returnInSearchFieldThrow() async {
         searcher.errorToThrow = .badQuery
         await subject.receive(.returnInSearchField("howdy"))
-        #expect(searcher.methodsCalled == ["doSearch(_:)"])
+        #expect(searcher.methodsCalled == ["doSearch(_:scopes:)"])
         #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
+    }
+
+    @Test("receive scopes: sets state scopes")
+    func scopes() async {
+        await subject.receive(.scopes([URL(string: "file:///testing")!]))
+        #expect(subject.state.scopes == [URL(string: "file:///testing")!])
     }
 
     @Test("receive searchType: changes state popup index, presents")

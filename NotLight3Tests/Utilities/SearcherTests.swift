@@ -18,7 +18,7 @@ private struct SearcherTests {
         // part one: the search begins
         var searchInfo: SearchInfo?
         Task {
-            searchInfo = try await subject.doSearch("kMDItemDisplayName == \"testing\"cdw")
+            searchInfo = try await subject.doSearch("kMDItemDisplayName == \"testing\"cdw", scopes: [])
         }
         await #while(query.methodsCalled.isEmpty)
         let predicate = try #require(query._predicate)
@@ -40,10 +40,22 @@ private struct SearcherTests {
         #expect(searchInfo?.results[0].path == "path")
     }
 
+    @Test("doSearch: with scopes, uses scopes")
+    func doSearchScopes() async throws {
+        query._resultCount = 1
+        query._results = [MockQueryItem(displayName: "name", path: "path")]
+        Task {
+            _ = try await subject.doSearch("kMDItemDisplayName == \"testing\"cdw", scopes: [URL(string: "file:///testing")!])
+        }
+        await #while(query.methodsCalled.isEmpty)
+        #expect(query._searchScopes as? [URL] == [URL(string: "file:///testing")!]) // *
+        subject.stop()
+    }
+
     @Test("doSearch: with bad search, throws badQuery")
     func doSearchBad() async throws {
         await #expect(throws: SearcherError.badQuery) {
-            _ = try await subject.doSearch("howdy")
+            _ = try await subject.doSearch("howdy", scopes: [])
         }
     }
 
@@ -52,7 +64,7 @@ private struct SearcherTests {
         var searchError: (any Error)?
         Task {
             do {
-                _ = try await subject.doSearch("kMDItemDisplayName == \"testing\"cdw")
+                _ = try await subject.doSearch("kMDItemDisplayName == \"testing\"cdw", scopes: [])
             } catch {
                 searchError = error
             }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="24506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="24506"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="MyContainerView" customModule="NotLight3" customModuleProvider="target">
+            <connections>
+                <outlet property="textField" destination="KIg-XK-u9J" id="pad-Mh-PoL"/>
+                <outlet property="wrapperView" destination="c22-O7-iKe" id="xXz-fo-nj5"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView translatesAutoresizingMaskIntoConstraints="NO" id="c22-O7-iKe">
+            <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
+            <subviews>
+                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="KIg-XK-u9J" customClass="FolderTextField" customModule="NotLight3" customModuleProvider="target">
+                    <rect key="frame" x="6" y="125" width="448" height="22"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="22" id="nja-aL-b9f"/>
+                    </constraints>
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="Drop a folder here to search in it." drawsBackground="YES" id="Ahy-N8-se7">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <action selector="textFieldValueChanged:" target="-2" id="umN-mK-gOz"/>
+                    </connections>
+                </textField>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="iDX-cG-2Iz">
+                    <rect key="frame" x="458" y="123.5" width="20" height="25"/>
+                    <buttonCell key="cell" type="roundRect" bezelStyle="roundedRect" image="NSStopProgressFreestandingTemplate" imagePosition="only" alignment="center" controlSize="small" state="on" imageScaling="proportionallyUpOrDown" inset="2" id="COO-bp-NUY">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="ECb-Mm-lzx"/>
+                        <constraint firstAttribute="width" constant="20" id="GJk-Aa-jg5"/>
+                    </constraints>
+                    <connections>
+                        <action selector="doClear:" target="-2" id="dSD-BE-jj3"/>
+                    </connections>
+                </button>
+            </subviews>
+            <constraints>
+                <constraint firstItem="KIg-XK-u9J" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="6" id="1lV-PE-iTH"/>
+                <constraint firstItem="iDX-cG-2Iz" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="8lD-g5-ZRN"/>
+                <constraint firstItem="KIg-XK-u9J" firstAttribute="centerY" secondItem="c22-O7-iKe" secondAttribute="centerY" id="Ojg-rP-GsL"/>
+                <constraint firstItem="iDX-cG-2Iz" firstAttribute="leading" secondItem="KIg-XK-u9J" secondAttribute="trailing" constant="4" id="eSf-0A-XqX"/>
+                <constraint firstAttribute="trailing" secondItem="iDX-cG-2Iz" secondAttribute="trailing" constant="2" id="yyd-jt-oZw"/>
+            </constraints>
+            <point key="canvasLocation" x="481" y="-41"/>
+        </customView>
+    </objects>
+    <resources>
+        <image name="NSStopProgressFreestandingTemplate" width="20" height="20"/>
+    </resources>
+</document>

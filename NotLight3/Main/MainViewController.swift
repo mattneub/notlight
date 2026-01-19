@@ -166,6 +166,16 @@ class MainViewController: NSViewController, ReceiverPresenter {
             await processor?.receive(.insertContains)
         }
     }
+
+    /// nil-targeted from MyContainerView!
+    @objc func folderTextFieldChanged(_ sender: NSTextField) {
+        let folderTextFields = view.subviews(ofType: FolderTextField.self, recursing: true)
+        let pathStrings = folderTextFields.map { $0.stringValue }.filter { $0 != "" }
+        let urls = pathStrings.map { URL(filePath: $0, directoryHint: .isDirectory, relativeTo: nil) }
+        Task {
+            await processor?.receive(.scopes(urls))
+        }
+    }
 }
 
 extension MainViewController: NSTextFieldDelegate {

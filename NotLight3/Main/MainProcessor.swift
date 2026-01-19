@@ -46,13 +46,15 @@ final class MainProcessor: Processor {
                 operator: state.searchOperator
             )
             // TODO: If we get a bad query error here, show an alert
-            if let result = try? await services.searcher.doSearch(queryString) {
+            if let result = try? await services.searcher.doSearch(queryString, scopes: state.scopes) {
                 let resultsState = ResultsState(queryString: result.queryString, results: result.results)
                 coordinator?.showResults(state: resultsState)
             }
             progressWatchingTask?.cancel()
             state.progress = 0
             await presenter?.present(state)
+        case .scopes(let urls):
+            state.scopes = urls
         case .searchType(let index):
             state.searchTypePopupCurrentItemIndex = index
             await presenter?.present(state)
