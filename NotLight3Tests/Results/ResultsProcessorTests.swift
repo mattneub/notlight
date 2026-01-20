@@ -1,17 +1,19 @@
 import Testing
 @testable import NotLight3
-import Foundation
+import AppKit
 
 private struct ResultsProcessorTests {
     let subject = ResultsProcessor()
     let coordinator = MockRootCoordinator()
     let presenter = MockReceiverPresenter<Void, ResultsState>()
     let workspace = MockWorkspace()
+    let persistence = MockPersistence()
 
     init() {
         subject.coordinator = coordinator
         subject.presenter = presenter
         services.workspace = workspace
+        services.persistence = persistence
     }
 
     @Test("receive close: calls coordinator dismiss()")
@@ -20,18 +22,41 @@ private struct ResultsProcessorTests {
         #expect(coordinator.methodsCalled == ["dismiss()"])
     }
 
-    @Test("receive initialData: presents state")
-    func initialData() async {
-        subject.state.results = [.init(displayName: "name", path: "path")]
+    @Test("receive initialData: consults persistence, gets icons from workspace if needed, configures column visibility, presents")
+    func initialDataPersistence() async {
+        subject.state.results = [.init(displayName: "name", path: "path", date: .distantPast, size: 10)]
+        let image = NSImage(systemSymbolName: "1.calendar", accessibilityDescription: nil)!
+        workspace.imageToReturn = image
+        persistence.boolToReturn = true // just say yes to everything
         await subject.receive(.initialData)
+        #expect(persistence.methodsCalled == [
+            "loadShowFileIcons()", "loadShowFileIcons()", "loadShowModDates()", "loadShowFileSizes()"
+        ])
+        #expect(workspace.methodsCalled == ["icon(forFile:)"])
+        #expect(subject.state.results[0].image == image)
+        #expect(subject.state.columnVisibility == ["icon": true, "date": true, "size": true])
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("receive initialData: same as previous but this time persistence says no to everything")
+    func initialDataPersistence2() async {
+        subject.state.results = [.init(displayName: "name", path: "path", date: .distantPast, size: 10)]
+        persistence.boolToReturn = false // just say no to everything
+        await subject.receive(.initialData)
+        #expect(persistence.methodsCalled == [
+            "loadShowFileIcons()", "loadShowFileIcons()", "loadShowModDates()", "loadShowFileSizes()"
+        ])
+        #expect(workspace.methodsCalled.isEmpty)
+        #expect(subject.state.results[0].image == nil)
+        #expect(subject.state.columnVisibility == ["icon": false, "date": false, "size": false])
         #expect(presenter.statesPresented == [subject.state])
     }
 
     @Test("receive revealItems: calls workspace activate with urls for paths")
     func revealItems() async {
         subject.state.results = [
-            .init(displayName: "name1", path: "/container1/path1"),
-            .init(displayName: "name2", path: "/container2/path2"),
+            .init(displayName: "name1", path: "/container1/path1", date: .distantPast, size: 10),
+            .init(displayName: "name2", path: "/container2/path2", date: .distantPast, size: 10),
         ]
         let indexSet = IndexSet([0])
         await subject.receive(.revealItems(forRows: indexSet))
@@ -41,7 +66,7 @@ private struct ResultsProcessorTests {
 
     @Test("receive selectedRow: sets state selectedPath, presents")
     func selectedRow() async {
-        subject.state.results = [.init(displayName: "name", path: "path")]
+        subject.state.results = [.init(displayName: "name", path: "path", date: .distantPast, size: 10)]
         await subject.receive(.selectedRow(0))
         #expect(subject.state.selectedPath == "path")
         #expect(presenter.statesPresented == [subject.state])
@@ -49,8 +74,8 @@ private struct ResultsProcessorTests {
 
     @Test("updateResults: sorts results according to sort descriptor, presents")
     func updateResults() async {
-        let result1 = SearchResult(displayName: "harpo", path: "/container1/path1")
-        let result2 = SearchResult(displayName: "groucho", path: "/container2/path2")
+        let result1 = SearchResult(displayName: "harpo", path: "/container1/path1", date: .distantPast, size: 10)
+        let result2 = SearchResult(displayName: "groucho", path: "/container2/path2", date: .distantPast, size: 10)
         subject.state.results = [result1, result2]
         let sortDescriptor = NSSortDescriptor(key: "displayName", ascending: true)
         await subject.receive(.updateResults([sortDescriptor]))

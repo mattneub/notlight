@@ -1,6 +1,7 @@
 import Testing
 @testable import NotLight3
 import AppKit
+import WaitWhile
 
 private struct RootCoordinatorTests {
     let subject = RootCoordinator()
@@ -18,8 +19,8 @@ private struct RootCoordinatorTests {
     }
 
     @Test("showResults: assembles the results module, sets the state, presents the view controller")
-    func showResults() throws {
-        let state = ResultsState(results: [.init(displayName: "name", path: "path")])
+    func showResults() async throws {
+        let state = ResultsState(results: [.init(displayName: "name", path: "path", date: .distantPast, size: 10)])
         let mainViewController = NSViewController()
         makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
@@ -28,6 +29,7 @@ private struct RootCoordinatorTests {
         #expect(processor.coordinator === subject)
         let viewController = try #require(processor.presenter as? ResultsViewController)
         #expect(viewController.processor === processor)
+        await #while(mainViewController.presentedViewControllers?.first == nil)
         #expect(mainViewController.presentedViewControllers?.first === viewController)
     }
 

@@ -17,7 +17,7 @@ private struct SearcherTests {
     func doSearch() async throws {
         subject.previousQueryString = "dummy"
         query._resultCount = 1
-        query._results = [MockQueryItem(displayName: "name", path: "path")]
+        query._results = [MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10)]
         // part one: the search begins
         var searchInfo: SearchInfo?
         Task {
@@ -46,6 +46,8 @@ private struct SearcherTests {
         #expect(searchInfo?.results.count == 1)
         #expect(searchInfo?.results[0].displayName == "name")
         #expect(searchInfo?.results[0].path == "path")
+        #expect(searchInfo?.results[0].date == .distantPast)
+        #expect(searchInfo?.results[0].size == 10)
     }
 
     @Test("doSearch: if option key is down, constructs previous query string but stops before searching")
@@ -67,7 +69,7 @@ private struct SearcherTests {
     @Test("doSearch: with scopes, uses scopes")
     func doSearchScopes() async throws {
         query._resultCount = 1
-        query._results = [MockQueryItem(displayName: "name", path: "path")]
+        query._results = [MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10)]
         Task {
             _ = try await subject.doSearch(
                 "kMDItemDisplayName == \"testing\"cdw",
@@ -84,7 +86,7 @@ private struct SearcherTests {
     func doSearchJoinerAnd() async throws {
         subject.previousQueryString = "kMDItemDisplayName == \"previous\""
         query._resultCount = 1
-        query._results = [MockQueryItem(displayName: "name", path: "path")]
+        query._results = [MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10)]
         Task {
             _ = try await subject.doSearch(
                 "kMDItemDisplayName == \"testing\"cdw",
@@ -101,7 +103,7 @@ private struct SearcherTests {
     func doSearchJoinerOr() async throws {
         subject.previousQueryString = "kMDItemDisplayName == \"previous\""
         query._resultCount = 1
-        query._results = [MockQueryItem(displayName: "name", path: "path")]
+        query._results = [MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10)]
         Task {
             _ = try await subject.doSearch(
                 "kMDItemDisplayName == \"testing\"cdw",

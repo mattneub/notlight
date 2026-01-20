@@ -1,3 +1,4 @@
+
 enum MainAction: Equatable {
     case autoContainsMode(Bool)
     case caseInsensitive(Bool)
@@ -8,6 +9,9 @@ enum MainAction: Equatable {
     case performSearch(String, SearchJoiner)
     case scopes([URL])
     case searchType(Int)
+    case showFileIcons
+    case showFileSizes
+    case showModDates
     case stop
     case termChanged(String)
     case wordBased(Bool)

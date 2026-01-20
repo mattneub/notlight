@@ -97,7 +97,14 @@ final class Searcher: SearcherType {
                 guard let path = result.path else {
                     continue
                 }
-                searchResults.append(SearchResult(displayName: displayName, path: path))
+                searchResults.append(
+                    SearchResult(
+                        displayName: displayName,
+                        path: path,
+                        date: result.date,
+                        size: result.size
+                    )
+                )
             }
         }
         return searchResults

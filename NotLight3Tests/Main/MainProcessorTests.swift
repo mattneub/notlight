@@ -8,6 +8,7 @@ private struct MainProcessorTests {
     let builder = MockQueryStringBuilder()
     let searcher = MockSearcher()
     let bundle = MockBundle()
+    let persistence = MockPersistence()
     let coordinator = MockRootCoordinator()
     let presenter = MockReceiverPresenter<Void, MainState>()
 
@@ -17,6 +18,7 @@ private struct MainProcessorTests {
         services.bundle = bundle
         services.searcher = searcher
         services.queryStringBuilder = builder
+        services.persistence = persistence
     }
 
     @Test("receive autoContainsMode: sets the state autoContainsMode and presents")
@@ -91,7 +93,7 @@ private struct MainProcessorTests {
     func performSearch() async {
         subject.state.scopes = [URL(string: "file:///testing")!]
         builder.queryStringToReturn = "queryString"
-        let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path")])
+        let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path", date: .distantPast, size: 10)])
         searcher.resultToReturn = result
         await subject.receive(.performSearch("howdy", .and))
         #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
@@ -105,7 +107,7 @@ private struct MainProcessorTests {
 
     @Test("receive performSearch: if searcher searchProgress publishes, updates state progress, presents")
     func performSearchProgress() async {
-        let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path")])
+        let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path", date: .distantPast, size: 10)])
         searcher.resultToReturn = result
         searcher.timeToSleep = 1
         Task {
@@ -156,6 +158,30 @@ private struct MainProcessorTests {
         await subject.receive(.searchType(3))
         #expect(subject.state.searchTypePopupCurrentItemIndex == 3)
         #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("receive showFileIcons: toggles persistence showFileIcons")
+    func showFileIcons() async {
+        persistence.boolToReturn = true
+        await subject.receive(.showFileIcons)
+        #expect(persistence.methodsCalled == ["loadShowFileIcons()", "saveShowFileIcons(_:)"])
+        #expect(persistence.boolSaved == false)
+    }
+
+    @Test("receive showFileSizes: toggles persistence showFilSizess")
+    func showFileSizes() async {
+        persistence.boolToReturn = true
+        await subject.receive(.showFileSizes)
+        #expect(persistence.methodsCalled == ["loadShowFileSizes()", "saveShowFileSizes(_:)"])
+        #expect(persistence.boolSaved == false)
+    }
+
+    @Test("receive showModDates: toggles persistence showModDates")
+    func showModDates() async {
+        persistence.boolToReturn = true
+        await subject.receive(.showModDates)
+        #expect(persistence.methodsCalled == ["loadShowModDates()", "saveShowModDates(_:)"])
+        #expect(persistence.boolSaved == false)
     }
 
     @Test("receive stop: calls searcher stop")

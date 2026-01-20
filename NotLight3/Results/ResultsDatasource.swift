@@ -65,12 +65,27 @@ final class ResultsDatasource: NSObject, @MainActor ResultsDatasourceType {
     func viewProvider(_ tableView: NSTableView, _ tableColumn: NSTableColumn, _ row: Int, _ identifier: UUID) -> NSView {
         let view = tableView.makeView(withIdentifier: tableColumn.identifier, owner: tableView) as? NSTableCellView
         let result = data[row]
-        let value = switch tableColumn.identifier.rawValue {
-        case "displayName": result.displayName
-        case "path": result.path
-        default: ""
+        switch tableColumn.identifier.rawValue {
+        case "icon":
+            view?.imageView?.image = result.image
+        case "displayName":
+            view?.textField?.stringValue = result.displayName
+        case "path":
+            view?.textField?.stringValue = result.path
+        case "date":
+            view?.textField?.stringValue = result.date?.formatted(date: .numeric, time: .shortened) ?? ""
+        case "size":
+            guard let size = result.size, size != 0 else { // we don't want any zeros
+                view?.textField?.stringValue = ""
+                break
+            }
+            guard size >= 1024 else { // we don't want any individual bytes either
+                view?.textField?.stringValue = "1 KB"
+                break
+            }
+            view?.textField?.stringValue = size.formatted(.byteCount(style: .file)).uppercased()
+        default: break
         }
-        view?.textField?.stringValue = value
         return view ?? NSView()
     }
 }

@@ -38,7 +38,7 @@ final class MockMetadataQuery: NSMetadataQuery {
         if _results.indices.contains(index) {
             return _results[index]
         } else {
-            return MockQueryItem(displayName: nil, path: nil)
+            return MockQueryItem(displayName: nil, path: nil, date: nil, size: nil)
         }
     }
 

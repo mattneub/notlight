@@ -25,7 +25,7 @@ private struct ResultsDatasourceTests {
 
     @Test("present: configures the contents of the data source")
     func present() async {
-        let result = SearchResult(displayName: "name", path: "path")
+        let result = SearchResult(displayName: "name", path: "path", date: .distantPast, size: 10)
         await subject.present(ResultsState(results: [result]))
         #expect(subject.data == [result])
         let snapshot = subject.datasource.snapshot()
@@ -35,13 +35,30 @@ private struct ResultsDatasourceTests {
 
     @Test("rows are correctly constructed")
     func rows() async throws {
-        let result = SearchResult(displayName: "name", path: "path")
+        let image = NSImage(systemSymbolName: "1.calendar", accessibilityDescription: nil)!
+        let result = SearchResult(image: image, displayName: "name", path: "path", date: .init(timeIntervalSince1970: 0), size: 1024)
         await subject.present(ResultsState(results: [result]))
         await #while(tableView.numberOfRows < 1)
-        let view = try #require(tableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? NSTableCellView)
-        #expect(view.textField?.stringValue == "name")
-        let view2 = try #require(tableView.view(atColumn: 1, row: 0, makeIfNecessary: false) as? NSTableCellView)
-        #expect(view2.textField?.stringValue == "path")
+        do {
+            let view = try #require(tableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? NSTableCellView)
+            #expect(view.imageView?.image == image)
+        }
+        do {
+            let view = try #require(tableView.view(atColumn: 1, row: 0, makeIfNecessary: false) as? NSTableCellView)
+            #expect(view.textField?.stringValue == "name")
+        }
+        do {
+            let view = try #require(tableView.view(atColumn: 2, row: 0, makeIfNecessary: false) as? NSTableCellView)
+            #expect(view.textField?.stringValue == "path")
+        }
+        do {
+            let view = try #require(tableView.view(atColumn: 3, row: 0, makeIfNecessary: false) as? NSTableCellView)
+            #expect(view.textField?.stringValue == "12/31/1969, 4:00 PM")
+        }
+        do {
+            let view = try #require(tableView.view(atColumn: 4, row: 0, makeIfNecessary: false) as? NSTableCellView)
+            #expect(view.textField?.stringValue == "1 KB")
+        }
     }
 
     @Test("selectionChanged: sends selectedRow to processor")

@@ -65,6 +65,15 @@ final class MainProcessor: Processor {
         case .searchType(let index):
             state.searchTypePopupCurrentItemIndex = index
             await presenter?.present(state)
+        case .showFileIcons:
+            let oldValue = services.persistence.loadShowFileIcons()
+            services.persistence.saveShowFileIcons(!oldValue)
+        case .showFileSizes:
+            let oldValue = services.persistence.loadShowFileSizes()
+            services.persistence.saveShowFileSizes(!oldValue)
+        case .showModDates:
+            let oldValue = services.persistence.loadShowModDates()
+            services.persistence.saveShowModDates(!oldValue)
         case .stop:
             services.searcher.stop()
         case .termChanged(let term):

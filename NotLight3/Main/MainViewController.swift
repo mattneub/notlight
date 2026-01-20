@@ -194,6 +194,24 @@ class MainViewController: NSViewController, ReceiverPresenter {
             await processor?.receive(.scopes(urls))
         }
     }
+
+    @objc func showFileIcons(_ sender: NSMenuItem) {
+        Task {
+            await processor?.receive(.showFileIcons)
+        }
+    }
+
+    @objc func showModDates(_ sender: NSMenuItem) {
+        Task {
+            await processor?.receive(.showModDates)
+        }
+    }
+
+    @objc func showFileSizes(_ sender: NSMenuItem) {
+        Task {
+            await processor?.receive(.showFileSizes)
+        }
+    }
 }
 
 extension MainViewController: NSTextFieldDelegate {

@@ -30,6 +30,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         unlessTesting {
             Bundle.main.loadNibNamed("MainMenu", owner: NSApplication.shared, topLevelObjects: nil)
         }
+        // hook Option menu to our "manual binding" system
+        NSApplication.shared.mainMenu?.item(withTitle: "Option")?.submenu?.delegate = self
         rootCoordinator.createMainModule(window: window)
     }
 
@@ -41,6 +43,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
+    }
+}
+
+/// "Manual binding" from user defaults to menu checkmark state.
+extension AppDelegate: NSMenuDelegate {
+    func menuWillOpen(_ menu: NSMenu) {
+        if menu.title == "Option" {
+            menu.item(at: 0)?.state = services.persistence.loadShowFileIcons() ? .on : .off
+            menu.item(at: 1)?.state = services.persistence.loadShowModDates() ? .on : .off
+            menu.item(at: 2)?.state = services.persistence.loadShowFileSizes() ? .on : .off
+        }
     }
 }
 

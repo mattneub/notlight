@@ -1,3 +1,6 @@
+import Foundation
+
+/// Protocol that describes Bundle so we can mock it for testing.
 protocol BundleType {
     func url(
         forResource name: String?,

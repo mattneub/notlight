@@ -31,7 +31,12 @@ final class RootCoordinator: RootCoordinatorType {
         let viewController = ResultsViewController()
         processor.presenter = viewController
         viewController.processor = processor
-        mainViewController?.presentAsSheet(viewController)
+        // deliberate "load view and delay" strategy so that things don't visibly jump around
+        viewController.loadViewIfNeeded()
+        Task {
+            try? await Task.sleep(for: .seconds(0.2))
+            mainViewController?.presentAsSheet(viewController)
+        }
     }
 
     func dismiss() {

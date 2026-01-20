@@ -49,6 +49,9 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
         configureItemsFoundLabel(state)
         queryStringLabel.stringValue = state.queryString
         pathLabel.stringValue = state.selectedPath
+        for (key, value) in state.columnVisibility {
+            tableView.tableColumn(withIdentifier: .init(key))?.isHidden = !value
+        }
         await datasource.present(state)
     }
 

@@ -332,4 +332,25 @@ private struct MainViewControllerTests {
         await #while(processor.thingsReceived.count < 2)
         #expect(processor.thingsReceived.last == .termChanged("howdy"))
     }
+
+    @Test("showFileIcons: sends showFileIcons")
+    func showFileIcons() async {
+        subject.showFileIcons(NSMenuItem())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.showFileIcons])
+    }
+
+    @Test("showFileSizes: sends showFileSizes")
+    func showFileSizes() async {
+        subject.showFileSizes(NSMenuItem())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.showFileSizes])
+    }
+
+    @Test("showModDates: sends showModDates")
+    func showModDates() async {
+        subject.showModDates(NSMenuItem())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.showModDates])
+    }
 }

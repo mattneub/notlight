@@ -55,7 +55,7 @@ private struct ResultsViewControllerTests {
     @Test("present: presents to the datasource")
     func present() async {
         subject.loadViewIfNeeded()
-        let state = ResultsState(results: [.init(displayName: "name", path: "path")])
+        let state = ResultsState(results: [.init(displayName: "name", path: "path", date: .distantPast, size: 10)])
         await subject.present(state)
         #expect(datasource.statePresented == state)
     }
@@ -63,12 +63,12 @@ private struct ResultsViewControllerTests {
     @Test("present: configures the items found label")
     func presentItemsFound() async {
         subject.loadViewIfNeeded()
-        var state = ResultsState(results: [.init(displayName: "name", path: "path")])
+        var state = ResultsState(results: [.init(displayName: "name", path: "path", date: .distantPast, size: 10)])
         await subject.present(state)
         #expect(subject.itemsFoundLabel.stringValue == "1 item found:")
         state = ResultsState(results: [
-            .init(displayName: "name", path: "path"),
-            .init(displayName: "name", path: "path")
+            .init(displayName: "name", path: "path", date: .distantPast, size: 10),
+            .init(displayName: "name", path: "path", date: .distantPast, size: 10)
         ])
         await subject.present(state)
         #expect(subject.itemsFoundLabel.stringValue == "2 items found:")
@@ -88,6 +88,15 @@ private struct ResultsViewControllerTests {
         let state = ResultsState(selectedPath: "howdy")
         await subject.present(state)
         #expect(subject.pathLabel.stringValue == "howdy")
+    }
+
+    @Test("present: shows / hides table view columns")
+    func presentColumns() async {
+        subject.loadViewIfNeeded()
+        let state = ResultsState(columnVisibility: ["icon": false, "size": true])
+        await subject.present(state)
+        #expect(subject.tableView.tableColumn(withIdentifier: .init("icon"))?.isHidden == true)
+        #expect(subject.tableView.tableColumn(withIdentifier: .init("size"))?.isHidden == false)
     }
 
     @Test("doClose: sends processor close")
