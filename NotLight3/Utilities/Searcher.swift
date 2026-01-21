@@ -58,7 +58,7 @@ final class Searcher: SearcherType {
         if stopBeforeSearching {
             throw SearcherError.userStopped
         }
-        query.start()
+        // Okay, we're going to search! Prepare observers for notifications...
         gatheringObserver = NotificationCenter.default.addObserver(
             forName: .NSMetadataQueryGatheringProgress, object: query, queue: nil
         ) { [unowned self] _ in
@@ -66,16 +66,18 @@ final class Searcher: SearcherType {
                 await updateProgress()
             }
         }
-        let results = try await withCheckedThrowingContinuation { continuation in
-            self.continuation = continuation // so that `stop` can throw into it
-            finishedObserver = NotificationCenter.default.addObserver(
-                of: query,
-                for: NSMetadataQuery.DidFinishGatheringMessage.self
-            ) { [unowned self] _ in
-                continuation.resume(returning: await gatherResults())
-            }
+        finishedObserver = NotificationCenter.default.addObserver(
+            // of: query,
+            for: NSMetadataQuery.DidFinishGatheringMessage.self
+        ) { [unowned self] _ in
+            await continuation?.resume(returning: await gatherResults())
         }
-        // clean up and we're out of here
+        // ...Expose a continuation, start the query, and wait for the continuation to resume
+        let results = try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            query.start()
+        }
+        // We're back! `results` contains the results; clean up and we're out of here
         cleanup()
         return SearchInfo(queryString: queryString, results: results)
     }
