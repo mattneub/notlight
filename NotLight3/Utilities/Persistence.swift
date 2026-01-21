@@ -34,6 +34,14 @@ protocol PersistenceType {
     func loadShowFileSizes() -> Bool
     func saveColumns(_: [ColumnWidth])
     func loadColumns(_: [String]) -> [ColumnWidth]?
+    func saveWordBased(_ value: Bool)
+    func loadWordBased() -> Bool
+    func saveCaseInsensitive(_ value: Bool)
+    func loadCaseInsensitive() -> Bool
+    func saveDiacriticInsensitive(_ value: Bool)
+    func loadDiacriticInsensitive() -> Bool
+    func saveAutoContains(_ value: Bool)
+    func loadAutoContains() -> Bool
 }
 
 final class Persistence: PersistenceType {
@@ -63,7 +71,30 @@ final class Persistence: PersistenceType {
         let key = Defaults.key(forColumns: columns)
         return load(forKey: key)
     }
-
+    func saveWordBased(_ value: Bool) {
+        save(value, forKey: Defaults.wordBased)
+    }
+    func loadWordBased() -> Bool {
+        load(forKey: Defaults.wordBased) ?? false
+    }
+    func saveCaseInsensitive(_ value: Bool) {
+        save(value, forKey: Defaults.caseInsensitive)
+    }
+    func loadCaseInsensitive() -> Bool {
+        load(forKey: Defaults.caseInsensitive) ?? false
+    }
+    func saveDiacriticInsensitive(_ value: Bool) {
+        save(value, forKey: Defaults.diacriticInsensitive)
+    }
+    func loadDiacriticInsensitive() -> Bool {
+        load(forKey: Defaults.diacriticInsensitive) ?? false
+    }
+    func saveAutoContains(_ value: Bool) {
+        save(value, forKey: Defaults.autoContains)
+    }
+    func loadAutoContains() -> Bool {
+        load(forKey: Defaults.autoContains) ?? false
+    }
 
     func save<T: Codable>(_ value: T, forKey key: String) {
         if T.self == Bool.self {

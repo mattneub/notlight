@@ -12,10 +12,13 @@ final class MainProcessor: Processor {
         case .autoContainsMode(let on):
             state.autoContainsMode = on
             await presenter?.present(state)
+            services.persistence.saveAutoContains(on)
         case .caseInsensitive(let on):
             state.caseInsensitive = on
+            services.persistence.saveCaseInsensitive(on)
         case .diacriticInsensitive(let on):
             state.diacriticInsensitive = on
+            services.persistence.saveDiacriticInsensitive(on)
         case .initialState:
             if let url = services.bundle.url(forResource: "popup", withExtension: "plist") {
                 if let data = try? Data(contentsOf: url, options: .uncached) {
@@ -25,9 +28,14 @@ final class MainProcessor: Processor {
                     }
                 }
             }
+            state.autoContainsMode = services.persistence.loadAutoContains()
+            state.caseInsensitive = services.persistence.loadCaseInsensitive()
+            state.diacriticInsensitive = services.persistence.loadDiacriticInsensitive()
+            state.wordBased = services.persistence.loadWordBased()
             await presenter?.present(state)
         case .insertContains:
-            state.term = "*" + state.term + "*"
+            let term = state.term.trimmingCharacters(in: CharacterSet(charactersIn: "*"))
+            state.term = "*" + term + "*"
             await presenter?.present(state)
         case .operator(let searchOperator):
             state.searchOperator = searchOperator
@@ -80,6 +88,7 @@ final class MainProcessor: Processor {
             state.term = term // and do not present
         case .wordBased(let on):
             state.wordBased = on
+            services.persistence.saveWordBased(on)
         }
     }
 

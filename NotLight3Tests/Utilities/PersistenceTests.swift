@@ -75,4 +75,64 @@ private struct PersistenceTests {
         #expect(result == columns)
     }
 
+    @Test("saveWordBased: saves bool for key wordBased")
+    func saveWordBased() {
+        subject.saveWordBased(true)
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["wordBased"] as? Bool == true)
+    }
+
+    @Test("loadWordBased: loads bool for key wordBased")
+    func loadWordBased() {
+        defaults.valuesToReturn["wordBased"] = true
+        let result = subject.loadWordBased()
+        #expect(defaults.methodsCalled == ["bool(forKey:)"])
+        #expect(result == true)
+    }
+
+    @Test("saveCaseInsensitive: saves bool for key caseInsensitive")
+    func saveCaseInsensitive() {
+        subject.saveCaseInsensitive(true)
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["caseInsensitive"] as? Bool == true)
+    }
+
+    @Test("loadCaseInsensitive: loads bool for key caseInsensitive")
+    func loadCaseInsensitive() {
+        defaults.valuesToReturn["caseInsensitive"] = true
+        let result = subject.loadCaseInsensitive()
+        #expect(defaults.methodsCalled == ["bool(forKey:)"])
+        #expect(result == true)
+    }
+
+    @Test("saveDiacriticInsensitive: saves bool for key diacriticInsensitive")
+    func saveDiacriticInsensitive() {
+        subject.saveDiacriticInsensitive(true)
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["diacriticInsensitive"] as? Bool == true)
+    }
+
+    @Test("loadDiacriticInsensitive: loads bool for key diacriticInsensitive")
+    func loadDiacriticInsensitive() {
+        defaults.valuesToReturn["diacriticInsensitive"] = true
+        let result = subject.loadDiacriticInsensitive()
+        #expect(defaults.methodsCalled == ["bool(forKey:)"])
+        #expect(result == true)
+    }
+
+    @Test("saveAutoContains: saves bool for key autoContains")
+    func saveAutoContains() {
+        subject.saveAutoContains(true)
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["autoContains"] as? Bool == true)
+    }
+
+    @Test("loadAutoContains: loads bool for key autoContains")
+    func loadAutoContains() {
+        defaults.valuesToReturn["autoContains"] = true
+        let result = subject.loadAutoContains()
+        #expect(defaults.methodsCalled == ["bool(forKey:)"])
+        #expect(result == true)
+    }
+
 }

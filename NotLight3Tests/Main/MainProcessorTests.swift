@@ -21,40 +21,52 @@ private struct MainProcessorTests {
         services.persistence = persistence
     }
 
-    @Test("receive autoContainsMode: sets the state autoContainsMode and presents")
+    @Test("receive autoContainsMode: sets the state autoContainsMode and presents, and persists")
     func autoContainsMode() async {
         await subject.receive(.autoContainsMode(true))
         #expect(subject.state.autoContainsMode == true)
         #expect(presenter.statesPresented == [subject.state])
+        #expect(persistence.methodsCalled == ["saveAutoContains(_:)"])
+        #expect(persistence.boolSaved == true)
     }
 
-    @Test("receive caseInsensitive: sets the state caseInsensitive")
+    @Test("receive caseInsensitive: sets the state caseInsensitive, and persists")
     func caseInsensitive() async {
         await subject.receive(.caseInsensitive(true))
         #expect(subject.state.caseInsensitive == true)
-        await subject.receive(.caseInsensitive(false))
-        #expect(subject.state.caseInsensitive == false)
+        #expect(persistence.methodsCalled == ["saveCaseInsensitive(_:)"])
+        #expect(persistence.boolSaved == true)
     }
     
-    @Test("receive diacriticInsensitive: sets the state diacriticInsensisive")
+    @Test("receive diacriticInsensitive: sets the state diacriticInsensitive, and persists")
     func diacriticInsensitive() async {
         await subject.receive(.diacriticInsensitive(true))
         #expect(subject.state.diacriticInsensitive == true)
-        await subject.receive(.diacriticInsensitive(false))
-        #expect(subject.state.diacriticInsensitive == false)
+        #expect(persistence.methodsCalled == ["saveDiacriticInsensitive(_:)"])
+        #expect(persistence.boolSaved == true)
     }
 
-    @Test("receive initialState: fetches popup plist, sets state, presents")
+    @Test("receive initialState: fetches popup plist, checks persistence, sets state, presents")
     func initialState() async {
         let list: [[String: String]] = [["hey": "ho"]]
         let url = Bundle(for: MockBundle.self).url(forResource: "fake", withExtension: "plist")!
         bundle.urlToReturn = url
-        subject.state.caseInsensitive = true
+        persistence.boolToReturn = true // just say yes to everything
         await subject.receive(.initialState)
         #expect(bundle.methodsCalled == ["url(forResource:withExtension:)"])
         #expect(bundle.name == "popup")
         #expect(bundle.ext == "plist")
         #expect(subject.state.searchTypePopupContents == list)
+        #expect(persistence.methodsCalled == [
+            "loadAutoContains()",
+            "loadCaseInsensitive()",
+            "loadDiacriticInsensitive()",
+            "loadWordBased()",
+        ])
+        #expect(subject.state.autoContainsMode)
+        #expect(subject.state.caseInsensitive)
+        #expect(subject.state.diacriticInsensitive)
+        #expect(subject.state.wordBased)
         #expect(presenter.statesPresented == [subject.state])
     }
 
@@ -201,8 +213,8 @@ private struct MainProcessorTests {
     func wordBased() async {
         await subject.receive(.wordBased(true))
         #expect(subject.state.wordBased == true)
-        await subject.receive(.wordBased(false))
-        #expect(subject.state.wordBased == false)
+        #expect(persistence.methodsCalled == ["saveWordBased(_:)"])
+        #expect(persistence.boolSaved == true)
     }
 
 }

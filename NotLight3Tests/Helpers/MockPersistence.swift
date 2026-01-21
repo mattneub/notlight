@@ -48,4 +48,45 @@ final class MockPersistence: PersistenceType {
         self.columns = columns
         return columnWidthsToReturn
     }
+
+    func saveAutoContains(_ value: Bool) {
+        methodsCalled.append(#function)
+        boolSaved = value
+    }
+
+    func loadAutoContains() -> Bool {
+        methodsCalled.append(#function)
+        return boolToReturn
+    }
+
+    func saveWordBased(_ value: Bool) {
+        methodsCalled.append(#function)
+        boolSaved = value
+    }
+
+    func loadWordBased() -> Bool {
+        methodsCalled.append(#function)
+        return boolToReturn
+    }
+
+    func saveCaseInsensitive(_ value: Bool) {
+        methodsCalled.append(#function)
+        boolSaved = value
+    }
+
+    func loadCaseInsensitive() -> Bool {
+        methodsCalled.append(#function)
+        return boolToReturn
+    }
+
+    func saveDiacriticInsensitive(_ value: Bool) {
+        methodsCalled.append(#function)
+        boolSaved = value
+    }
+
+    func loadDiacriticInsensitive() -> Bool {
+        methodsCalled.append(#function)
+        return boolToReturn
+    }
+
 }
