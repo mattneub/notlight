@@ -4,6 +4,8 @@ final class MockPersistence: PersistenceType {
     var methodsCalled = [String]()
     var boolSaved: Bool?
     var boolToReturn = false
+    var intSaved: Int?
+    var intToReturn = -1
     var columnWidthsSaved = [ColumnWidth]()
     var columnWidthsToReturn: [ColumnWidth]?
     var columns = [String]()
@@ -87,6 +89,16 @@ final class MockPersistence: PersistenceType {
     func loadDiacriticInsensitive() -> Bool {
         methodsCalled.append(#function)
         return boolToReturn
+    }
+
+    func saveKeyPopupIndex(_ value: Int) {
+        methodsCalled.append(#function)
+        intSaved = value
+    }
+
+    func loadKeyPopupIndex() -> Int {
+        methodsCalled.append(#function)
+        return intToReturn
     }
 
 }

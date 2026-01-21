@@ -17,12 +17,17 @@ final class MockUserDefaults: UserDefaultsType {
         return valuesToReturn[key] as? Bool ?? crashThisTest(key)
     }
 
+    func integer(forKey key: String) -> Int {
+        methodsCalled.append(#function)
+        return valuesToReturn[key] as? Int ?? crashThisTest(key)
+    }
+
     func data(forKey key: String) -> Data? {
         methodsCalled.append(#function)
         return valuesToReturn[key] as? Data
     }
 
-    func crashThisTest(_ key: String) -> Bool {
-        fatalError("no value for key \(key) as Bool found in valuesToReturn")
+    func crashThisTest<T>(_ key: String) -> T {
+        fatalError("no value for key \(key) as \(T.self) found in valuesToReturn")
     }
 }

@@ -3,11 +3,11 @@ struct MainState: Equatable {
     /// how many results we've accumulated so far.
     var progress: Int = 0
 
-    var searchTypePopupContents = [[String: String]]()
-    var searchTypePopupCurrentItemIndex: Int = 0
-    var searchType: [String: String] {
-        if searchTypePopupCurrentItemIndex < searchTypePopupContents.count {
-            return searchTypePopupContents[searchTypePopupCurrentItemIndex]
+    var keyPopupContents = [[String: String]]()
+    var keyPopupIndex: Int = 0
+    var currentKey: [String: String] {
+        if keyPopupIndex < keyPopupContents.count {
+            return keyPopupContents[keyPopupIndex]
         }
         return ["key": "value"]
     }

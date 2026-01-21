@@ -23,8 +23,8 @@ final class MainProcessor: Processor {
             if let url = services.bundle.url(forResource: "popup", withExtension: "plist") {
                 if let data = try? Data(contentsOf: url, options: .uncached) {
                     if let contents = try? PropertyListDecoder().decode([[String: String]].self, from: data) {
-                        state.searchTypePopupContents = contents
-                        state.searchTypePopupCurrentItemIndex = 0
+                        state.keyPopupContents = contents
+                        state.keyPopupIndex = services.persistence.loadKeyPopupIndex()
                     }
                 }
             }
@@ -37,6 +37,10 @@ final class MainProcessor: Processor {
             let term = state.term.trimmingCharacters(in: CharacterSet(charactersIn: "*"))
             state.term = "*" + term + "*"
             await presenter?.present(state)
+        case .keyPopupIndex(let index):
+            state.keyPopupIndex = index
+            await presenter?.present(state)
+            services.persistence.saveKeyPopupIndex(index)
         case .operator(let searchOperator):
             state.searchOperator = searchOperator
             await presenter?.present(state)
@@ -50,7 +54,7 @@ final class MainProcessor: Processor {
                 caseInsensitive: state.caseInsensitive,
                 diacriticInsensitive: state.diacriticInsensitive,
                 wordBased: state.wordBased,
-                type: state.searchType["key"] ?? "",
+                type: state.currentKey["key"] ?? "",
                 operator: state.searchOperator
             )
             // TODO: If we get a bad query error here, show an alert
@@ -70,9 +74,6 @@ final class MainProcessor: Processor {
             await presenter?.present(state)
         case .scopes(let urls):
             state.scopes = urls
-        case .searchType(let index):
-            state.searchTypePopupCurrentItemIndex = index
-            await presenter?.present(state)
         case .showFileIcons:
             let oldValue = services.persistence.loadShowFileIcons()
             services.persistence.saveShowFileIcons(!oldValue)

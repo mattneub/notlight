@@ -135,4 +135,19 @@ private struct PersistenceTests {
         #expect(result == true)
     }
 
+    @Test("saveKeyPopupIndex: saves int for key keyChoice")
+    func saveKeyPopupIndex() {
+        subject.saveKeyPopupIndex(42)
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["keyChoice"] as? Int == 42)
+    }
+
+    @Test("loadKeyPopupIndex: loads int for key keyChoice")
+    func loadKeyPopupIndex() {
+        defaults.valuesToReturn["keyChoice"] = 42
+        let result = subject.loadKeyPopupIndex()
+        #expect(defaults.methodsCalled == ["integer(forKey:)"])
+        #expect(result == 42)
+    }
+
 }

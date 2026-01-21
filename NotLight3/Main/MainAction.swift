@@ -5,10 +5,10 @@ enum MainAction: Equatable {
     case diacriticInsensitive(Bool)
     case initialState
     case insertContains
+    case keyPopupIndex(Int)
     case `operator`(String)
     case performSearch(String, SearchJoiner)
     case scopes([URL])
-    case searchType(Int)
     case showFileIcons
     case showFileSizes
     case showModDates

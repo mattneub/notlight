@@ -42,6 +42,8 @@ protocol PersistenceType {
     func loadDiacriticInsensitive() -> Bool
     func saveAutoContains(_ value: Bool)
     func loadAutoContains() -> Bool
+    func saveKeyPopupIndex(_: Int)
+    func loadKeyPopupIndex() -> Int
 }
 
 final class Persistence: PersistenceType {
@@ -95,9 +97,15 @@ final class Persistence: PersistenceType {
     func loadAutoContains() -> Bool {
         load(forKey: Defaults.autoContains) ?? false
     }
+    func saveKeyPopupIndex(_ value: Int) {
+        save(value, forKey: Defaults.keyChoice)
+    }
+    func loadKeyPopupIndex() -> Int {
+        load(forKey: Defaults.keyChoice) ?? 0
+    }
 
     func save<T: Codable>(_ value: T, forKey key: String) {
-        if T.self == Bool.self {
+        if T.self == Bool.self || T.self == Int.self {
             services.userDefaults.set(value, forKey: key)
         } else {
             let data = try? PropertyListEncoder().encode(value)
@@ -108,6 +116,8 @@ final class Persistence: PersistenceType {
     func load<T: Codable>(forKey key: String) -> T? {
         if T.self == Bool.self {
             return services.userDefaults.bool(forKey: key) as? T
+        } else if T.self == Int.self {
+            return services.userDefaults.integer(forKey: key) as? T
         } else {
             if let data = services.userDefaults.data(forKey: key) {
                 return try? PropertyListDecoder().decode(T.self, from: data)

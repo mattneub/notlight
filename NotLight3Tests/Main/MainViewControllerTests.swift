@@ -39,7 +39,7 @@ private struct MainViewControllerTests {
     @Test("present: configures search type popup")
     func presentSearchTypePopup() async {
         var state = MainState()
-        state.searchTypePopupContents = [["title": "ho"], ["title": "ha"]]
+        state.keyPopupContents = [["title": "ho"], ["title": "ha"]]
         subject.loadViewIfNeeded()
         await subject.present(state)
         #expect(subject.searchTypePopup.itemArray.map {$0.title} == ["ho", "ha"])
@@ -48,8 +48,8 @@ private struct MainViewControllerTests {
     @Test("present: sets search type popup selection")
     func presentSearchTypePopupSelection() async {
         var state = MainState()
-        state.searchTypePopupContents = [["title": "ho"], ["title": "ha"]]
-        state.searchTypePopupCurrentItemIndex = 1
+        state.keyPopupContents = [["title": "ho"], ["title": "ha"]]
+        state.keyPopupIndex = 1
         subject.loadViewIfNeeded()
         await subject.present(state)
         #expect(subject.searchTypePopup.titleOfSelectedItem == "ha")
@@ -67,11 +67,11 @@ private struct MainViewControllerTests {
     @Test("present: sets blurb text")
     func presentBlurb() async {
         var state = MainState()
-        state.searchTypePopupContents = [["blurb": "ho"], ["blurb": "ha"]]
+        state.keyPopupContents = [["blurb": "ho"], ["blurb": "ha"]]
         subject.loadViewIfNeeded()
         await subject.present(state)
         #expect(subject.blurbLabel.stringValue == "ho")
-        state.searchTypePopupCurrentItemIndex = 1
+        state.keyPopupIndex = 1
         await subject.present(state)
         #expect(subject.blurbLabel.stringValue == "ha")
     }
@@ -274,7 +274,7 @@ private struct MainViewControllerTests {
         #expect(processor.thingsReceived == [.autoContainsMode(true)])
     }
 
-    @Test("doSearchTypePopup: sends searchType")
+    @Test("doSearchTypePopup: sends keyPopupIndex")
     func searchTypePopup() async {
         let button = NSPopUpButton()
         button.addItem(withTitle: "hey")
@@ -282,7 +282,7 @@ private struct MainViewControllerTests {
         button.selectItem(at: 1)
         subject.doSearchTypePopup(button)
         await #while(processor.thingsReceived.isEmpty)
-        #expect(processor.thingsReceived == [.searchType(1)])
+        #expect(processor.thingsReceived == [.keyPopupIndex(1)])
     }
 
     @Test("doOperatorPopup: sends operator")

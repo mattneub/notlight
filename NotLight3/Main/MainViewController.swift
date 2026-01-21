@@ -56,16 +56,16 @@ class MainViewController: NSViewController, ReceiverPresenter {
     func present(_ state: MainState) async {
         if searchTypePopup.itemArray.count < 4 { // there are three in the nib
             searchTypePopup.removeAllItems()
-            for item in state.searchTypePopupContents {
+            for item in state.keyPopupContents {
                 searchTypePopup.addItem(withTitle: item["title"] ?? "Title")
             }
         }
         let currentSearchType = searchTypePopup.titleOfSelectedItem
-        if currentSearchType != state.searchType["title"] {
-            searchTypePopup.selectItem(at: state.searchTypePopupCurrentItemIndex)
+        if currentSearchType != state.currentKey["title"] {
+            searchTypePopup.selectItem(at: state.keyPopupIndex)
         }
 
-        blurbLabel.stringValue = state.searchType["blurb"] ?? ""
+        blurbLabel.stringValue = state.currentKey["blurb"] ?? ""
 
         let currentSearchTerm = termField.objectValue as? String ?? ""
         if currentSearchTerm != state.term {
@@ -169,7 +169,7 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     @IBAction func doSearchTypePopup(_ sender: NSPopUpButton) {
         Task {
-            await processor?.receive(.searchType(sender.indexOfSelectedItem))
+            await processor?.receive(.keyPopupIndex(sender.indexOfSelectedItem))
         }
     }
 

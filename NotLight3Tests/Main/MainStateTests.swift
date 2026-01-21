@@ -2,15 +2,15 @@ import Testing
 @testable import NotLight3
 
 private struct MainStateTests {
-    @Test("searchType behaves correctly")
+    @Test("currentKey behaves correctly")
     func searchType() {
         var subject = MainState()
-        subject.searchTypePopupContents = [["hey": "ho"], ["hoo": "ha"]]
-        subject.searchTypePopupCurrentItemIndex = 0
-        #expect(subject.searchType == ["hey": "ho"])
-        subject.searchTypePopupCurrentItemIndex = 1
-        #expect(subject.searchType == ["hoo": "ha"])
-        subject.searchTypePopupCurrentItemIndex = 2
-        #expect(subject.searchType == ["key": "value"])
+        subject.keyPopupContents = [["hey": "ho"], ["hoo": "ha"]]
+        subject.keyPopupIndex = 0
+        #expect(subject.currentKey == ["hey": "ho"])
+        subject.keyPopupIndex = 1
+        #expect(subject.currentKey == ["hoo": "ha"])
+        subject.keyPopupIndex = 2
+        #expect(subject.currentKey == ["key": "value"])
     }
 }

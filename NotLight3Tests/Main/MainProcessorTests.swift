@@ -52,17 +52,20 @@ private struct MainProcessorTests {
         let url = Bundle(for: MockBundle.self).url(forResource: "fake", withExtension: "plist")!
         bundle.urlToReturn = url
         persistence.boolToReturn = true // just say yes to everything
+        persistence.intToReturn = 42
         await subject.receive(.initialState)
         #expect(bundle.methodsCalled == ["url(forResource:withExtension:)"])
         #expect(bundle.name == "popup")
         #expect(bundle.ext == "plist")
-        #expect(subject.state.searchTypePopupContents == list)
+        #expect(subject.state.keyPopupContents == list)
         #expect(persistence.methodsCalled == [
+            "loadKeyPopupIndex()",
             "loadAutoContains()",
             "loadCaseInsensitive()",
             "loadDiacriticInsensitive()",
             "loadWordBased()",
         ])
+        #expect(subject.state.keyPopupIndex == 42)
         #expect(subject.state.autoContainsMode)
         #expect(subject.state.caseInsensitive)
         #expect(subject.state.diacriticInsensitive)
@@ -78,6 +81,15 @@ private struct MainProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
+    @Test("receive keyPopupIndex: changes state popup index, presents, persists")
+    func searchType() async {
+        await subject.receive(.keyPopupIndex(3))
+        #expect(subject.state.keyPopupIndex == 3)
+        #expect(presenter.statesPresented == [subject.state])
+        #expect(persistence.methodsCalled == ["saveKeyPopupIndex(_:)"])
+        #expect(persistence.intSaved == 3)
+    }
+
     @Test("receive operator: sets state operator, presents")
     func searchOperator() async {
         await subject.receive(.operator("op"))
@@ -88,7 +100,7 @@ private struct MainProcessorTests {
     @Test("receive performSearch: calls builder makeQuery with term and state values")
     func performSearchBuilder() async {
         subject.state.caseInsensitive = true
-        subject.state.searchTypePopupContents = [["key": "kMDItemDisplayName"]]
+        subject.state.keyPopupContents = [["key": "kMDItemDisplayName"]]
         subject.state.searchOperator = "!="
         builder.queryStringToReturn = "queryString"
         await subject.receive(.performSearch("howdy", .noJoiner))
@@ -163,13 +175,6 @@ private struct MainProcessorTests {
     func scopes() async {
         await subject.receive(.scopes([URL(string: "file:///testing")!]))
         #expect(subject.state.scopes == [URL(string: "file:///testing")!])
-    }
-
-    @Test("receive searchType: changes state popup index, presents")
-    func searchType() async {
-        await subject.receive(.searchType(3))
-        #expect(subject.state.searchTypePopupCurrentItemIndex == 3)
-        #expect(presenter.statesPresented == [subject.state])
     }
 
     @Test("receive showFileIcons: toggles persistence showFileIcons")
