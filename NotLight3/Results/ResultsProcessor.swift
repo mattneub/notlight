@@ -1,5 +1,5 @@
 final class ResultsProcessor: Processor {
-    weak var presenter: (any ReceiverPresenter<Void, ResultsState>)?
+    weak var presenter: (any ReceiverPresenter<ResultsEffect, ResultsState>)?
     
     weak var coordinator: (any RootCoordinatorType)?
     
@@ -9,6 +9,8 @@ final class ResultsProcessor: Processor {
         switch action {
         case .close:
             coordinator?.dismiss()
+        case .columnWidths(let array):
+            services.persistence.saveColumns(array)
         case .initialData:
             if services.persistence.loadShowFileIcons() {
                 // the searcher didn't fetch icons, so to display them we must fetch them now
@@ -20,6 +22,10 @@ final class ResultsProcessor: Processor {
             state.columnVisibility["date"] = services.persistence.loadShowModDates()
             state.columnVisibility["size"] = services.persistence.loadShowFileSizes()
             await presenter?.present(state)
+        case .requestColumnWidths(let array):
+            if let columns = services.persistence.loadColumns(array) {
+                await presenter?.receive(.columnWidths(columns))
+            }
         case .revealItems(let rows):
             let paths = rows.map { state.results[$0] }.map(\.path)
             // TODO: deal with possible multiple selection being too large

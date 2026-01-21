@@ -4,6 +4,9 @@ final class MockPersistence: PersistenceType {
     var methodsCalled = [String]()
     var boolSaved: Bool?
     var boolToReturn = false
+    var columnWidthsSaved = [ColumnWidth]()
+    var columnWidthsToReturn: [ColumnWidth]?
+    var columns = [String]()
 
     func saveShowFileIcons(_ value: Bool) {
         methodsCalled.append(#function)
@@ -35,4 +38,14 @@ final class MockPersistence: PersistenceType {
         return boolToReturn
     }
 
+    func saveColumns(_ columns: [ColumnWidth]) {
+        methodsCalled.append(#function)
+        columnWidthsSaved = columns
+    }
+
+    func loadColumns(_ columns: [String]) -> [ColumnWidth]? {
+        methodsCalled.append(#function)
+        self.columns = columns
+        return columnWidthsToReturn
+    }
 }

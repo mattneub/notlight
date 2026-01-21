@@ -5,7 +5,7 @@ import AppKit
 private struct ResultsProcessorTests {
     let subject = ResultsProcessor()
     let coordinator = MockRootCoordinator()
-    let presenter = MockReceiverPresenter<Void, ResultsState>()
+    let presenter = MockReceiverPresenter<ResultsEffect, ResultsState>()
     let workspace = MockWorkspace()
     let persistence = MockPersistence()
 
@@ -20,6 +20,14 @@ private struct ResultsProcessorTests {
     func close() async {
         await subject.receive(.close)
         #expect(coordinator.methodsCalled == ["dismiss()"])
+    }
+
+    @Test("receive columnWidths: calls persistence saveColumns")
+    func columnWidths() async {
+        let columns = [ColumnWidth(name: "hey", width: 10)]
+        await subject.receive(.columnWidths(columns))
+        #expect(persistence.methodsCalled == ["saveColumns(_:)"])
+        #expect(persistence.columnWidthsSaved == columns)
     }
 
     @Test("receive initialData: consults persistence, gets icons from workspace if needed, configures column visibility, presents")
@@ -50,6 +58,27 @@ private struct ResultsProcessorTests {
         #expect(subject.state.results[0].image == nil)
         #expect(subject.state.columnVisibility == ["icon": false, "date": false, "size": false])
         #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("receive requestColumnWidths: call persistence loadColumns, if not nil passes on to presenter")
+    func requestColumnWidths() async {
+        let columnWidths = [ColumnWidth(name: "hey", width: 10)]
+        persistence.columnWidthsToReturn = columnWidths
+        let columns = ["manny", "moe"]
+        await subject.receive(.requestColumnWidths(columns))
+        #expect(persistence.methodsCalled == ["loadColumns(_:)"])
+        #expect(persistence.columns == columns)
+        #expect(presenter.thingsReceived == [.columnWidths(columnWidths)])
+    }
+
+    @Test("receive requestColumnWidths: call persistence loadColumns, if nil does nothing")
+    func requestColumnWidthsNil() async {
+        persistence.columnWidthsToReturn = nil
+        let columns = ["manny", "moe"]
+        await subject.receive(.requestColumnWidths(columns))
+        #expect(persistence.methodsCalled == ["loadColumns(_:)"])
+        #expect(persistence.columns == columns)
+        #expect(presenter.thingsReceived == [])
     }
 
     @Test("receive revealItems: calls workspace activate with urls for paths")

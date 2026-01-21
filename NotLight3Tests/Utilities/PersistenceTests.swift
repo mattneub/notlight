@@ -55,4 +55,24 @@ private struct PersistenceTests {
         #expect(result == true)
     }
 
+    @Test("saveColumns: saves for key based on column names")
+    func saveColumns() throws {
+        let columns = [ColumnWidth(name: "hey", width: 10), ColumnWidth(name: "ho", width: 20)]
+        subject.saveColumns(columns)
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        let saved = try #require(defaults.valuesSet["tableColumnWidths_hey_ho"] as? Data)
+        let expected = try PropertyListEncoder().encode(columns)
+        #expect(saved == expected)
+    }
+
+    @Test("loadColumns: loads for key based on column names")
+    func loadColumns() throws {
+        let columns = [ColumnWidth(name: "hey", width: 10), ColumnWidth(name: "ho", width: 20)]
+        let data = try PropertyListEncoder().encode(columns)
+        defaults.valuesToReturn["tableColumnWidths_hey_ho"] = data
+        let result = subject.loadColumns(["hey", "ho"])
+        #expect(defaults.methodsCalled == ["data(forKey:)"])
+        #expect(result == columns)
+    }
+
 }

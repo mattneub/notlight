@@ -52,6 +52,19 @@ private struct ResultsViewControllerTests {
         #expect(window.minSize == CGSize(width: 1000, height: 500))
     }
 
+    @Test("viewWillDisappear: gathers table column info, sends tableColumns to processor")
+    func viewWillDisappear() async {
+        subject.loadViewIfNeeded()
+        subject.tableView.tableColumn(withIdentifier: .init("icon"))?.isHidden = true
+        subject.tableView.tableColumn(withIdentifier: .init("displayName"))?.isHidden = true
+        subject.tableView.tableColumn(withIdentifier: .init("size"))?.isHidden = true
+        subject.tableView.tableColumn(withIdentifier: .init("date"))?.isHidden = true
+        subject.tableView.tableColumn(withIdentifier: .init("path"))?.width = 250
+        subject.viewWillDisappear()
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .columnWidths([ColumnWidth(name: "path", width: 250)]))
+    }
+
     @Test("present: presents to the datasource")
     func present() async {
         subject.loadViewIfNeeded()
@@ -97,6 +110,18 @@ private struct ResultsViewControllerTests {
         await subject.present(state)
         #expect(subject.tableView.tableColumn(withIdentifier: .init("icon"))?.isHidden == true)
         #expect(subject.tableView.tableColumn(withIdentifier: .init("size"))?.isHidden == false)
+    }
+
+    @Test("present: asks for table column widths for visible columns, just once")
+    func requestColumnWidths() async {
+        subject.loadViewIfNeeded()
+        let state = ResultsState(columnVisibility: ["icon": false, "size": false, "date": false])
+        await subject.present(state)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.first == .requestColumnWidths(["displayName", "path"]))
+        await subject.present(state)
+        try? await Task.sleep(for: .seconds(0.1))
+        #expect(processor.thingsReceived.filter { $0 == .requestColumnWidths(["displayName", "path"]) }.count == 1)
     }
 
     @Test("doClose: sends processor close")

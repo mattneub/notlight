@@ -10,7 +10,7 @@ final class RootCoordinator: RootCoordinatorType {
     weak var mainViewController: NSViewController?
 
     var mainProcessor: (any Processor<MainAction, MainState, Void>)?
-    var resultsProcessor: (any Processor<ResultsAction, ResultsState, Void>)?
+    var resultsProcessor: (any Processor<ResultsAction, ResultsState, ResultsEffect>)?
 
     func createMainModule(window: NSWindow) {
         let processor = MainProcessor()
