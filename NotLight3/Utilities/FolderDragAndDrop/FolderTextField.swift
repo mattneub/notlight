@@ -5,12 +5,14 @@ class FolderTextField: NSTextField {
         super.init(frame: frame)
         registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
         drawsBackground = true
+        formatter = MyURLFormatter()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
         drawsBackground = true
+        formatter = MyURLFormatter()
     }
 
     override func draggingEntered(_ sender: any NSDraggingInfo) -> NSDragOperation {
@@ -57,7 +59,7 @@ class FolderTextField: NSTextField {
         guard let url = NSURL(from: sender.draggingPasteboard) as? URL else {
             return false
         }
-        self.stringValue = url.path(percentEncoded: false)
+        self.objectValue = url
         sendAction(action, to: target) // we changed the value in code, we have to signal manually
         return true
     }

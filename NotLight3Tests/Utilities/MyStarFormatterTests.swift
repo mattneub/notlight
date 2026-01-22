@@ -15,25 +15,22 @@ private struct MyStarFormatterTests {
     }
 
     @Test("getObjectValue: adds asterisks")
-    func getObjectValue() {
-        var result: NSString = ""
-        withUnsafeMutablePointer(to: &result) { pointer in
-            let autoReleaser = AutoreleasingUnsafeMutablePointer<AnyObject?>(pointer)
-            let ok = subject.getObjectValue(autoReleaser, for: "", errorDescription: nil)
-            #expect(ok == true)
-        }
-        #expect(result == "**")
-        withUnsafeMutablePointer(to: &result) { pointer in
-            let autoReleaser = AutoreleasingUnsafeMutablePointer<AnyObject?>(pointer)
-            let ok = subject.getObjectValue(autoReleaser, for: "*", errorDescription: nil)
-            #expect(ok == true)
-        }
-        #expect(result == "**")
-        withUnsafeMutablePointer(to: &result) { pointer in
-            let autoReleaser = AutoreleasingUnsafeMutablePointer<AnyObject?>(pointer)
-            let ok = subject.getObjectValue(autoReleaser, for: "test", errorDescription: nil)
-            #expect(ok == true)
-        }
-        #expect(result == "*test*")
+    func getObjectValue() throws {
+        var result: AnyObject? = "" as NSString
+        //
+        var ok = subject.getObjectValue(&result, for: "", errorDescription: nil)
+        #expect(ok == true)
+        var realResult = try #require(result! as? NSString)
+        #expect((realResult as String) == "**")
+        //
+        ok = subject.getObjectValue(&result, for: "*", errorDescription: nil)
+        #expect(ok == true)
+        realResult = try #require(result! as? NSString)
+        #expect((realResult as String) == "**")
+        //
+        ok = subject.getObjectValue(&result, for: "test", errorDescription: nil)
+        #expect(ok == true)
+        realResult = try #require(result! as? NSString)
+        #expect((realResult as String) == "*test*")
     }
 }

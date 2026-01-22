@@ -26,7 +26,7 @@ class MyContainerView: NSView {
     }
 
     @IBAction func doClear(_ sender: NSButton) {
-        textField.stringValue = ""
+        textField.objectValue = nil
         textFieldValueChanged(textField)
     }
 }

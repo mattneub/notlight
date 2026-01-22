@@ -120,16 +120,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
     }
 
     func reconcileScopes(_ scopes: [URL]) {
-        // TODO: It would be nicer if text fields had a formatter
-        // so their object value could be the URL and their displayed string would just
-        // automatically be the path string, and we could stop converting back and forth like this
         let folderTextFields = view.subviews(ofType: FolderTextField.self, recursing: true)
-        let pathStrings = folderTextFields.map { $0.stringValue }.filter { $0 != "" }
-        let urls = pathStrings.map { URL(filePath: $0, directoryHint: .isDirectory, relativeTo: nil) }
+        let urls = folderTextFields.compactMap { $0.objectValue as? URL }
         if scopes != urls {
             // Big serious logic will eventually go here! Right now, assume just one scope.
             if let url = scopes.first {
-                folderTextFields.first?.stringValue = url.path(percentEncoded: false)
+                folderTextFields.first?.objectValue = url
             }
         }
     }
@@ -215,8 +211,7 @@ class MainViewController: NSViewController, ReceiverPresenter {
     /// nil-targeted from MyContainerView!
     @objc func folderTextFieldChanged(_ sender: NSTextField) {
         let folderTextFields = view.subviews(ofType: FolderTextField.self, recursing: true)
-        let pathStrings = folderTextFields.map { $0.stringValue }.filter { $0 != "" }
-        let urls = pathStrings.map { URL(filePath: $0, directoryHint: .isDirectory, relativeTo: nil) }
+        let urls = folderTextFields.compactMap { $0.objectValue as? URL }
         Task {
             await processor?.receive(.scopes(urls))
         }
