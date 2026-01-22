@@ -9,16 +9,20 @@ private struct MainProcessorTests {
     let searcher = MockSearcher()
     let bundle = MockBundle()
     let persistence = MockPersistence()
+    let appleScripter = MockAppleScripter()
+    let beeper = MockBeeper()
     let coordinator = MockRootCoordinator()
     let presenter = MockReceiverPresenter<Void, MainState>()
 
     init() {
         subject.coordinator = coordinator
         subject.presenter = presenter
+        subject.appleScripter = appleScripter
         services.bundle = bundle
         services.searcher = searcher
         services.queryStringBuilder = builder
         services.persistence = persistence
+        services.beeper = beeper
     }
 
     @Test("receive autoContainsMode: sets the state autoContainsMode and presents, and persists")
@@ -71,6 +75,36 @@ private struct MainProcessorTests {
         #expect(subject.state.diacriticInsensitive)
         #expect(subject.state.wordBased)
         #expect(presenter.statesPresented == [subject.state])
+        #expect(subject.appleScripter is AppleScripter)
+    }
+
+    @Test("receive finder: executes script, if valid file path sets state scopes, presents")
+    func finder() async {
+        appleScripter.stringToReturn = URL.temporaryDirectory.path(percentEncoded: false)
+        await subject.receive(.finder)
+        #expect(appleScripter.methodsCalled == ["executeScript()"])
+        #expect(subject.state.scopes == [URL.temporaryDirectory])
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("receive finder: executes script, if empty result, beeps")
+    func finderEmptyScriptResult() async {
+        appleScripter.stringToReturn = ""
+        await subject.receive(.finder)
+        #expect(appleScripter.methodsCalled == ["executeScript()"])
+        #expect(subject.state.scopes == [])
+        #expect(presenter.statesPresented.isEmpty)
+        #expect(beeper.methodsCalled == ["beep()"])
+    }
+
+    @Test("receive finder: executes script, if bad path result, beeps")
+    func finderBadScriptResult() async {
+        appleScripter.stringToReturn = "hey babu riba"
+        await subject.receive(.finder)
+        #expect(appleScripter.methodsCalled == ["executeScript()"])
+        #expect(subject.state.scopes == [])
+        #expect(presenter.statesPresented.isEmpty)
+        #expect(beeper.methodsCalled == ["beep()"])
     }
 
     @Test("receive insertContains: inserts asterisks in state term, presents")
@@ -145,30 +179,46 @@ private struct MainProcessorTests {
         try? await Task.sleep(for: .seconds(0.1))
         searcher.searchProgress.count = 3
         try? await Task.sleep(for: .seconds(0.1))
-        #expect(presenter.statesPresented.count == 4)
+        #expect(presenter.statesPresented.count == 5)
         #expect(presenter.statesPresented[0].progress == 0)
-        #expect(presenter.statesPresented[1].progress == 1)
-        #expect(presenter.statesPresented[2].progress == 2)
-        #expect(presenter.statesPresented[3].progress == 3)
+        #expect(presenter.statesPresented[0].progressSpinner == true)
+        #expect(presenter.statesPresented[1].progress == 0)
+        #expect(presenter.statesPresented[2].progress == 1)
+        #expect(presenter.statesPresented[3].progress == 2)
+        #expect(presenter.statesPresented[4].progress == 3)
         await #while(subject.progressWatchingTask?.isCancelled == false)
         #expect(subject.progressWatchingTask?.isCancelled == true)
+        #expect(presenter.statesPresented.count == 6)
+        #expect(presenter.statesPresented[5].progress == 0)
+        #expect(presenter.statesPresented[5].progressSpinner == false)
     }
 
-    @Test("receive performSearch: if term is empty, does nothing")
+    @Test("receive performSearch: if term is empty, beeps")
     func performSearchEmpty() async {
         await subject.receive(.performSearch("", .noJoiner))
         #expect(builder.methodsCalled.isEmpty)
         #expect(searcher.methodsCalled.isEmpty)
         #expect(coordinator.methodsCalled.isEmpty)
+        #expect(beeper.methodsCalled == ["beep()"])
     }
 
-    @Test("receive performSearch: if search throws, does nothing")
+    @Test("receive performSearch: if search throws, beeps")
     func performSearchThrow() async {
         searcher.errorToThrow = .badQuery
         await subject.receive(.performSearch("howdy", .noJoiner))
         #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
         #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
+        #expect(beeper.methodsCalled == ["beep()"])
+    }
+
+    @Test("receive performSearch: if search returns empty results, beeps")
+    func performSearchEmptyResults() async {
+        searcher.resultToReturn = SearchInfo(queryString: "", results: [])
+        await subject.receive(.performSearch("howdy", .noJoiner))
+        #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
+        #expect(coordinator.methodsCalled.isEmpty)
+        #expect(beeper.methodsCalled == ["beep()"])
     }
 
     @Test("receive scopes: sets state scopes")

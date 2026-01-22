@@ -84,15 +84,21 @@ class MainViewController: NSViewController, ReceiverPresenter {
         autoContainsModeCheckbox.state = state.autoContainsMode ? .on : .off
         configureAutoContainsMode(state.autoContainsMode)
 
+        if state.progressSpinner {
+            progressSpinner.startAnimation(self)
+        } else {
+            progressSpinner.stopAnimation(self)
+        }
+
         if state.progress > 0 {
             progressLabel.stringValue = "\(String(state.progress)) results found..."
-            progressSpinner.startAnimation(self)
             stopButton.isEnabled = true
         } else {
             progressLabel.stringValue = ""
-            progressSpinner.stopAnimation(self)
             stopButton.isEnabled = false
         }
+
+        reconcileScopes(state.scopes)
     }
 
     func configureAutoContainsMode(_ isOn: Bool) {
@@ -109,6 +115,21 @@ class MainViewController: NSViewController, ReceiverPresenter {
             termField.stringValue = currentValue
             Task {
                 await processor?.receive(.termChanged(termField.objectValue as? String ?? ""))
+            }
+        }
+    }
+
+    func reconcileScopes(_ scopes: [URL]) {
+        // TODO: It would be nicer if text fields had a formatter
+        // so their object value could be the URL and their displayed string would just
+        // automatically be the path string, and we could stop converting back and forth like this
+        let folderTextFields = view.subviews(ofType: FolderTextField.self, recursing: true)
+        let pathStrings = folderTextFields.map { $0.stringValue }.filter { $0 != "" }
+        let urls = pathStrings.map { URL(filePath: $0, directoryHint: .isDirectory, relativeTo: nil) }
+        if scopes != urls {
+            // Big serious logic will eventually go here! Right now, assume just one scope.
+            if let url = scopes.first {
+                folderTextFields.first?.stringValue = url.path(percentEncoded: false)
             }
         }
     }
@@ -182,6 +203,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @IBAction func insertContains(_ sender: NSButton) {
         Task {
             await processor?.receive(.insertContains)
+        }
+    }
+
+    @IBAction func doFinder(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.finder)
         }
     }
 

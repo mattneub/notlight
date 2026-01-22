@@ -27,7 +27,7 @@
             <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
-                <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="FIj-ed-s4j" customClass="MyTextField" customModule="NotLight3" customModuleProvider="target">
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="FIj-ed-s4j" customClass="MyTextField" customModule="NotLight3" customModuleProvider="target">
                     <rect key="frame" x="20" y="211" width="440" height="22"/>
                     <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" drawsBackground="YES" id="dNt-YY-CBA">
                         <font key="font" metaFont="smallSystem"/>
@@ -38,7 +38,7 @@
                         <action selector="doSearchTextField:" target="-2" id="Wyi-Be-rb1"/>
                     </connections>
                 </textField>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-o5-xYT" userLabel="ProgressLabel">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DTS-o5-xYT" userLabel="ProgressLabel">
                     <rect key="frame" x="250" y="245" width="212" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="4xN-Ic-C1r">
                         <font key="font" metaFont="smallSystem"/>
@@ -106,7 +106,7 @@
                         <action selector="doSearchTypePopup:" target="-2" id="C2m-ar-lmw"/>
                     </connections>
                 </popUpButton>
-                <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="8vV-U4-Dsf">
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="8vV-U4-Dsf">
                     <rect key="frame" x="18" y="97" width="444" height="42"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="42" id="57u-9j-gP3"/>
@@ -159,7 +159,7 @@ Label</string>
                     </connections>
                 </button>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="v4e-0x-r2i" customClass="MyContainerView" customModule="NotLight3" customModuleProvider="target">
-                    <rect key="frame" x="20" y="61" width="440" height="28"/>
+                    <rect key="frame" x="84" y="61" width="376" height="28"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="28" id="kgc-Aq-TbI"/>
                     </constraints>
@@ -194,21 +194,33 @@ Label</string>
                         <action selector="doSearchWithinButton:" target="-2" id="gkS-Yu-bvD"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="zSD-pS-aTF">
+                    <rect key="frame" x="20" y="65" width="54" height="20"/>
+                    <buttonCell key="cell" type="push" title="Finder" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vbt-WL-8h3">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doFinder:" target="-2" id="Vwu-lP-457"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="8WQ-Yv-Abj" firstAttribute="leading" secondItem="Fmo-p1-b1H" secondAttribute="trailing" constant="12" symbolic="YES" id="2Xi-h5-qiy"/>
                 <constraint firstItem="ugU-pF-GT8" firstAttribute="top" secondItem="mqW-rA-31S" secondAttribute="bottom" constant="6" id="4ht-tp-afQ"/>
                 <constraint firstAttribute="bottom" secondItem="vs4-v2-Yso" secondAttribute="bottom" constant="20" symbolic="YES" id="5Nx-sg-gYa"/>
+                <constraint firstItem="zSD-pS-aTF" firstAttribute="leading" secondItem="FIj-ed-s4j" secondAttribute="leading" id="8cs-Ld-pAj"/>
                 <constraint firstItem="8WQ-Yv-Abj" firstAttribute="centerY" secondItem="Fmo-p1-b1H" secondAttribute="centerY" id="8uJ-aE-bsy"/>
                 <constraint firstItem="pKn-Yg-Chk" firstAttribute="centerX" secondItem="c22-O7-iKe" secondAttribute="centerX" id="9L8-2w-i6n"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="trailing" secondItem="FIj-ed-s4j" secondAttribute="trailing" id="9kL-ZM-Iq1"/>
                 <constraint firstItem="QCS-M8-A8y" firstAttribute="top" secondItem="ugU-pF-GT8" secondAttribute="bottom" constant="6" id="AcK-4C-Jf8"/>
                 <constraint firstItem="HsY-UI-ynR" firstAttribute="top" secondItem="JVN-DG-v0s" secondAttribute="bottom" constant="10" id="DcB-as-8Bt"/>
-                <constraint firstItem="v4e-0x-r2i" firstAttribute="leading" secondItem="FIj-ed-s4j" secondAttribute="leading" id="Ezd-hO-qwY"/>
+                <constraint firstItem="v4e-0x-r2i" firstAttribute="leading" secondItem="FIj-ed-s4j" secondAttribute="leading" constant="64" id="Ezd-hO-qwY"/>
                 <constraint firstItem="y6J-dv-1OF" firstAttribute="centerY" secondItem="DTS-o5-xYT" secondAttribute="centerY" id="HE9-wF-4aG"/>
                 <constraint firstItem="JVN-DG-v0s" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="IQ5-gc-nLw"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="leading" secondItem="y6J-dv-1OF" secondAttribute="trailing" constant="6" id="ImM-dl-eaf"/>
                 <constraint firstItem="FIj-ed-s4j" firstAttribute="top" secondItem="DTS-o5-xYT" secondAttribute="bottom" constant="12" id="L9h-8r-0Jz"/>
+                <constraint firstItem="v4e-0x-r2i" firstAttribute="centerY" secondItem="zSD-pS-aTF" secondAttribute="centerY" id="LnN-hH-o77"/>
                 <constraint firstAttribute="trailing" secondItem="vs4-v2-Yso" secondAttribute="trailing" constant="19" id="NRu-ZP-DSQ"/>
                 <constraint firstItem="mqW-rA-31S" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="Nfp-Al-3aZ"/>
                 <constraint firstItem="vs4-v2-Yso" firstAttribute="leading" secondItem="8WQ-Yv-Abj" secondAttribute="trailing" constant="12" symbolic="YES" id="OYH-Ih-uRz"/>

@@ -158,21 +158,37 @@ private struct MainViewControllerTests {
         #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
     }
 
-    @Test("present: sets progress spinner and label")
-    func presentProgressSpinnerLabel() async throws {
+    @Test("present: sets progress label and stop button")
+    func presentProgressLabel() async throws {
         subject.loadViewIfNeeded()
-        let spinner = try #require(subject.progressSpinner as? MyProgressIndicator) // purely to give it an `isAnimating` property!
-        #expect(spinner.isAnimating == false)
         #expect(subject.progressLabel.stringValue == "")
         #expect(subject.stopButton.isEnabled == false)
         await subject.present(MainState(progress: 2))
-        #expect(spinner.isAnimating == true)
         #expect(subject.progressLabel.stringValue == "2 results found...")
         #expect(subject.stopButton.isEnabled == true)
         await subject.present(MainState(progress: 0))
-        #expect(spinner.isAnimating == false)
         #expect(subject.progressLabel.stringValue == "")
         #expect(subject.stopButton.isEnabled == false)
+    }
+
+    @Test("present: sets progress spinner")
+    func presentProgressSpinner() async throws {
+        subject.loadViewIfNeeded()
+        let spinner = try #require(subject.progressSpinner as? MyProgressIndicator) // purely to give it an `isAnimating` property!
+        #expect(spinner.isAnimating == false)
+        await subject.present(MainState(progressSpinner: true))
+        #expect(spinner.isAnimating == true)
+        await subject.present(MainState(progressSpinner: false))
+        #expect(spinner.isAnimating == false)
+    }
+
+    @Test("present: sets folder text field value")
+    func presentFolderTextField() async throws {
+        subject.loadViewIfNeeded()
+        let field1 = FolderTextField(frame: .zero)
+        subject.view.addSubview(field1)
+        await subject.present(MainState(scopes: [URL(string: "file:///testing")!]))
+        #expect(field1.stringValue == "/testing")
     }
 
     @Test("doSearchTextField: sends processor performSearch with text field object value and no joiner")
@@ -352,5 +368,12 @@ private struct MainViewControllerTests {
         subject.showModDates(NSMenuItem())
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showModDates])
+    }
+
+    @Test("doFinder: sends finder")
+    func doFinder() async {
+        subject.doFinder(NSButton())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.finder])
     }
 }

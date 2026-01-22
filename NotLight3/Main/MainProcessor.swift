@@ -7,6 +7,10 @@ final class MainProcessor: Processor {
 
     var progressWatchingTask: Task<(), Never>?
 
+    /// The AppleScripter object, instantiated only after receiving `.initialState` so that the
+    /// user sees the interface and then the system dialog asking to script the Finder.
+    var appleScripter: (any AppleScripterType)?
+
     func receive(_ action: MainAction) async {
         switch action {
         case .autoContainsMode(let on):
@@ -19,6 +23,19 @@ final class MainProcessor: Processor {
         case .diacriticInsensitive(let on):
             state.diacriticInsensitive = on
             services.persistence.saveDiacriticInsensitive(on)
+        case .finder:
+            guard let result = appleScripter?.executeScript(), !result.isEmpty else {
+                services.beeper.beep()
+                return
+            }
+            let url = URL(filePath: result, directoryHint: .isDirectory, relativeTo: nil)
+            let exists = try? url.checkResourceIsReachable()
+            if exists == true {
+                state.scopes = [url]
+                await presenter?.present(state)
+            } else {
+                services.beeper.beep()
+            }
         case .initialState:
             if let url = services.bundle.url(forResource: "popup", withExtension: "plist") {
                 if let data = try? Data(contentsOf: url, options: .uncached) {
@@ -33,6 +50,7 @@ final class MainProcessor: Processor {
             state.diacriticInsensitive = services.persistence.loadDiacriticInsensitive()
             state.wordBased = services.persistence.loadWordBased()
             await presenter?.present(state)
+            self.appleScripter = AppleScripter() // create the instance now that we're up and running
         case .insertContains:
             let term = state.term.trimmingCharacters(in: CharacterSet(charactersIn: "*"))
             state.term = "*" + term + "*"
@@ -46,8 +64,11 @@ final class MainProcessor: Processor {
             await presenter?.present(state)
         case .performSearch(let term, let joiner):
             if term.isEmpty {
+                services.beeper.beep()
                 return
             }
+            state.progressSpinner = true
+            await presenter?.present(state)
             watchProgress()
             let queryString = services.queryStringBuilder.makeQuery(
                 term: term,
@@ -57,20 +78,22 @@ final class MainProcessor: Processor {
                 type: state.currentKey["key"] ?? "",
                 operator: state.searchOperator
             )
-            // TODO: If we get a bad query error here, show an alert
             if let result = try? await services.searcher.doSearch(
                 queryString,
                 scopes: state.scopes,
                 joiner: joiner
-            ) {
+            ), !result.results.isEmpty {
                 let resultsState = ResultsState(
                     queryString: result.queryString,
                     results: result.results
                 )
                 coordinator?.showResults(state: resultsState)
+            } else {
+                services.beeper.beep()
             }
             progressWatchingTask?.cancel()
             state.progress = 0
+            state.progressSpinner = false
             await presenter?.present(state)
         case .scopes(let urls):
             state.scopes = urls

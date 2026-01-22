@@ -3,6 +3,7 @@ enum MainAction: Equatable {
     case autoContainsMode(Bool)
     case caseInsensitive(Bool)
     case diacriticInsensitive(Bool)
+    case finder
     case initialState
     case insertContains
     case keyPopupIndex(Int)

@@ -23,6 +23,7 @@
 
 /* Begin PBXFileReference section */
 		3F1EE2DC2F1415CE002D28AA /* NotLight3Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotLight3Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F23F7282F21AEF900FF0B48 /* NotLight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = NotLight.entitlements; path = NotLight3/NotLight.entitlements; sourceTree = "<group>"; };
 		3F366E722F12F5CE0010786B /* NotLight3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotLight3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F9501AA2F14674600D83369 /* NotLight3.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = NotLight3.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,6 +64,7 @@
 		3F366E692F12F5CE0010786B = {
 			isa = PBXGroup;
 			children = (
+				3F23F7282F21AEF900FF0B48 /* NotLight.entitlements */,
 				3F9501AA2F14674600D83369 /* NotLight3.xctestplan */,
 				3F366E742F12F5CE0010786B /* NotLight3 */,
 				3F1EE2DD2F1415CE002D28AA /* NotLight3Tests */,
@@ -270,6 +272,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -334,6 +337,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -390,8 +394,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				AUTOMATION_APPLE_EVENTS = NO;
+				AUTOMATION_APPLE_EVENTS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = NotLight3/NotLight.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -411,6 +417,7 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSAppleEventsUsageDescription = "NotLight will enable searching in the frontmost Finder window.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = "";
@@ -419,6 +426,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.neuburg.matt.NotLight3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -447,8 +455,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				AUTOMATION_APPLE_EVENTS = NO;
+				AUTOMATION_APPLE_EVENTS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = NotLight3/NotLight.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -468,6 +478,7 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSAppleEventsUsageDescription = "NotLight will enable searching in the frontmost Finder window.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainNibFile = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = "";
@@ -476,6 +487,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.neuburg.matt.NotLight3;
 				PRODUCT_NAME = "$(TARGET_NAME)";

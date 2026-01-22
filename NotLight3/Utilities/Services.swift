@@ -2,6 +2,7 @@ import AppKit
 
 final class Services {
     var application: any ApplicationType = NSApplication.shared
+    var beeper: any BeeperType = Beeper()
     var bundle: any BundleType = Bundle.main
     var persistence: any PersistenceType = Persistence()
     var queryFactory = QueryFactory()
