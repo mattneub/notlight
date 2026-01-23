@@ -221,10 +221,11 @@ private struct MainProcessorTests {
         #expect(beeper.methodsCalled == ["beep()"])
     }
 
-    @Test("receive scopes: sets state scopes")
+    @Test("receive scopes: sets state scopes, presents")
     func scopes() async {
         await subject.receive(.scopes([URL(string: "file:///testing")!]))
         #expect(subject.state.scopes == [URL(string: "file:///testing")!])
+        #expect(presenter.statesPresented == [subject.state])
     }
 
     @Test("receive showFileIcons: toggles persistence showFileIcons")

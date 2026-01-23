@@ -10,7 +10,7 @@ private struct MyContainerViewTests {
     }
 
     @Test("moving to window causes view to load its interface from nib")
-    func moveToWindow() {
+    func moveToWindow() throws {
         let viewController = NSViewController()
         makeWindow(viewController: viewController)
         viewController.view.addSubview(subject)
@@ -19,6 +19,8 @@ private struct MyContainerViewTests {
         #expect(subject.wrapperView.isDescendant(of: subject))
         #expect(subject.textField.isDescendant(of: subject))
         #expect(subject.textField is FolderTextField)
+        let heightConstraint = try #require(subject.constraints.first(where: { $0.firstAttribute == .height }))
+        #expect(heightConstraint.constant == 28)
     }
 
     @Test("textFieldValueChanged: calls up responder chain to folderTextFieldChanged")

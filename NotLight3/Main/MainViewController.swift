@@ -46,6 +46,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @IBOutlet var diacriticInsensitiveCheckbox: NSButton!
     @IBOutlet var autoContainsModeCheckbox: NSButton!
 
+    @IBOutlet var stackView: NSStackView!
+
+    var folderTextFields: [FolderTextField] {
+        view.subviews(ofType: FolderTextField.self, recursing: true)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {
@@ -120,14 +126,27 @@ class MainViewController: NSViewController, ReceiverPresenter {
     }
 
     func reconcileScopes(_ scopes: [URL]) {
-        let folderTextFields = view.subviews(ofType: FolderTextField.self, recursing: true)
-        let urls = folderTextFields.compactMap { $0.objectValue as? URL }
-        if scopes != urls {
-            // Big serious logic will eventually go here! Right now, assume just one scope.
-            if let url = scopes.first {
-                folderTextFields.first?.objectValue = url
+        let folderTextFieldsCount = folderTextFields.count
+        let neededCount = scopes.count + 1
+        if neededCount > folderTextFieldsCount { // add text fields
+            for _ in folderTextFieldsCount ..< neededCount {
+                let containerView = MyContainerView()
+                stackView.addArrangedSubview(containerView)
+                containerView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+            }
+        } else if neededCount < folderTextFieldsCount { // remove text fields
+            for _ in neededCount ..< folderTextFieldsCount {
+                if let lastContainerView = stackView.arrangedSubviews.last {
+                    stackView.removeView(lastContainerView)
+                }
             }
         }
+        // now apply values
+        let fields = folderTextFields
+        for (url, field) in zip(scopes, fields) {
+            field.objectValue = url
+        }
+        fields.last?.objectValue = nil
     }
 
     @IBAction func doSearchTextField(_ sender: NSTextField) {
@@ -210,7 +229,6 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     /// nil-targeted from MyContainerView!
     @objc func folderTextFieldChanged(_ sender: NSTextField) {
-        let folderTextFields = view.subviews(ofType: FolderTextField.self, recursing: true)
         let urls = folderTextFields.compactMap { $0.objectValue as? URL }
         Task {
             await processor?.receive(.scopes(urls))

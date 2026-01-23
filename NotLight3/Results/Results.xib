@@ -18,17 +18,17 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView misplaced="YES" id="c22-O7-iKe">
-            <rect key="frame" x="0.0" y="0.0" width="1024" height="500"/>
+            <rect key="frame" x="0.0" y="0.0" width="1024" height="471"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xe0-pt-m1g">
-                    <rect key="frame" x="30" y="50" width="964" height="34"/>
-                    <clipView key="contentView" ambiguous="YES" drawsBackground="NO" id="w1i-qM-3RV">
-                        <rect key="frame" x="1" y="1" width="962" height="32"/>
+                    <rect key="frame" x="30" y="50" width="964" height="341"/>
+                    <clipView key="contentView" drawsBackground="NO" id="w1i-qM-3RV">
+                        <rect key="frame" x="1" y="1" width="962" height="339"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" headerView="2wC-c1-heV" viewBased="YES" id="DYA-F7-mxn">
-                                <rect key="frame" x="0.0" y="0.0" width="962" height="17"/>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowSizeStyle="automatic" headerView="2wC-c1-heV" viewBased="YES" id="DYA-F7-mxn">
+                                <rect key="frame" x="0.0" y="0.0" width="962" height="311"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="17" height="0.0"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -223,8 +223,8 @@
                         <rect key="frame" x="1" y="62" width="762" height="17"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="rKD-67-5ff">
-                        <rect key="frame" x="224" y="17" width="15" height="102"/>
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="rKD-67-5ff">
+                        <rect key="frame" x="946" y="29" width="17" height="4"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <tableHeaderView key="headerView" id="2wC-c1-heV">
@@ -243,7 +243,7 @@
                     </connections>
                 </button>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="WvR-wr-Efm" userLabel="Items found">
-                    <rect key="frame" x="28" y="92" width="95" height="14"/>
+                    <rect key="frame" x="28" y="399" width="95" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Items found label" usesSingleLineMode="YES" id="ip8-6M-9rF">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -251,7 +251,7 @@
                     </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="qcn-yc-O0W" userLabel="Query string">
-                    <rect key="frame" x="28" y="116" width="968" height="36"/>
+                    <rect key="frame" x="28" y="423" width="968" height="36"/>
                     <textFieldCell key="cell" selectable="YES" title="Query string label" id="Q4a-AR-ef6">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>

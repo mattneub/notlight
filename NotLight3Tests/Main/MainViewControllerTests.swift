@@ -182,13 +182,18 @@ private struct MainViewControllerTests {
         #expect(spinner.isAnimating == false)
     }
 
-    @Test("present: sets folder text field value")
+    @Test("present: sets folder text field quantity and values")
     func presentFolderTextField() async throws {
-        subject.loadViewIfNeeded()
-        let field1 = FolderTextField(frame: .zero)
-        subject.view.addSubview(field1)
-        await subject.present(MainState(scopes: [URL(string: "file:///testing")!]))
-        #expect(field1.stringValue == "/testing")
+        makeWindow(viewController: subject)
+        let scopes = [URL(string: "file:///testing")!, URL(string: "file:///testing2")!]
+        await subject.present(MainState(scopes: scopes))
+        await #while(subject.folderTextFields.count < 3)
+        try #require(subject.folderTextFields.count == 3)
+        let fields = subject.folderTextFields
+        #expect(fields.count == 3)
+        #expect(fields[0].objectValue as? URL == URL(string: "file:///testing")!)
+        #expect(fields[1].objectValue as? URL == URL(string: "file:///testing2")!)
+        #expect(fields[2].objectValue as? URL == nil)
     }
 
     @Test("doSearchTextField: sends processor performSearch with text field object value and no joiner")
@@ -325,10 +330,13 @@ private struct MainViewControllerTests {
         subject.loadViewIfNeeded()
         let field1 = FolderTextField(frame: .zero)
         let field2 = FolderTextField(frame: .zero)
+        let field3 = FolderTextField(frame: .zero)
         subject.view.addSubview(field1)
         subject.view.addSubview(field2)
-        field1.stringValue = "/top/testing"
-        field2.stringValue = "/top/testing with space"
+        subject.view.addSubview(field3)
+        field1.objectValue = nil
+        field2.stringValue = "/top/testing"
+        field3.stringValue = "/top/testing with space"
         subject.folderTextFieldChanged(field1)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .scopes([

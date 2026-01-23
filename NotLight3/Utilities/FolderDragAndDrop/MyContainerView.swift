@@ -17,6 +17,7 @@ class MyContainerView: NSView {
                 leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor),
                 trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor),
             ])
+            heightAnchor.constraint(equalToConstant: 28).isActive = true
         }
     }
 
@@ -28,5 +29,9 @@ class MyContainerView: NSView {
     @IBAction func doClear(_ sender: NSButton) {
         textField.objectValue = nil
         textFieldValueChanged(textField)
+    }
+
+    deinit {
+        print("farewell from MyContainerView")
     }
 }

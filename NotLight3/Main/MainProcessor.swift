@@ -97,6 +97,7 @@ final class MainProcessor: Processor {
             await presenter?.present(state)
         case .scopes(let urls):
             state.scopes = urls
+            await presenter?.present(state)
         case .showFileIcons:
             let oldValue = services.persistence.loadShowFileIcons()
             services.persistence.saveShowFileIcons(!oldValue)
