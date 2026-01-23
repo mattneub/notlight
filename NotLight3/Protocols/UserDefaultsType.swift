@@ -5,6 +5,7 @@ protocol UserDefaultsType {
     func set(_: Any?, forKey: String)
     func bool(forKey: String) -> Bool
     func integer(forKey: String) -> Int
+    func string(forKey: String) -> String?
     func data(forKey: String) -> Data?
 }
 

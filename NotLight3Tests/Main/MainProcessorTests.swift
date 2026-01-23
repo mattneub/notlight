@@ -57,6 +57,9 @@ private struct MainProcessorTests {
         bundle.urlToReturn = url
         persistence.boolToReturn = true // just say yes to everything
         persistence.intToReturn = 42
+        persistence.term = "term"
+        persistence.search = "search"
+        persistence.searchOperator = "op"
         await subject.receive(.initialState)
         #expect(bundle.methodsCalled == ["url(forResource:withExtension:)"])
         #expect(bundle.name == "popup")
@@ -68,12 +71,19 @@ private struct MainProcessorTests {
             "loadCaseInsensitive()",
             "loadDiacriticInsensitive()",
             "loadWordBased()",
+            "loadTerm()",
+            "loadSearchOperator()",
+            "loadCurrentSearch()"
         ])
         #expect(subject.state.keyPopupIndex == 42)
         #expect(subject.state.autoContainsMode)
         #expect(subject.state.caseInsensitive)
         #expect(subject.state.diacriticInsensitive)
         #expect(subject.state.wordBased)
+        #expect(subject.state.term == "term")
+        #expect(subject.state.searchOperator == "op")
+        #expect(searcher.methodsCalled == ["setPreviousQueryString(_:)"])
+        #expect(searcher.queryString == "search")
         #expect(presenter.statesPresented == [subject.state])
         #expect(subject.appleScripter is AppleScripter)
     }
@@ -124,11 +134,13 @@ private struct MainProcessorTests {
         #expect(persistence.intSaved == 3)
     }
 
-    @Test("receive operator: sets state operator, presents")
+    @Test("receive operator: sets state operator, presents, persists")
     func searchOperator() async {
         await subject.receive(.operator("op"))
         #expect(subject.state.searchOperator == "op")
         #expect(presenter.statesPresented == [subject.state])
+        #expect(persistence.methodsCalled == ["saveSearchOperator(_:)"])
+        #expect(persistence.searchOperator == "op")
     }
 
     @Test("receive performSearch: calls builder makeQuery with term and state values")
@@ -147,7 +159,7 @@ private struct MainProcessorTests {
         #expect(builder.operatorString == "!=")
     }
 
-    @Test("receive performSearch: calls searcher doSearch with builder's query string and joiner")
+    @Test("receive performSearch: calls searcher doSearch with builder's query string and joiner, persists")
     func performSearch() async {
         subject.state.scopes = [URL(string: "file:///testing")!]
         builder.queryStringToReturn = "queryString"
@@ -161,6 +173,9 @@ private struct MainProcessorTests {
         #expect(coordinator.methodsCalled == ["showResults(state:)"])
         #expect(coordinator.resultsState?.queryString == result.queryString)
         #expect(coordinator.resultsState?.results == result.results)
+        #expect(persistence.methodsCalled == ["saveTerm(_:)", "saveCurrentSearch(_:)"])
+        #expect(persistence.term == "howdy")
+        #expect(persistence.search == "queryString")
     }
 
     @Test("receive performSearch: if searcher searchProgress publishes, updates state progress, presents")
@@ -199,6 +214,7 @@ private struct MainProcessorTests {
         #expect(builder.methodsCalled.isEmpty)
         #expect(searcher.methodsCalled.isEmpty)
         #expect(coordinator.methodsCalled.isEmpty)
+        #expect(persistence.methodsCalled.isEmpty)
         #expect(beeper.methodsCalled == ["beep()"])
     }
 
@@ -209,6 +225,7 @@ private struct MainProcessorTests {
         #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
         #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
+        #expect(persistence.methodsCalled.isEmpty)
         #expect(beeper.methodsCalled == ["beep()"])
     }
 

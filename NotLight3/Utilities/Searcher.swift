@@ -4,6 +4,7 @@ protocol SearcherType {
     var searchProgress: SearchProgress { get }
     func doSearch(_ term: String, scopes: [URL], joiner: SearchJoiner) async throws -> SearchInfo
     func stop()
+    func setPreviousQueryString(_: String)
 }
 
 final class Searcher: SearcherType {
@@ -132,6 +133,10 @@ final class Searcher: SearcherType {
             NotificationCenter.default.removeObserver(gatheringObserver)
         }
         query?.stop()
+    }
+
+    func setPreviousQueryString(_ value: String) {
+        previousQueryString = value
     }
 }
 

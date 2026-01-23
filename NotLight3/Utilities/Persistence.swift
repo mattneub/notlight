@@ -15,7 +15,7 @@ struct Defaults {
     static let operatorChoice = "operatorChoice"
     static let keyChoice = "keyChoice"
 
-    static let paths = "paths"
+    // static let paths = "paths"
     static let term = "term"
     static let currentSearch = "currentSearch"
 
@@ -44,6 +44,12 @@ protocol PersistenceType {
     func loadAutoContains() -> Bool
     func saveKeyPopupIndex(_: Int)
     func loadKeyPopupIndex() -> Int
+    func saveTerm(_ value: String)
+    func loadTerm() -> String
+    func saveCurrentSearch(_ value: String)
+    func loadCurrentSearch() -> String
+    func saveSearchOperator(_ value: String)
+    func loadSearchOperator() -> String
 }
 
 final class Persistence: PersistenceType {
@@ -103,9 +109,27 @@ final class Persistence: PersistenceType {
     func loadKeyPopupIndex() -> Int {
         load(forKey: Defaults.keyChoice) ?? 0
     }
+    func saveTerm(_ value: String) {
+        save(value, forKey: Defaults.term)
+    }
+    func loadTerm() -> String {
+        load(forKey: Defaults.term) ?? ""
+    }
+    func saveCurrentSearch(_ value: String) {
+        save(value, forKey: Defaults.currentSearch)
+    }
+    func loadCurrentSearch() -> String {
+        load(forKey: Defaults.currentSearch) ?? ""
+    }
+    func saveSearchOperator(_ value: String) {
+        save(value, forKey: Defaults.operatorChoice)
+    }
+    func loadSearchOperator() -> String {
+        load(forKey: Defaults.operatorChoice) ?? "=="
+    }
 
     func save<T: Codable>(_ value: T, forKey key: String) {
-        if T.self == Bool.self || T.self == Int.self {
+        if T.self == Bool.self || T.self == Int.self || T.self == String.self {
             services.userDefaults.set(value, forKey: key)
         } else {
             let data = try? PropertyListEncoder().encode(value)
@@ -118,6 +142,8 @@ final class Persistence: PersistenceType {
             return services.userDefaults.bool(forKey: key) as? T
         } else if T.self == Int.self {
             return services.userDefaults.integer(forKey: key) as? T
+        } else if T.self == String.self {
+            return services.userDefaults.string(forKey: key) as? T
         } else {
             if let data = services.userDefaults.data(forKey: key) {
                 return try? PropertyListDecoder().decode(T.self, from: data)

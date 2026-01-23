@@ -9,6 +9,9 @@ final class MockPersistence: PersistenceType {
     var columnWidthsSaved = [ColumnWidth]()
     var columnWidthsToReturn: [ColumnWidth]?
     var columns = [String]()
+    var term: String?
+    var search: String?
+    var searchOperator: String?
 
     func saveShowFileIcons(_ value: Bool) {
         methodsCalled.append(#function)
@@ -100,5 +103,36 @@ final class MockPersistence: PersistenceType {
         methodsCalled.append(#function)
         return intToReturn
     }
+
+    func saveTerm(_ value: String) {
+        methodsCalled.append(#function)
+        term = value
+    }
+
+    func loadTerm() -> String {
+        methodsCalled.append(#function)
+        return term ?? ""
+    }
+
+    func saveCurrentSearch(_ value: String) {
+        methodsCalled.append(#function)
+        search = value
+    }
+
+    func loadCurrentSearch() -> String {
+        methodsCalled.append(#function)
+        return search ?? ""
+    }
+
+    func saveSearchOperator(_ value: String) {
+        methodsCalled.append(#function)
+        searchOperator = value
+    }
+
+    func loadSearchOperator() -> String {
+        methodsCalled.append(#function)
+        return searchOperator ?? ""
+    }
+
 
 }

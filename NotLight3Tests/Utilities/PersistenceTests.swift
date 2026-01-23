@@ -135,6 +135,51 @@ private struct PersistenceTests {
         #expect(result == true)
     }
 
+    @Test("saveTerm: saves string for key term")
+    func saveTerm() {
+        subject.saveTerm("term")
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["term"] as? String == "term")
+    }
+
+    @Test("loadTerm: loads string for key term")
+    func loadTerm() {
+        defaults.valuesToReturn["term"] = "term"
+        let result = subject.loadTerm()
+        #expect(defaults.methodsCalled == ["string(forKey:)"])
+        #expect(result == "term")
+    }
+
+    @Test("saveCurrentSearch: saves string for key currentSearch")
+    func saveCurrentSearch() {
+        subject.saveCurrentSearch("currentSearch")
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["currentSearch"] as? String == "currentSearch")
+    }
+
+    @Test("loadCurrentSearch: loads string for key currentSearch")
+    func loadCurrentSearch() {
+        defaults.valuesToReturn["currentSearch"] = "currentSearch"
+        let result = subject.loadCurrentSearch()
+        #expect(defaults.methodsCalled == ["string(forKey:)"])
+        #expect(result == "currentSearch")
+    }
+
+    @Test("saveSearchOperator: saves string for key operatorChoice")
+    func saveSearchOperator() {
+        subject.saveSearchOperator("operatorChoice")
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        #expect(defaults.valuesSet["operatorChoice"] as? String == "operatorChoice")
+    }
+
+    @Test("loadSearchOperator: loads string for key operatorChoice")
+    func loadSearchOperator() {
+        defaults.valuesToReturn["operatorChoice"] = "operatorChoice"
+        let result = subject.loadSearchOperator()
+        #expect(defaults.methodsCalled == ["string(forKey:)"])
+        #expect(result == "operatorChoice")
+    }
+
     @Test("saveKeyPopupIndex: saves int for key keyChoice")
     func saveKeyPopupIndex() {
         subject.saveKeyPopupIndex(42)

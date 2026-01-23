@@ -22,6 +22,11 @@ final class MockUserDefaults: UserDefaultsType {
         return valuesToReturn[key] as? Int ?? crashThisTest(key)
     }
 
+    func string(forKey key: String) -> String? {
+        methodsCalled.append(#function)
+        return valuesToReturn[key] as? String ?? crashThisTest(key)
+    }
+
     func data(forKey key: String) -> Data? {
         methodsCalled.append(#function)
         return valuesToReturn[key] as? Data

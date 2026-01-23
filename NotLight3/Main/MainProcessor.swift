@@ -49,6 +49,9 @@ final class MainProcessor: Processor {
             state.caseInsensitive = services.persistence.loadCaseInsensitive()
             state.diacriticInsensitive = services.persistence.loadDiacriticInsensitive()
             state.wordBased = services.persistence.loadWordBased()
+            state.term = services.persistence.loadTerm()
+            state.searchOperator = services.persistence.loadSearchOperator()
+            services.searcher.setPreviousQueryString(services.persistence.loadCurrentSearch())
             await presenter?.present(state)
             self.appleScripter = AppleScripter() // create the instance now that we're up and running
         case .insertContains:
@@ -62,6 +65,7 @@ final class MainProcessor: Processor {
         case .operator(let searchOperator):
             state.searchOperator = searchOperator
             await presenter?.present(state)
+            services.persistence.saveSearchOperator(searchOperator)
         case .performSearch(let term, let joiner):
             if term.isEmpty {
                 services.beeper.beep()
@@ -88,6 +92,8 @@ final class MainProcessor: Processor {
                     results: result.results
                 )
                 coordinator?.showResults(state: resultsState)
+                services.persistence.saveTerm(term)
+                services.persistence.saveCurrentSearch(queryString)
             } else {
                 services.beeper.beep()
             }

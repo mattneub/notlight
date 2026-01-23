@@ -8,6 +8,7 @@ final class MockSearcher: SearcherType {
     var timeToSleep: Double = 0
     var scopes = [URL]()
     var joiner: SearchJoiner?
+    var queryString: String?
 
     var searchProgress = SearchProgress()
 
@@ -28,5 +29,11 @@ final class MockSearcher: SearcherType {
     func stop() {
         methodsCalled.append(#function)
     }
+
+    func setPreviousQueryString(_ value: String) {
+        methodsCalled.append(#function)
+        self.queryString = value
+    }
+
 
 }

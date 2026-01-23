@@ -150,4 +150,10 @@ private struct SearcherTests {
         #expect(query.methodsCalled == ["stop()"])
     }
 
+    @Test("setPreviousQueryString: sets previous query string")
+    func setPreviousQueryString() {
+        subject.setPreviousQueryString("string")
+        #expect(subject.previousQueryString == "string")
+    }
+
 }
