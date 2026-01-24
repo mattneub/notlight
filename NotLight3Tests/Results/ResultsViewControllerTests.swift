@@ -70,6 +70,7 @@ private struct ResultsViewControllerTests {
         subject.loadViewIfNeeded()
         let state = ResultsState(results: [.init(displayName: "name", path: "path", date: .distantPast, size: 10)])
         await subject.present(state)
+        #expect(datasource.methodsCalled == ["present(_:)"])
         #expect(datasource.statePresented == state)
     }
 

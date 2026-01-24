@@ -10,3 +10,14 @@ struct SearchKey: Equatable, Codable {
         case blurb = "blurb"
     }
 }
+
+extension SearchKey {
+    mutating func update(_ text: String, forColumn column: Int) {
+        switch column {
+        case 0: title = text
+        case 1: key = text
+        case 2: blurb = text
+        default: break
+        }
+    }
+}

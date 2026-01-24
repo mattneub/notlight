@@ -3,7 +3,7 @@ import AppKit
 /// Table view data source and delegate for the view controller's table view.
 final class SearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
     typealias State = SearchKeysState
-    typealias Received = Void
+    typealias Received = SearchKeysEffect
 
     /// Processor to whom we can send action messages.
     weak var processor: (any Receiver<SearchKeysAction>)?
@@ -32,6 +32,9 @@ final class SearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
         ) { [unowned self] tableView, tableColumn, row, identifier in
             viewProvider(tableView, tableColumn, row, identifier)
         }
+        datasource.rowViewProvider = { _, _, _ in
+            return MyRowView()
+        }
         return datasource
     }
 
@@ -41,20 +44,37 @@ final class SearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
         configureData(state)
     }
 
+    func receive(_ effect: SearchKeysEffect) async {
+        switch effect {
+        case .changed(let row, let column, let text):
+            data[row].update(text, forColumn: column)
+        case .delete(let row):
+            data.remove(at: row)
+            updateTableView()
+        case .editLastRow:
+            let lastRow = data.count - 1
+            tableView?.editColumn(0, row: lastRow, with: nil, select: true)
+        }
+    }
+
     func configureData(_ state: SearchKeysState) {
         let fakeId = UUID()
-        if state.keys.map({
-            var key = $0
-            key.id = fakeId
-            return key
-        }) == self.data.map ({
-            var key = $0
-            key.id = fakeId
-            return key
-        }) {
+        var stateKeys = state.keys
+        var selfData = self.data
+        stateKeys.modifyEach {
+            $0.id = fakeId
+        }
+        selfData.modifyEach {
+            $0.id = fakeId
+        }
+        if stateKeys == selfData {
             return // no point doing anything, it's the same data
         }
         self.data = state.keys
+        updateTableView()
+    }
+
+    func updateTableView() {
         var snapshot = datasource.snapshot()
         snapshot.deleteAllItems()
         snapshot.appendSections(["dummy"])
@@ -74,6 +94,8 @@ final class SearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
             view?.textField?.stringValue = searchKey.blurb
         default: break
         }
+        view?.textField?.action = Selector(("didEndEditing:"))
+        view?.textField?.maximumNumberOfLines = 1
         return view ?? NSView()
     }
 }
@@ -85,3 +107,4 @@ extension SearchKeysDatasource { // table view delegate methods
         }
     }
 }
+

@@ -12,7 +12,7 @@ final class RootCoordinator: RootCoordinatorType {
 
     var mainProcessor: (any Processor<MainAction, MainState, Void>)?
     var resultsProcessor: (any Processor<ResultsAction, ResultsState, ResultsEffect>)?
-    var searchKeysProcessor: (any Processor<SearchKeysAction, SearchKeysState, Void>)?
+    var searchKeysProcessor: (any Processor<SearchKeysAction, SearchKeysState, SearchKeysEffect>)?
 
     func createMainModule(window: NSWindow) {
         let processor = MainProcessor()

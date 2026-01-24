@@ -5,7 +5,7 @@ import WaitWhile
 
 private struct SearchKeysViewControllerTests {
     let subject = SearchKeysViewController()
-    let processor = MockProcessor<SearchKeysAction, SearchKeysState, Void>()
+    let processor = MockProcessor<SearchKeysAction, SearchKeysState, SearchKeysEffect>()
     let datasource = MockSearchKeysDatasource()
 
     init() {
@@ -36,4 +36,90 @@ private struct SearchKeysViewControllerTests {
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
     }
+
+    @Test("present: presents to the datasource")
+    func present() async {
+        subject.loadViewIfNeeded()
+        let state = SearchKeysState(keys: [.init(key: "key", title: "title", blurb: "blurb")])
+        await subject.present(state)
+        #expect(datasource.methodsCalled == ["present(_:)"])
+        #expect(datasource.statePresented == state)
+    }
+
+    @Test("receive: passes effect to the datasource")
+    func receive() async {
+        await subject.receive(.editLastRow)
+        #expect(datasource.methodsCalled == ["receive(_:)"])
+        #expect(datasource.thingsReceived == [.editLastRow])
+    }
+
+    @Test("doAdd: ends editing, sends add")
+    func doAdd() async throws {
+        let window = makeWindow(viewController: subject)
+        let textField = NSTextField()
+        subject.view.addSubview(textField)
+        textField.becomeFirstResponder()
+        let editor = try #require(window.fieldEditor(false, for: textField))
+        #expect(window.firstResponder === editor)
+        subject.doAdd(NSButton())
+        #expect(window.firstResponder == window)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .add)
+    }
+
+    @Test("doDelete: deletes selected row, ends editing, sends delete")
+    func doDelete() async throws {
+        makeWindow(viewController: subject)
+        let textField = NSTextField()
+        subject.view.addSubview(textField)
+        textField.becomeFirstResponder()
+        #expect(textField.currentEditor() != nil)
+        let tableView = MockTableView()
+        tableView._selectedRow = 10
+        subject.tableView = tableView
+        subject.doDelete(NSButton())
+        #expect(textField.currentEditor() == nil)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .delete(10))
+    }
+
+    @Test("doDelete: if no selected row, does nothing")
+    func doDeleteNoSelection() async throws {
+        makeWindow(viewController: subject)
+        let textField = NSTextField()
+        subject.view.addSubview(textField)
+        textField.becomeFirstResponder()
+        #expect(textField.currentEditor() != nil)
+        let tableView = MockTableView()
+        tableView._selectedRow = -1
+        subject.tableView = tableView
+        subject.doDelete(NSButton())
+        try? await Task.sleep(for: .seconds(0.1))
+        #expect(textField.currentEditor() != nil)
+        #expect(processor.thingsReceived == [.initialData])
+    }
+
+    @Test("didEndEditing: sends changed with row of sender, column of sender, text of sender")
+    func didEndEditing() async throws {
+        subject.loadViewIfNeeded()
+        let tableView = MockTableView()
+        tableView._rowForView = 20
+        tableView._columnForView = 30
+        subject.tableView = tableView
+        let textField = NSTextField()
+        textField.stringValue = "howdy"
+        subject.didEndEditing(textField)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .changed(row: 20, column: 30, text: "howdy"))
+    }
 }
+
+private final class MockTableView: NSTableView {
+    var _selectedRow: Int = 0
+    var _rowForView: Int = 0
+    var _columnForView: Int = 0
+    override var selectedRow: Int { _selectedRow }
+    override func row(for: NSView) -> Int { _rowForView }
+    override func column(for: NSView) -> Int { _columnForView }
+}
+

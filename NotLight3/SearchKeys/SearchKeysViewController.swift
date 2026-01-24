@@ -7,7 +7,7 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
 
     @IBOutlet weak var tableView: NSTableView!
 
-    lazy var datasource: (any TableViewDatasourceType<Void, SearchKeysState>) = SearchKeysDatasource(
+    lazy var datasource: (any TableViewDatasourceType<SearchKeysEffect, SearchKeysState>) = SearchKeysDatasource(
         tableView: tableView,
         processor: processor
     )
@@ -21,5 +21,36 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
 
     func present(_ state: SearchKeysState) async {
         await datasource.present(state)
+    }
+
+    func receive(_ effect: SearchKeysEffect) async {
+        await datasource.receive(effect)
+    }
+
+    @IBAction func doAdd(_ sender: NSButton) {
+        view.window?.endEditing(for: nil)
+        Task {
+            await processor?.receive(.add)
+        }
+    }
+
+    @IBAction func doDelete(_ sender: NSButton) {
+        let row = tableView.selectedRow
+        guard row > -1 else {
+            return
+        }
+        view.window?.endEditing(for: nil)
+        Task {
+            await processor?.receive(.delete(row))
+        }
+    }
+
+    @objc func didEndEditing(_ sender: NSTextField) {
+        let row = tableView.row(for: sender)
+        let column = tableView.column(for: sender)
+        let text = sender.stringValue
+        Task {
+            await processor?.receive(.changed(row: row, column: column, text: text))
+        }
     }
 }

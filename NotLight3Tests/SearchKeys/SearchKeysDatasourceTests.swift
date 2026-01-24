@@ -41,14 +41,20 @@ private struct SearchKeysDatasourceTests {
         do {
             let view = try #require(tableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? NSTableCellView)
             #expect(view.textField?.stringValue == "title")
+            #expect(view.textField?.action == #selector(SearchKeysViewController.didEndEditing(_:)))
+            #expect(view.textField?.maximumNumberOfLines == 1)
         }
         do {
             let view = try #require(tableView.view(atColumn: 1, row: 0, makeIfNecessary: false) as? NSTableCellView)
             #expect(view.textField?.stringValue == "key")
+            #expect(view.textField?.action == #selector(SearchKeysViewController.didEndEditing(_:)))
+            #expect(view.textField?.maximumNumberOfLines == 1)
         }
         do {
             let view = try #require(tableView.view(atColumn: 2, row: 0, makeIfNecessary: false) as? NSTableCellView)
             #expect(view.textField?.stringValue == "blurb")
+            #expect(view.textField?.maximumNumberOfLines == 1)
+            #expect(view.textField?.maximumNumberOfLines == 1)
         }
     }
 }
@@ -57,4 +63,6 @@ private struct SearchKeysDatasourceTests {
 private final class MyViewController: NSViewController {
     override var nibName: String? { get {"SearchKeys"} set {}}
     @IBOutlet var tableView: NSTableView!
+    @IBAction func doAdd(_: AnyObject) {}
+    @IBAction func doDelete(_: AnyObject) {}
 }

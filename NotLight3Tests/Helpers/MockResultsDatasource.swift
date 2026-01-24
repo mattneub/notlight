@@ -7,6 +7,7 @@ final class MockResultsDatasource: NSObject, @MainActor TableViewDatasourceType 
     var methodsCalled = [String]()
 
     func present(_ state: ResultsState) async {
+        methodsCalled.append(#function)
         self.statePresented = state
     }
 
