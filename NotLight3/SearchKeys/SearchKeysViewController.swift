@@ -7,7 +7,7 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
 
     @IBOutlet weak var tableView: NSTableView!
 
-    lazy var datasource: (any SearchKeysDatasourceType<Void, SearchKeysState>) = SearchKeysDatasource(
+    lazy var datasource: (any TableViewDatasourceType<Void, SearchKeysState>) = SearchKeysDatasource(
         tableView: tableView,
         processor: processor
     )

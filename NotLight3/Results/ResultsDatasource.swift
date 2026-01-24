@@ -1,14 +1,7 @@
 import AppKit
 
-/// Protocol describing the view controller's interaction with the datasource, so we can
-/// mock it for testing.
-protocol ResultsDatasourceType<Received, State>: ReceiverPresenter, NSTableViewDelegate {
-    associatedtype State
-    associatedtype Received
-}
-
 /// Table view data source and delegate for the view controller's table view.
-final class ResultsDatasource: NSObject, @MainActor ResultsDatasourceType {
+final class ResultsDatasource: NSObject, @MainActor TableViewDatasourceType {
     typealias State = ResultsState
     typealias Received = Void
 

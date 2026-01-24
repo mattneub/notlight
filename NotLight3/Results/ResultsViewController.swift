@@ -27,7 +27,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
         }
     }
 
-    lazy var datasource: (any ResultsDatasourceType<Void, ResultsState>) = ResultsDatasource(
+    lazy var datasource: (any TableViewDatasourceType<Void, ResultsState>) = ResultsDatasource(
         tableView: tableView,
         processor: processor
     )

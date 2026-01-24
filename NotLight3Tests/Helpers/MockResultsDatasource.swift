@@ -1,6 +1,6 @@
 @testable import NotLight3
 
-final class MockResultsDatasource: NSObject, @MainActor ResultsDatasourceType {
+final class MockResultsDatasource: NSObject, @MainActor TableViewDatasourceType {
     typealias State = ResultsState
     typealias Received = Void
     var statePresented: ResultsState?

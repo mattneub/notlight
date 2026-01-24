@@ -1,6 +1,6 @@
 @testable import NotLight3
 
-final class MockSearchKeysDatasource: NSObject, @MainActor SearchKeysDatasourceType {
+final class MockSearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
     typealias State = SearchKeysState
     typealias Received = Void
     var statePresented: SearchKeysState?
