@@ -358,6 +358,13 @@
                                     <action selector="showFileSizes:" target="-1" id="HEv-iH-1nf"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Uwj-9d-ROx"/>
+                            <menuItem title="Search Keys..." id="Fng-XR-pSg">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="showSearchKeys:" target="-1" id="Yoq-bK-5C1"/>
+                                </connections>
+                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

@@ -39,7 +39,7 @@ final class MainProcessor: Processor {
         case .initialState:
             if let url = services.bundle.url(forResource: "popup", withExtension: "plist") {
                 if let data = try? Data(contentsOf: url, options: .uncached) {
-                    if let contents = try? PropertyListDecoder().decode([[String: String]].self, from: data) {
+                    if let contents = try? PropertyListDecoder().decode([SearchKey].self, from: data) {
                         state.keyPopupContents = contents
                         state.keyPopupIndex = services.persistence.loadKeyPopupIndex()
                     }
@@ -79,7 +79,7 @@ final class MainProcessor: Processor {
                 caseInsensitive: state.caseInsensitive,
                 diacriticInsensitive: state.diacriticInsensitive,
                 wordBased: state.wordBased,
-                type: state.currentKey["key"] ?? "",
+                type: state.currentKey.key,
                 operator: state.searchOperator
             )
             if let result = try? await services.searcher.doSearch(
@@ -113,6 +113,8 @@ final class MainProcessor: Processor {
         case .showModDates:
             let oldValue = services.persistence.loadShowModDates()
             services.persistence.saveShowModDates(!oldValue)
+        case .showSearchKeys:
+            coordinator?.showSearchKeys()
         case .stop:
             services.searcher.stop()
         case .termChanged(let term):

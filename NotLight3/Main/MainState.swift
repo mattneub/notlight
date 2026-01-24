@@ -4,13 +4,13 @@ struct MainState: Equatable {
     var progress: Int = 0
     var progressSpinner = false
 
-    var keyPopupContents = [[String: String]]()
+    var keyPopupContents = [SearchKey]()
     var keyPopupIndex: Int = 0
-    var currentKey: [String: String] {
+    var currentKey: SearchKey {
         if keyPopupIndex < keyPopupContents.count {
             return keyPopupContents[keyPopupIndex]
         }
-        return ["key": "value"]
+        return keyPopupContents.first ?? .init(key: "", title: "", blurb: "") // shouldn't happen
     }
 
     var searchOperator: String = "=="

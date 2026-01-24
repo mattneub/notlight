@@ -63,15 +63,15 @@ class MainViewController: NSViewController, ReceiverPresenter {
         if searchTypePopup.itemArray.count < 4 { // there are three in the nib
             searchTypePopup.removeAllItems()
             for item in state.keyPopupContents {
-                searchTypePopup.addItem(withTitle: item["title"] ?? "Title")
+                searchTypePopup.addItem(withTitle: item.title)
             }
         }
         let currentSearchType = searchTypePopup.titleOfSelectedItem
-        if currentSearchType != state.currentKey["title"] {
+        if currentSearchType != state.currentKey.title {
             searchTypePopup.selectItem(at: state.keyPopupIndex)
         }
 
-        blurbLabel.stringValue = state.currentKey["blurb"] ?? ""
+        blurbLabel.stringValue = state.currentKey.blurb
 
         let currentSearchTerm = termField.objectValue as? String ?? ""
         if currentSearchTerm != state.term {
@@ -250,6 +250,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
     @objc func showFileSizes(_ sender: NSMenuItem) {
         Task {
             await processor?.receive(.showFileSizes)
+        }
+    }
+
+    @IBAction func showSearchKeys(_ sender: NSMenuItem) {
+        Task {
+            await processor?.receive(.showSearchKeys)
         }
     }
 }

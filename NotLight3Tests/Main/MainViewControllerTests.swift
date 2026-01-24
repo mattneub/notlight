@@ -39,20 +39,24 @@ private struct MainViewControllerTests {
     @Test("present: configures search type popup")
     func presentSearchTypePopup() async {
         var state = MainState()
-        state.keyPopupContents = [["title": "ho"], ["title": "ha"]]
+        let key1 = SearchKey(key: "1", title: "title1", blurb: "1")
+        let key2 = SearchKey(key: "2", title: "title2", blurb: "2")
+        state.keyPopupContents = [key1, key2]
         subject.loadViewIfNeeded()
         await subject.present(state)
-        #expect(subject.searchTypePopup.itemArray.map {$0.title} == ["ho", "ha"])
+        #expect(subject.searchTypePopup.itemArray.map {$0.title} == ["title1", "title2"])
     }
 
     @Test("present: sets search type popup selection")
     func presentSearchTypePopupSelection() async {
         var state = MainState()
-        state.keyPopupContents = [["title": "ho"], ["title": "ha"]]
+        let key1 = SearchKey(key: "1", title: "title1", blurb: "1")
+        let key2 = SearchKey(key: "2", title: "title2", blurb: "2")
+        state.keyPopupContents = [key1, key2]
         state.keyPopupIndex = 1
         subject.loadViewIfNeeded()
         await subject.present(state)
-        #expect(subject.searchTypePopup.titleOfSelectedItem == "ha")
+        #expect(subject.searchTypePopup.titleOfSelectedItem == "title2")
     }
 
     @Test("present: sets term field")
@@ -67,13 +71,15 @@ private struct MainViewControllerTests {
     @Test("present: sets blurb text")
     func presentBlurb() async {
         var state = MainState()
-        state.keyPopupContents = [["blurb": "ho"], ["blurb": "ha"]]
+        let key1 = SearchKey(key: "1", title: "1", blurb: "blurb1")
+        let key2 = SearchKey(key: "2", title: "2", blurb: "blurb2")
+        state.keyPopupContents = [key1, key2]
         subject.loadViewIfNeeded()
         await subject.present(state)
-        #expect(subject.blurbLabel.stringValue == "ho")
+        #expect(subject.blurbLabel.stringValue == "blurb1")
         state.keyPopupIndex = 1
         await subject.present(state)
-        #expect(subject.blurbLabel.stringValue == "ha")
+        #expect(subject.blurbLabel.stringValue == "blurb2")
     }
 
     @Test("presents: sets operator popup selection")
@@ -383,5 +389,12 @@ private struct MainViewControllerTests {
         subject.doFinder(NSButton())
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.finder])
+    }
+
+    @Test("showSearchKeys: sends showSearchKeys")
+    func showSearchKeys() async {
+        subject.showSearchKeys(NSMenuItem())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.showSearchKeys])
     }
 }

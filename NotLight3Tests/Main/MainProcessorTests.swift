@@ -51,8 +51,7 @@ private struct MainProcessorTests {
     }
 
     @Test("receive initialState: fetches popup plist, checks persistence, sets state, presents")
-    func initialState() async {
-        let list: [[String: String]] = [["hey": "ho"]]
+    func initialState() async throws {
         let url = Bundle(for: MockBundle.self).url(forResource: "fake", withExtension: "plist")!
         bundle.urlToReturn = url
         persistence.boolToReturn = true // just say yes to everything
@@ -64,7 +63,11 @@ private struct MainProcessorTests {
         #expect(bundle.methodsCalled == ["url(forResource:withExtension:)"])
         #expect(bundle.name == "popup")
         #expect(bundle.ext == "plist")
-        #expect(subject.state.keyPopupContents == list)
+        #expect(subject.state.keyPopupContents.count == 1)
+        let searchKey = subject.state.keyPopupContents[0]
+        #expect(searchKey.key == "this is the key")
+        #expect(searchKey.title == "this is the title")
+        #expect(searchKey.blurb == "this is the blurb")
         #expect(persistence.methodsCalled == [
             "loadKeyPopupIndex()",
             "loadAutoContains()",
@@ -146,7 +149,7 @@ private struct MainProcessorTests {
     @Test("receive performSearch: calls builder makeQuery with term and state values")
     func performSearchBuilder() async {
         subject.state.caseInsensitive = true
-        subject.state.keyPopupContents = [["key": "kMDItemDisplayName"]]
+        subject.state.keyPopupContents = [SearchKey(key: "kMDItemDisplayName", title: "", blurb: "")]
         subject.state.searchOperator = "!="
         builder.queryStringToReturn = "queryString"
         await subject.receive(.performSearch("howdy", .noJoiner))
@@ -267,6 +270,12 @@ private struct MainProcessorTests {
         await subject.receive(.showModDates)
         #expect(persistence.methodsCalled == ["loadShowModDates()", "saveShowModDates(_:)"])
         #expect(persistence.boolSaved == false)
+    }
+
+    @Test("receive showSearchKeys: calls coordinator showSearchKeys")
+    func showSearchKeys() async {
+        await subject.receive(.showSearchKeys)
+        #expect(coordinator.methodsCalled == ["showSearchKeys()"])
     }
 
     @Test("receive stop: calls searcher stop")

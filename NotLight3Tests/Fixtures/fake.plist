@@ -3,8 +3,12 @@
 <plist version="1.0">
 <array>
 	<dict>
-		<key>hey</key>
-		<string>ho</string>
+		<key>key</key>
+		<string>this is the key</string>
+		<key>title</key>
+		<string>this is the title</string>
+		<key>blurb</key>
+		<string>this is the blurb</string>
 	</dict>
 </array>
 </plist>

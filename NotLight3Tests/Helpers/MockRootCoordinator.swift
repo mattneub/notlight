@@ -16,6 +16,10 @@ final class MockRootCoordinator: RootCoordinatorType {
         self.resultsState = state
     }
 
+    func showSearchKeys() {
+        methodsCalled.append(#function)
+    }
+
     func dismiss() {
         methodsCalled.append(#function)
     }

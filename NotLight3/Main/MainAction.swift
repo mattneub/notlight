@@ -13,6 +13,7 @@ enum MainAction: Equatable {
     case showFileIcons
     case showFileSizes
     case showModDates
+    case showSearchKeys
     case stop
     case termChanged(String)
     case wordBased(Bool)
