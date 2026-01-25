@@ -7,6 +7,14 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
 
     @IBOutlet weak var tableView: NSTableView!
 
+    @IBOutlet weak var blurbField: NSTextField! {
+        didSet {
+            blurbField?.maximumNumberOfLines = 3
+            blurbField?.cell?.truncatesLastVisibleLine = true
+            blurbField?.delegate = self
+        }
+    }
+
     lazy var datasource: (any TableViewDatasourceType<SearchKeysEffect, SearchKeysState>) = SearchKeysDatasource(
         tableView: tableView,
         processor: processor
@@ -20,6 +28,13 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
     }
 
     func present(_ state: SearchKeysState) async {
+        if state.selectedRow > -1 {
+            blurbField.stringValue = state.keys[state.selectedRow].blurb
+            blurbField.isEnabled = true
+        } else {
+            blurbField.stringValue = ""
+            blurbField.isEnabled = false
+        }
         await datasource.present(state)
     }
 
@@ -51,6 +66,14 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
         let text = sender.stringValue
         Task {
             await processor?.receive(.changed(row: row, column: column, text: text))
+        }
+    }
+}
+
+extension SearchKeysViewController: NSTextFieldDelegate {
+    func controlTextDidChange(_ obj: Notification) {
+        Task {
+            await processor?.receive(.blurb(blurbField.stringValue))
         }
     }
 }

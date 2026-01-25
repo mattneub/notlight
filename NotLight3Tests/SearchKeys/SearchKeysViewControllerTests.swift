@@ -18,6 +18,14 @@ private struct SearchKeysViewControllerTests {
         #expect(subject.nibName == "SearchKeys")
     }
 
+    @Test("blurbField: is correctly configured")
+    func blurbField() {
+        subject.loadViewIfNeeded()
+        #expect(subject.blurbField.maximumNumberOfLines == 3)
+        #expect(subject.blurbField.cell?.truncatesLastVisibleLine == true)
+        #expect(subject.blurbField?.delegate === subject)
+    }
+
     @Test("initialization: sets up the datasource and table view")
     func initialization() throws {
         let subject = SearchKeysViewController()
@@ -35,6 +43,19 @@ private struct SearchKeysViewControllerTests {
         subject.loadViewIfNeeded()
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
+    }
+
+    @Test("present: based on state selected row, configures blurbField")
+    func presentBlurbField() async {
+        subject.loadViewIfNeeded()
+        var state = SearchKeysState(keys: [.init(key: "key", title: "title", blurb: "blurb")], selectedRow: 0)
+        await subject.present(state)
+        #expect(subject.blurbField.isEnabled == true)
+        #expect(subject.blurbField.stringValue == "blurb")
+        state.selectedRow = -1
+        await subject.present(state)
+        #expect(subject.blurbField.isEnabled == false)
+        #expect(subject.blurbField.stringValue == "")
     }
 
     @Test("present: presents to the datasource")
@@ -111,6 +132,15 @@ private struct SearchKeysViewControllerTests {
         subject.didEndEditing(textField)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .changed(row: 20, column: 30, text: "howdy"))
+    }
+
+    @Test("controlTextDidChange: sends blurb with contents of blurb field")
+    func controlTextDidChange() async {
+        subject.loadViewIfNeeded()
+        subject.blurbField.stringValue = "howdy"
+        subject.controlTextDidChange(Notification(name: .init("dummy")))
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .blurb("howdy"))
     }
 }
 

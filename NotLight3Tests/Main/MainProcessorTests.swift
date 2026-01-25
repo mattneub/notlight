@@ -65,9 +65,11 @@ private struct MainProcessorTests {
         #expect(bundle.ext == "plist")
         #expect(subject.state.keyPopupContents.count == 1)
         let searchKey = subject.state.keyPopupContents[0]
-        #expect(searchKey.key == "this is the key")
-        #expect(searchKey.title == "this is the title")
-        #expect(searchKey.blurb == "this is the blurb")
+        #expect(searchKey == SearchKey(
+            key: "this is the key",
+            title: "this is the title",
+            blurb: "this is the blurb"
+        ))
         #expect(persistence.methodsCalled == [
             "loadKeyPopupIndex()",
             "loadAutoContains()",

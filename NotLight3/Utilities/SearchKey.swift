@@ -2,12 +2,19 @@ struct SearchKey: Equatable, Codable {
     var key: String
     var title: String
     var blurb: String
-    var id: UUID = UUID()
+    let id: UUID = UUID()
 
     enum CodingKeys: String, CodingKey {
         case key = "key"
         case title = "title"
         case blurb = "blurb"
+    }
+
+    /// The UUID is merely so we have something unique to stick into the diffable datasource,
+    /// but it does not bear upon the essential question of whether the _data_ are the same.
+    /// So implement `==` explicitly to exclude the UUID.
+    static func ==(rhs: SearchKey, lhs: SearchKey) -> Bool {
+        lhs.key == rhs.key && lhs.title == rhs.title && lhs.blurb == rhs.blurb
     }
 }
 

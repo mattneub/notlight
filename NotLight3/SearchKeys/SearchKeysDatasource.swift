@@ -41,45 +41,45 @@ final class SearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
     var data = [SearchKey]()
 
     func present(_ state: SearchKeysState) async {
-        configureData(state)
+        if state.keys != self.data {
+            self.data = state.keys
+            await updateTableView()
+        }
+        if state.selectedRow != tableView?.selectedRow {
+            if state.selectedRow == -1 {
+                tableView?.selectRowIndexes([], byExtendingSelection: false)
+            } else {
+                tableView?.selectRowIndexes([state.selectedRow], byExtendingSelection: false)
+            }
+        }
     }
 
     func receive(_ effect: SearchKeysEffect) async {
         switch effect {
+        case .blurb(let text):
+            if let row = tableView?.selectedRow, row > -1 {
+                data[row].blurb = text
+                await updateTableView()
+                tableView?.selectRowIndexes([row], byExtendingSelection: false)
+            }
         case .changed(let row, let column, let text):
             data[row].update(text, forColumn: column)
-        case .delete(let row):
-            data.remove(at: row)
-            updateTableView()
         case .editLastRow:
             let lastRow = data.count - 1
             tableView?.editColumn(0, row: lastRow, with: nil, select: true)
         }
     }
 
-    func configureData(_ state: SearchKeysState) {
-        let fakeId = UUID()
-        var stateKeys = state.keys
-        var selfData = self.data
-        stateKeys.modifyEach {
-            $0.id = fakeId
-        }
-        selfData.modifyEach {
-            $0.id = fakeId
-        }
-        if stateKeys == selfData {
-            return // no point doing anything, it's the same data
-        }
-        self.data = state.keys
-        updateTableView()
-    }
-
-    func updateTableView() {
+    func updateTableView() async {
         var snapshot = datasource.snapshot()
         snapshot.deleteAllItems()
         snapshot.appendSections(["dummy"])
         snapshot.appendItems(data.map { $0.id })
-        datasource.apply(snapshot, animatingDifferences: false)
+        await withCheckedContinuation { continuation in
+            datasource.apply(snapshot, animatingDifferences: false) {
+                continuation.resume(returning: ())
+            }
+        }
     }
 
     func viewProvider(_ tableView: NSTableView, _ tableColumn: NSTableColumn, _ row: Int, _ identifier: UUID) -> NSView {
@@ -103,7 +103,7 @@ final class SearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
 extension SearchKeysDatasource { // table view delegate methods
     func tableViewSelectionDidChange(_ notification: Notification) {
         Task {
-            // await processor?.receive(.selectedRow(tableView?.selectedRow ?? -1))
+            await processor?.receive(.selectedRow(tableView?.selectedRow ?? -1))
         }
     }
 }
