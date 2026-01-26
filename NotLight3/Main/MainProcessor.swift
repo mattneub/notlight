@@ -40,7 +40,7 @@ final class MainProcessor: Processor {
             if let url = services.bundle.url(forResource: "popup", withExtension: "plist") {
                 if let data = try? Data(contentsOf: url, options: .uncached) {
                     if let contents = try? PropertyListDecoder().decode([SearchKey].self, from: data) {
-                        state.keyPopupContents = contents
+                        state.keyPopupContents = contents + services.persistence.loadAdditionalKeys()
                         state.keyPopupIndex = services.persistence.loadKeyPopupIndex()
                     }
                 }
@@ -143,3 +143,19 @@ final class MainProcessor: Processor {
         }
     }
 }
+
+extension MainProcessor: SearchKeysDelegate {
+    func done() async {
+        if let url = services.bundle.url(forResource: "popup", withExtension: "plist") {
+            if let data = try? Data(contentsOf: url, options: .uncached) {
+                if let contents = try? PropertyListDecoder().decode([SearchKey].self, from: data) {
+                    state.keyPopupContents = contents + services.persistence.loadAdditionalKeys()
+                    state.keyPopupIndex = 0
+                }
+            }
+        }
+        await presenter?.present(state)
+    }
+}
+
+

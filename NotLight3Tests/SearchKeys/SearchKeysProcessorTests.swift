@@ -6,10 +6,14 @@ private struct SearchKeysProcessorTests {
     let subject = SearchKeysProcessor()
     let coordinator = MockRootCoordinator()
     let presenter = MockReceiverPresenter<SearchKeysEffect, SearchKeysState>()
-    
+    let delegate = MockDelegate()
+    let persistence = MockPersistence()
+
     init() {
         subject.coordinator = coordinator
         subject.presenter = presenter
+        subject.delegate = delegate
+        services.persistence = persistence
     }
 
     @Test("receive add: appends an empty search key, resets selected row, presents, sends editLastRow")
@@ -56,10 +60,24 @@ private struct SearchKeysProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
-    @Test("receive initialData: presents")
+    @Test("receive done: saves keys to persistence, calls delegate done, calls coordinator dismiss")
+    func done() async {
+        let key1 = SearchKey(key: "key", title: "title", blurb: "blurb")
+        let key2 = SearchKey(key: "key2", title: "title2", blurb: "blurb2")
+        subject.state.keys = [key1, key2]
+        await subject.receive(.done)
+        #expect(persistence.methodsCalled == ["saveAdditionalKeys(_:)"])
+        #expect(persistence.additionalKeys == [key1, key2])
+        #expect(delegate.methodsCalled == ["done()"])
+        #expect(coordinator.methodsCalled == ["dismiss()"])
+    }
+
+    @Test("receive initialData: loads keys from persistence, presents")
     func initialData() async {
-        subject.state.keys = [SearchKey(key: "key", title: "title", blurb: "blurb")]
+        persistence.additionalKeys = [SearchKey(key: "key2", title: "title2", blurb: "blurb2")]
         await subject.receive(.initialData)
+        #expect(persistence.methodsCalled == ["loadAdditionalKeys()"])
+        #expect(subject.state.keys == [SearchKey(key: "key2", title: "title2", blurb: "blurb2")])
         #expect(presenter.statesPresented == [subject.state])
     }
 
@@ -68,5 +86,13 @@ private struct SearchKeysProcessorTests {
         await subject.receive(.selectedRow(42))
         #expect(subject.state.selectedRow == 42)
         #expect(presenter.statesPresented == [subject.state])
+    }
+}
+
+final class MockDelegate: SearchKeysDelegate {
+    var methodsCalled = [String]()
+
+    func done() async {
+        methodsCalled.append(#function)
     }
 }

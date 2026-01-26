@@ -230,6 +230,16 @@
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TfG-sA-Syg">
+                    <rect key="frame" x="404" y="10" width="56" height="24"/>
+                    <buttonCell key="cell" type="push" title="Done" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="xo5-OY-bEM">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="doDone:" target="-2" id="fvf-Gs-glT"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="MV2-IS-gDe" firstAttribute="trailing" secondItem="K7n-KS-ThT" secondAttribute="trailing" id="5Bq-gr-vz6"/>
@@ -237,6 +247,7 @@
                 <constraint firstItem="DJ8-Bs-7nz" firstAttribute="top" secondItem="K7n-KS-ThT" secondAttribute="bottom" constant="8" id="7MY-kK-nEm"/>
                 <constraint firstItem="K7n-KS-ThT" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" symbolic="YES" id="8mz-uw-uVh"/>
                 <constraint firstItem="K7n-KS-ThT" firstAttribute="top" secondItem="puL-8y-mOK" secondAttribute="bottom" constant="8" id="AAB-Jk-yR0"/>
+                <constraint firstAttribute="bottom" secondItem="TfG-sA-Syg" secondAttribute="bottom" constant="10" id="B68-7s-zWf"/>
                 <constraint firstItem="K7n-KS-ThT" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="36" id="ERQ-r0-r8B"/>
                 <constraint firstItem="C76-ce-ckz" firstAttribute="leading" secondItem="7QF-5m-ZKj" secondAttribute="trailing" constant="8" id="ItL-rJ-oNh"/>
                 <constraint firstAttribute="bottom" secondItem="7QF-5m-ZKj" secondAttribute="bottom" constant="14" id="Nlg-dV-9kh"/>
@@ -247,6 +258,7 @@
                 <constraint firstItem="DJ8-Bs-7nz" firstAttribute="leading" secondItem="K7n-KS-ThT" secondAttribute="leading" id="lHf-up-si2"/>
                 <constraint firstItem="MV2-IS-gDe" firstAttribute="top" secondItem="DJ8-Bs-7nz" secondAttribute="bottom" constant="4" id="r9Z-v7-PAO"/>
                 <constraint firstItem="puL-8y-mOK" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" symbolic="YES" id="tR5-VQ-Qbs"/>
+                <constraint firstItem="TfG-sA-Syg" firstAttribute="trailing" secondItem="K7n-KS-ThT" secondAttribute="trailing" id="vt2-MY-nHW"/>
                 <constraint firstItem="Q9p-EJ-C5F" firstAttribute="leading" secondItem="puL-8y-mOK" secondAttribute="trailing" constant="68" id="yuB-3d-Yg5"/>
             </constraints>
             <point key="canvasLocation" x="139" y="154"/>

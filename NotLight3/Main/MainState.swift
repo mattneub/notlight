@@ -7,7 +7,7 @@ struct MainState: Equatable {
     var keyPopupContents = [SearchKey]()
     var keyPopupIndex: Int = 0
     var currentKey: SearchKey {
-        if keyPopupIndex < keyPopupContents.count {
+        if (0..<keyPopupContents.count).contains(keyPopupIndex) {
             return keyPopupContents[keyPopupIndex]
         }
         return keyPopupContents.first ?? .init(key: "", title: "", blurb: "") // shouldn't happen

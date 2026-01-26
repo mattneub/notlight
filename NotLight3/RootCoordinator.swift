@@ -48,6 +48,7 @@ final class RootCoordinator: RootCoordinatorType {
         let viewController = SearchKeysViewController()
         processor.presenter = viewController
         viewController.processor = processor
+        processor.delegate = (mainProcessor as? any SearchKeysDelegate)
         // deliberate "load view and delay" strategy so that things don't visibly jump around
         viewController.loadViewIfNeeded()
         Task {

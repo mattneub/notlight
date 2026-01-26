@@ -54,6 +54,7 @@ private struct MainProcessorTests {
     func initialState() async throws {
         let url = Bundle(for: MockBundle.self).url(forResource: "fake", withExtension: "plist")!
         bundle.urlToReturn = url
+        persistence.additionalKeys = [SearchKey(key: "additional", title: "additional", blurb: "additional")]
         persistence.boolToReturn = true // just say yes to everything
         persistence.intToReturn = 42
         persistence.term = "term"
@@ -63,14 +64,20 @@ private struct MainProcessorTests {
         #expect(bundle.methodsCalled == ["url(forResource:withExtension:)"])
         #expect(bundle.name == "popup")
         #expect(bundle.ext == "plist")
-        #expect(subject.state.keyPopupContents.count == 1)
-        let searchKey = subject.state.keyPopupContents[0]
-        #expect(searchKey == SearchKey(
-            key: "this is the key",
-            title: "this is the title",
-            blurb: "this is the blurb"
-        ))
+        #expect(subject.state.keyPopupContents == [
+            SearchKey(
+                key: "this is the key",
+                title: "this is the title",
+                blurb: "this is the blurb"
+            ),
+            SearchKey(
+                key: "additional",
+                title: "additional",
+                blurb: "additional"
+            ),
+        ])
         #expect(persistence.methodsCalled == [
+            "loadAdditionalKeys()",
             "loadKeyPopupIndex()",
             "loadAutoContains()",
             "loadCaseInsensitive()",
@@ -299,6 +306,34 @@ private struct MainProcessorTests {
         #expect(subject.state.wordBased == true)
         #expect(persistence.methodsCalled == ["saveWordBased(_:)"])
         #expect(persistence.boolSaved == true)
+    }
+
+    @Test("done: like the first part of initialLayout")
+    func done() async {
+        subject.state.keyPopupIndex = 10
+        let url = Bundle(for: MockBundle.self).url(forResource: "fake", withExtension: "plist")!
+        bundle.urlToReturn = url
+        persistence.additionalKeys = [SearchKey(key: "additional", title: "additional", blurb: "additional")]
+        await subject.done()
+        #expect(bundle.methodsCalled == ["url(forResource:withExtension:)"])
+        #expect(bundle.name == "popup")
+        #expect(bundle.ext == "plist")
+        #expect(subject.state.keyPopupContents == [
+            SearchKey(
+                key: "this is the key",
+                title: "this is the title",
+                blurb: "this is the blurb"
+            ),
+            SearchKey(
+                key: "additional",
+                title: "additional",
+                blurb: "additional"
+            ),
+        ])
+        #expect(persistence.methodsCalled == [
+            "loadAdditionalKeys()",
+        ])
+        #expect(subject.state.keyPopupIndex == 0)
     }
 
 }

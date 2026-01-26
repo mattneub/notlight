@@ -195,4 +195,25 @@ private struct PersistenceTests {
         #expect(result == 42)
     }
 
+    @Test("saveAdditionalKeys: saves for key additionalKeys")
+    func saveAdditionalKeys() throws {
+        let keys = [SearchKey(key: "key", title: "title", blurb: "blurb")]
+        subject.saveAdditionalKeys(keys)
+        #expect(defaults.methodsCalled == ["set(_:forKey:)"])
+        let saved = try #require(defaults.valuesSet["additionalKeys"] as? Data)
+        let expected = try PropertyListEncoder().encode(keys)
+        #expect(saved == expected)
+    }
+
+    @Test("loadAdditionalKeys: loads for key additionalKeys")
+    func loadAdditionalKeys() throws {
+        let keys = [SearchKey(key: "key", title: "title", blurb: "blurb")]
+        let data = try PropertyListEncoder().encode(keys)
+        defaults.valuesToReturn["additionalKeys"] = data
+        let result = subject.loadAdditionalKeys()
+        #expect(defaults.methodsCalled == ["data(forKey:)"])
+        #expect(result == keys)
+    }
+
+
 }

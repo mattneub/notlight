@@ -34,22 +34,24 @@ protocol PersistenceType {
     func loadShowFileSizes() -> Bool
     func saveColumns(_: [ColumnWidth])
     func loadColumns(_: [String]) -> [ColumnWidth]?
-    func saveWordBased(_ value: Bool)
+    func saveWordBased(_: Bool)
     func loadWordBased() -> Bool
     func saveCaseInsensitive(_ value: Bool)
     func loadCaseInsensitive() -> Bool
-    func saveDiacriticInsensitive(_ value: Bool)
+    func saveDiacriticInsensitive(_: Bool)
     func loadDiacriticInsensitive() -> Bool
-    func saveAutoContains(_ value: Bool)
+    func saveAutoContains(_: Bool)
     func loadAutoContains() -> Bool
     func saveKeyPopupIndex(_: Int)
     func loadKeyPopupIndex() -> Int
-    func saveTerm(_ value: String)
+    func saveTerm(_: String)
     func loadTerm() -> String
-    func saveCurrentSearch(_ value: String)
+    func saveCurrentSearch(_: String)
     func loadCurrentSearch() -> String
-    func saveSearchOperator(_ value: String)
+    func saveSearchOperator(_: String)
     func loadSearchOperator() -> String
+    func saveAdditionalKeys(_: [SearchKey])
+    func loadAdditionalKeys() -> [SearchKey]
 }
 
 final class Persistence: PersistenceType {
@@ -127,6 +129,13 @@ final class Persistence: PersistenceType {
     func loadSearchOperator() -> String {
         load(forKey: Defaults.operatorChoice) ?? "=="
     }
+    func saveAdditionalKeys(_ value: [SearchKey]) {
+        save(value, forKey: Defaults.additionalKeys)
+    }
+    func loadAdditionalKeys() -> [SearchKey] {
+        load(forKey: Defaults.additionalKeys) ?? []
+    }
+
 
     func save<T: Codable>(_ value: T, forKey key: String) {
         if T.self == Bool.self || T.self == Int.self || T.self == String.self {

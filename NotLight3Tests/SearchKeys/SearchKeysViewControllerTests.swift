@@ -45,6 +45,16 @@ private struct SearchKeysViewControllerTests {
         #expect(processor.thingsReceived == [.initialData])
     }
 
+    @Test("viewDidAppear: makes window not resizable")
+    func viewDidAppear() {
+        let view = NSView()
+        let window = makeWindow(view: view)
+        #expect(window.isResizable == true)
+        view.addSubview(subject.view)
+        subject.viewDidAppear()
+        #expect(window.isResizable == false)
+    }
+
     @Test("present: based on state selected row, configures blurbField")
     func presentBlurbField() async {
         subject.loadViewIfNeeded()
@@ -118,6 +128,19 @@ private struct SearchKeysViewControllerTests {
         try? await Task.sleep(for: .seconds(0.1))
         #expect(textField.currentEditor() != nil)
         #expect(processor.thingsReceived == [.initialData])
+    }
+
+    @Test("doDone: ends editing, sends done")
+    func doDone() async throws {
+        makeWindow(viewController: subject)
+        let textField = NSTextField()
+        subject.view.addSubview(textField)
+        textField.becomeFirstResponder()
+        #expect(textField.currentEditor() != nil)
+        subject.doDone(NSButton())
+        #expect(textField.currentEditor() == nil)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived.last == .done)
     }
 
     @Test("didEndEditing: sends changed with row of sender, column of sender, text of sender")

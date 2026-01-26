@@ -12,6 +12,7 @@ final class MockPersistence: PersistenceType {
     var term: String?
     var search: String?
     var searchOperator: String?
+    var additionalKeys: [SearchKey]?
 
     func saveShowFileIcons(_ value: Bool) {
         methodsCalled.append(#function)
@@ -132,6 +133,16 @@ final class MockPersistence: PersistenceType {
     func loadSearchOperator() -> String {
         methodsCalled.append(#function)
         return searchOperator ?? ""
+    }
+
+    func saveAdditionalKeys(_ value: [SearchKey]) {
+        methodsCalled.append(#function)
+        additionalKeys = value
+    }
+
+    func loadAdditionalKeys() -> [SearchKey] {
+        methodsCalled.append(#function)
+        return additionalKeys ?? []
     }
 
 

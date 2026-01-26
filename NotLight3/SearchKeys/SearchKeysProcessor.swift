@@ -3,6 +3,8 @@ final class SearchKeysProcessor: Processor {
 
     weak var coordinator: (any RootCoordinatorType)?
 
+    weak var delegate: (any SearchKeysDelegate)?
+
     var state = SearchKeysState()
 
     func receive(_ action: SearchKeysAction) async {
@@ -24,12 +26,23 @@ final class SearchKeysProcessor: Processor {
             state.keys.remove(at: row)
             state.selectedRow = -1
             await presenter?.present(state)
+        case .done:
+            services.persistence.saveAdditionalKeys(state.keys)
+            await delegate?.done()
+            coordinator?.dismiss()
         case .initialData:
+            state.keys = services.persistence.loadAdditionalKeys()
             await presenter?.present(state)
         case .selectedRow(let row):
             state.selectedRow = row
             await presenter?.present(state)
         }
     }
-
 }
+
+protocol SearchKeysDelegate: AnyObject {
+    func done() async
+}
+
+
+

@@ -27,6 +27,10 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    override func viewDidAppear() {
+        view.window?.styleMask.remove(.resizable)
+    }
+
     func present(_ state: SearchKeysState) async {
         if state.selectedRow > -1 {
             blurbField.stringValue = state.keys[state.selectedRow].blurb
@@ -57,6 +61,13 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
         view.window?.endEditing(for: nil)
         Task {
             await processor?.receive(.delete(row))
+        }
+    }
+
+    @IBAction func doDone(_ sender: NSButton) {
+        view.window?.endEditing(for: nil)
+        Task {
+            await processor?.receive(.done)
         }
     }
 

@@ -60,7 +60,7 @@ class MainViewController: NSViewController, ReceiverPresenter {
     }
 
     func present(_ state: MainState) async {
-        if searchTypePopup.itemArray.count < 4 { // there are three in the nib
+        if searchTypePopup.itemArray.map(\.title) != state.keyPopupContents.map(\.title) {
             searchTypePopup.removeAllItems()
             for item in state.keyPopupContents {
                 searchTypePopup.addItem(withTitle: item.title)

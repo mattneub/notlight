@@ -140,4 +140,5 @@ private final class MyViewController: NSViewController {
     @IBOutlet var blurbField: NSTextField!
     @IBAction func doAdd(_: AnyObject) {}
     @IBAction func doDelete(_: AnyObject) {}
+    @IBAction func doDone(_: AnyObject) {}
 }

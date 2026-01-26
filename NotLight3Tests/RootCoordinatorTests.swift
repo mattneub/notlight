@@ -35,12 +35,14 @@ private struct RootCoordinatorTests {
 
     @Test("showSearchKeys: assembles the search keys module, presents the view controller")
     func showSearchKeys() async throws {
+        subject.mainProcessor = MainProcessor()
         let mainViewController = NSViewController()
         makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         subject.showSearchKeys()
         let processor = try #require(subject.searchKeysProcessor as? SearchKeysProcessor)
         #expect(processor.coordinator === subject)
+        #expect(processor.delegate === subject.mainProcessor)
         let viewController = try #require(processor.presenter as? SearchKeysViewController)
         #expect(viewController.processor === processor)
         await #while(mainViewController.presentedViewControllers?.first == nil)
