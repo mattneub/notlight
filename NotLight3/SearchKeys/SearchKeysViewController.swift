@@ -28,6 +28,7 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
     }
 
     override func viewDidAppear() {
+        super.viewDidAppear()
         view.window?.styleMask.remove(.resizable)
     }
 

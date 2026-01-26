@@ -1,3 +1,4 @@
+import AppKit
 
 enum MainAction: Equatable {
     case autoContainsMode(Bool)
@@ -12,6 +13,7 @@ enum MainAction: Equatable {
     case scopes([URL])
     case showFileIcons
     case showFileSizes
+    case showImportExport(NSView, NSRect)
     case showModDates
     case showSearchKeys
     case stop

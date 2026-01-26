@@ -258,6 +258,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
             await processor?.receive(.showSearchKeys)
         }
     }
+
+    @IBAction func showImportExport(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.showImportExport(sender, sender.bounds))
+        }
+    }
 }
 
 extension MainViewController: NSTextFieldDelegate {

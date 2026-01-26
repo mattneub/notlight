@@ -235,12 +235,27 @@ Label</string>
                         <action selector="doFinder:" target="-2" id="Vwu-lP-457"/>
                     </connections>
                 </button>
+                <button horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="VE2-oI-0rS">
+                    <rect key="frame" x="20" y="12" width="40" height="40"/>
+                    <buttonCell key="cell" type="round" title="☂" bezelStyle="circular" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Zhn-Fk-w4z">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="htY-m0-hHX"/>
+                        <constraint firstAttribute="height" constant="40" id="uTJ-Rn-GKs"/>
+                    </constraints>
+                    <connections>
+                        <action selector="showImportExport:" target="-2" id="LGd-nH-gwS"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="8WQ-Yv-Abj" firstAttribute="leading" secondItem="Fmo-p1-b1H" secondAttribute="trailing" constant="12" symbolic="YES" id="2Xi-h5-qiy"/>
                 <constraint firstItem="ugU-pF-GT8" firstAttribute="top" secondItem="mqW-rA-31S" secondAttribute="bottom" constant="6" id="4ht-tp-afQ"/>
                 <constraint firstItem="zSD-pS-aTF" firstAttribute="top" secondItem="8vV-U4-Dsf" secondAttribute="bottom" constant="12" id="5Do-zO-Cdk"/>
                 <constraint firstAttribute="bottom" secondItem="vs4-v2-Yso" secondAttribute="bottom" constant="20" symbolic="YES" id="5Nx-sg-gYa"/>
+                <constraint firstItem="VE2-oI-0rS" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" id="5Wn-CW-co3"/>
                 <constraint firstAttribute="bottom" secondItem="Q2Z-l9-1Hh" secondAttribute="bottom" constant="61" id="5p3-qc-cGP"/>
                 <constraint firstItem="zSD-pS-aTF" firstAttribute="leading" secondItem="FIj-ed-s4j" secondAttribute="leading" id="8cs-Ld-pAj"/>
                 <constraint firstItem="8WQ-Yv-Abj" firstAttribute="centerY" secondItem="Fmo-p1-b1H" secondAttribute="centerY" id="8uJ-aE-bsy"/>
@@ -269,6 +284,7 @@ Label</string>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="width" secondItem="FIj-ed-s4j" secondAttribute="width" multiplier="0.5" constant="-12" id="kSY-kU-bES"/>
                 <constraint firstItem="8vV-U4-Dsf" firstAttribute="leading" secondItem="c22-O7-iKe" secondAttribute="leading" constant="20" symbolic="YES" id="l2u-0q-RWb"/>
                 <constraint firstItem="mqW-rA-31S" firstAttribute="leading" secondItem="FIj-ed-s4j" secondAttribute="leading" id="lmh-SF-94N"/>
+                <constraint firstAttribute="bottom" secondItem="VE2-oI-0rS" secondAttribute="bottom" constant="12" id="q97-Gs-NTv"/>
                 <constraint firstItem="pKn-Yg-Chk" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="qhm-6u-MUK"/>
                 <constraint firstItem="y6J-dv-1OF" firstAttribute="leading" secondItem="FuA-BQ-UYP" secondAttribute="trailing" constant="10" id="vNd-tF-OB9"/>
                 <constraint firstItem="8vV-U4-Dsf" firstAttribute="top" secondItem="QCS-M8-A8y" secondAttribute="bottom" constant="8" id="xrz-c4-rV1"/>
