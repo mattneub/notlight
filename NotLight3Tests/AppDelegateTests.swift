@@ -12,6 +12,7 @@ private struct AppDelegateTests {
         let window = try #require(subject.window)
         #expect(window.title == "NotLight")
         #expect(window.styleMask == [.miniaturizable, .closable, .titled])
+        #expect(window.frameAutosaveName == "NotLight_Main_Window")
         // I don't want to run this code even when testing bootstrap, so I've wrapped `unlessTesting` around it
         // #expect(NSApplication.shared.mainMenu != nil)
         #expect(coordinator.methodsCalled == ["createMainModule(window:)"])

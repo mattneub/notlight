@@ -30,8 +30,4 @@ class MyContainerView: NSView {
         textField.objectValue = nil
         textFieldValueChanged(textField)
     }
-
-    deinit {
-        print("farewell from MyContainerView")
-    }
 }

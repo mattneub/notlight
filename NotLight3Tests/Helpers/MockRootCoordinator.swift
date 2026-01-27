@@ -20,6 +20,10 @@ final class MockRootCoordinator: RootCoordinatorType {
         methodsCalled.append(#function)
     }
 
+    func showDateAssistant() {
+        methodsCalled.append(#function)
+    }
+
     func dismiss() {
         methodsCalled.append(#function)
     }

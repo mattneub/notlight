@@ -10,6 +10,7 @@ enum MainAction: Equatable {
     case `operator`(String)
     case performSearch(String, SearchJoiner)
     case scopes([URL])
+    case showDateAssistant
     case showFileIcons
     case showFileSizes
     case showModDates

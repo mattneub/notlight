@@ -1,0 +1,1 @@
+struct DateState: Equatable {}

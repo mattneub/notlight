@@ -397,4 +397,11 @@ private struct MainViewControllerTests {
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showSearchKeys])
     }
+
+    @Test("showDateAssistant: sends showDateAssistant")
+    func showDateAssistant() async {
+        subject.showDateAssistant(NSMenuItem())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.showDateAssistant])
+    }
 }

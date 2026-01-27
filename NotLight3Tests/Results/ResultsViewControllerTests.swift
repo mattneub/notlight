@@ -49,7 +49,7 @@ private struct ResultsViewControllerTests {
         subject.loadViewIfNeeded()
         window.contentView = subject.view
         subject.viewWillAppear()
-        #expect(window.minSize == CGSize(width: 1000, height: 500))
+        #expect(window.minSize == CGSize(width: 1024, height: 360))
     }
 
     @Test("viewWillDisappear: gathers table column info, sends tableColumns to processor")

@@ -42,7 +42,9 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
 
     override func viewWillAppear() {
         super.viewWillAppear()
-        view.window?.minSize = CGSize(width: 1000, height: 500)
+        if let window = view.window {
+            window.minSize = CGSize(width: 1024, height: 360)
+        }
     }
 
     override func viewWillDisappear() {

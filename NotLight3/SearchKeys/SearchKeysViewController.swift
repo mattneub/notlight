@@ -28,7 +28,10 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
     }
 
     override func viewDidAppear() {
-        view.window?.styleMask.remove(.resizable)
+        if let window = view.window {
+            window.styleMask.remove(.resizable)
+            window.minSize = CGSize(width: 480, height: 272)
+        }
     }
 
     func present(_ state: SearchKeysState) async {

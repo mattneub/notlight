@@ -49,6 +49,21 @@ private struct RootCoordinatorTests {
         #expect(mainViewController.presentedViewControllers?.first === viewController)
     }
 
+    @Test("showDateAssistant: assembles the date module, creates window and shows it")
+    func showDateAssistant() async throws {
+        subject.showDateAssistant()
+        let processor = try #require(subject.dateProcessor as? DateProcessor)
+        #expect(processor.coordinator === subject)
+        let viewController = try #require(processor.presenter as? DateViewController)
+        #expect(viewController.processor === processor)
+        await #while(subject.dateAssistantWindow == nil)
+        let window = try #require(subject.dateAssistantWindow)
+        #expect(window.contentViewController == viewController)
+        #expect(window.isResizable == false)
+        #expect(window.title == "Date Assistant")
+        #expect(window.isReleasedWhenClosed == false)
+    }
+
     @Test("dismiss: dismisses the presented view controller")
     func dismiss() throws {
         let mainViewController = NSViewController()

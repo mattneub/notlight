@@ -258,6 +258,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
             await processor?.receive(.showSearchKeys)
         }
     }
+
+    @objc func showDateAssistant(_ sender: NSMenuItem) {
+        Task {
+            await processor?.receive(.showDateAssistant)
+        }
+    }
 }
 
 extension MainViewController: NSTextFieldDelegate {

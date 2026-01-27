@@ -45,7 +45,7 @@ private struct SearchKeysViewControllerTests {
         #expect(processor.thingsReceived == [.initialData])
     }
 
-    @Test("viewDidAppear: makes window not resizable")
+    @Test("viewDidAppear: makes window not resizable, sets min size")
     func viewDidAppear() {
         let view = NSView()
         let window = makeWindow(view: view)
@@ -53,6 +53,7 @@ private struct SearchKeysViewControllerTests {
         view.addSubview(subject.view)
         subject.viewDidAppear()
         #expect(window.isResizable == false)
+        #expect(window.minSize == CGSize(width: 480, height: 272))
     }
 
     @Test("present: based on state selected row, configures blurbField")

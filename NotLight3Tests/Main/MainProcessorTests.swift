@@ -257,6 +257,12 @@ private struct MainProcessorTests {
         #expect(presenter.statesPresented == [subject.state])
     }
 
+    @Test("receive showDateAssistant: calls coordinator showDateAssistant")
+    func showDateAssistant() async {
+        await subject.receive(.showDateAssistant)
+        #expect(coordinator.methodsCalled == ["showDateAssistant()"])
+    }
+
     @Test("receive showFileIcons: toggles persistence showFileIcons")
     func showFileIcons() async {
         persistence.boolToReturn = true
