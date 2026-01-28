@@ -32,3 +32,28 @@ final class QueryStringBuilder: QueryStringBuilderType {
         return queryString
     }
 }
+
+// TODO: translate content type, type code, creator code
+/*
+ case "kMDItemContentType" :
+ let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+ self.term as CFString, nil)
+ if let uti = uti {
+ let utiString = uti.takeRetainedValue() as String
+ if !(utiString.hasPrefix("dyn.")) { // "dyn." means LS had to make up something
+ translatedTerm = utiString // got it
+ break
+ }
+ }
+ // if we get here, we tried and failed to convert to UTI
+ let err = NSError(domain: "NotLight", code: 0, userInfo: [
+ NSLocalizedDescriptionKey : "Invalid Extension",
+ NSLocalizedRecoverySuggestionErrorKey : "Could not resolve extension to UTI."
+ ])
+ NSApp.presentError(err)
+ return
+ case "kMDItemFSTypeCode", "kMDItemFSCreatorCode":
+ let n = NSNumber.from_fourcc(self.term) // extension, see AppDelegate
+ translatedTerm = n.stringValue
+
+ */

@@ -58,13 +58,21 @@
         <key>title</key>
         <string>Creator Code</string>
     </dict>
+    <dict>
+        <key>blurb</key>
+        <string>Dates must be entered using special &quot;$time&quot; notation or as seconds since January, 2001; use the Date Assistant window to help. Dates are exact date-times, so you will probably want an inexact operator (e.g. &gt;=).</string>
+        <key>key</key>
+        <string>kMDItemFSContentChangeDate</string>
+        <key>title</key>
+        <string>Modified Date</string>
+    </dict>
 	<dict>
 		<key>blurb</key>
 		<string>Dates must be entered using special &quot;$time&quot; notation or as seconds since January, 2001; use the Date Assistant window to help. Dates are exact date-times, so you will probably want an inexact operator (e.g. &gt;=).</string>
 		<key>key</key>
-		<string>kMDItemFSContentChangeDate</string>
+		<string>kMDItemFSCreationDate</string>
 		<key>title</key>
-		<string>Modified Date</string>
+		<string>Created Date</string>
 	</dict>
 </array>
 </plist>

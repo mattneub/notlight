@@ -7,6 +7,10 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="DateViewController" customModule="NotLight3" customModuleProvider="target">
             <connections>
+                <outlet property="agoPopup" destination="yuQ-8l-aex" id="14Z-I3-6zp"/>
+                <outlet property="predefinedPopup" destination="J8E-Ac-fQf" id="Hdv-Hg-VAm"/>
+                <outlet property="relativePopup" destination="F8F-9n-IY2" id="hYB-KN-HnL"/>
+                <outlet property="relativeQuantityField" destination="Oui-1H-d7X" id="UHu-ee-fLb"/>
                 <outlet property="view" destination="c22-O7-iKe" id="jwZ-nc-poe"/>
             </connections>
         </customObject>
@@ -80,6 +84,9 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="usePredefined:" target="-2" id="ZAy-Np-jH2"/>
+                    </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mFC-c4-7Ki">
                     <rect key="frame" x="230" y="73" width="66" height="20"/>
@@ -87,34 +94,44 @@
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="useRelative:" target="-2" id="ieZ-of-Gd0"/>
+                    </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6Mf-N1-uRG">
-                    <rect key="frame" x="230" y="17" width="66" height="20"/>
+                    <rect key="frame" x="230" y="16" width="66" height="20"/>
                     <buttonCell key="cell" type="push" title="Use This" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="woC-Ci-jQU">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="smallSystem"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="useAbsolute:" target="-2" id="92B-TR-0Yl"/>
+                    </connections>
                 </button>
                 <datePicker verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V6k-7L-QzH">
-                    <rect key="frame" x="45" y="17" width="159" height="22"/>
+                    <rect key="frame" x="45" y="15" width="160" height="26"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="157" id="cEP-oa-Au3"/>
                     </constraints>
-                    <datePickerCell key="cell" controlSize="small" borderStyle="bezel" alignment="left" useCurrentDate="YES" id="Pd3-3F-aTx">
-                        <font key="font" metaFont="smallSystem"/>
-                        <date key="date" timeIntervalSinceReferenceDate="791216027.46035802">
-                            <!--2026-01-27 14:13:47 +0000-->
+                    <datePickerCell key="cell" borderStyle="bezel" alignment="left" useCurrentDate="YES" id="Pd3-3F-aTx">
+                        <font key="font" metaFont="system" size="11"/>
+                        <date key="date" timeIntervalSinceReferenceDate="791235660.63673103">
+                            <!--2026-01-27 19:41:00 +0000-->
                         </date>
                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES"/>
                     </datePickerCell>
+                    <connections>
+                        <action selector="doDatePicker:" target="-2" id="H72-hG-P4I"/>
+                    </connections>
                 </datePicker>
-                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Oui-1H-d7X">
+                <textField focusRingType="none" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Oui-1H-d7X" customClass="MyTextField" customModule="NotLight3" customModuleProvider="target">
                     <rect key="frame" x="45" y="104" width="60" height="22"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="60" id="co2-vu-UXC"/>
                     </constraints>
-                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="r8Z-yn-mni">
+                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" drawsBackground="YES" id="r8Z-yn-mni">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -137,6 +154,13 @@
                         <constraint firstAttribute="width" constant="90" id="tDl-Gs-DsK"/>
                     </constraints>
                 </popUpButton>
+                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TVO-Cw-5nA">
+                    <rect key="frame" x="20" y="102" width="20" height="26"/>
+                    <stepperCell key="cell" continuous="YES" alignment="left" minValue="1" maxValue="100" doubleValue="1" id="MOk-oo-EOK"/>
+                    <connections>
+                        <action selector="doRelativeQuantity:" target="-2" id="0q1-Rg-nJa"/>
+                    </connections>
+                </stepper>
             </subviews>
             <constraints>
                 <constraint firstItem="N5N-ES-ly9" firstAttribute="top" secondItem="imO-we-6AL" secondAttribute="bottom" constant="75" id="0B9-XA-vzB"/>
@@ -153,6 +177,7 @@
                 <constraint firstItem="F8F-9n-IY2" firstAttribute="centerY" secondItem="Oui-1H-d7X" secondAttribute="centerY" id="SRT-fa-7Yj"/>
                 <constraint firstItem="xto-uh-MqU" firstAttribute="top" secondItem="c22-O7-iKe" secondAttribute="top" constant="12" id="ZME-ZH-r7n"/>
                 <constraint firstItem="V6k-7L-QzH" firstAttribute="leading" secondItem="J8E-Ac-fQf" secondAttribute="leading" id="aqX-CJ-DqZ"/>
+                <constraint firstItem="Oui-1H-d7X" firstAttribute="leading" secondItem="TVO-Cw-5nA" secondAttribute="trailing" constant="5" id="dEj-9b-tBs"/>
                 <constraint firstItem="Oui-1H-d7X" firstAttribute="top" secondItem="imO-we-6AL" secondAttribute="bottom" constant="8" id="gpi-hu-uU4"/>
                 <constraint firstItem="yuQ-8l-aex" firstAttribute="trailing" secondItem="Ysc-cV-M40" secondAttribute="trailing" id="q2C-ev-Uzg"/>
                 <constraint firstItem="imO-we-6AL" firstAttribute="top" secondItem="xto-uh-MqU" secondAttribute="bottom" constant="48" id="qLn-Tu-5Y0"/>
@@ -161,6 +186,7 @@
                 <constraint firstItem="N5N-ES-ly9" firstAttribute="leading" secondItem="imO-we-6AL" secondAttribute="leading" id="s45-F8-dvE"/>
                 <constraint firstItem="yuQ-8l-aex" firstAttribute="centerY" secondItem="Oui-1H-d7X" secondAttribute="centerY" id="tHh-Wk-c3F"/>
                 <constraint firstItem="6Mf-N1-uRG" firstAttribute="centerY" secondItem="V6k-7L-QzH" secondAttribute="centerY" id="tNw-BB-NRa"/>
+                <constraint firstItem="Oui-1H-d7X" firstAttribute="centerY" secondItem="TVO-Cw-5nA" secondAttribute="centerY" id="yAj-E7-ODl"/>
             </constraints>
             <point key="canvasLocation" x="139" y="154"/>
         </customView>
