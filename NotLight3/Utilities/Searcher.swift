@@ -7,6 +7,8 @@ protocol SearcherType {
     func setPreviousQueryString(_: String)
 }
 
+/// For syntax see https://developer.apple.com/library/archive/documentation/Carbon/Conceptual/SpotlightQuery/Concepts/QueryFormat.html
+/// But the syntax when using a _predicate_ as we do here is slightly different.
 final class Searcher: SearcherType {
     /// The query, held while we are performing it. This has two purposes: it keeps the query
     /// alive, and it maintains it in a place where multiple methods can access it, so we don't

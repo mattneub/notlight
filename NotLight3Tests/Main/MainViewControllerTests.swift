@@ -391,6 +391,13 @@ private struct MainViewControllerTests {
         #expect(processor.thingsReceived == [.finder])
     }
 
+    @Test("doDate: sends showDateAssistant")
+    func doDate() async {
+        subject.doDate(NSButton())
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.showDateAssistant])
+    }
+
     @Test("showSearchKeys: sends showSearchKeys")
     func showSearchKeys() async {
         subject.showSearchKeys(NSMenuItem())

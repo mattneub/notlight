@@ -28,4 +28,9 @@ final class MockRootCoordinator: RootCoordinatorType {
         methodsCalled.append(#function)
     }
 
+    func bringMainToFront() {
+        methodsCalled.append(#function)
+    }
+
+
 }

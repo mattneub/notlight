@@ -227,6 +227,12 @@ class MainViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    @IBAction func doDate(_ sender: NSButton) {
+        Task {
+            await processor?.receive(.showDateAssistant)
+        }
+    }
+
     /// nil-targeted from MyContainerView!
     @objc func folderTextFieldChanged(_ sender: NSTextField) {
         let urls = folderTextFields.compactMap { $0.objectValue as? URL }

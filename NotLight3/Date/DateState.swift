@@ -37,6 +37,14 @@ struct DateState: Equatable {
             "key":"$time.now",
         ],
         [
+            "name":"Minutes",
+            "key":"$time.now",
+        ],
+        [
+            "name":"Hours",
+            "key":"$time.now",
+        ],
+        [
             "name":"Days",
             "key":"$time.today",
         ],
@@ -59,6 +67,14 @@ struct DateState: Equatable {
         relativeContent[relativeIndex]["key"] ?? ""
     }
     var relativeQuantity = 1
+    var relativeQuantityAdjusted: Int {
+        let multiplier = switch relativeIndex {
+        case 1: 60 // seconds to minutes
+        case 2: 60*60 // seconds to hours
+        default: 1 // no adjustment
+        }
+        return relativeQuantity * multiplier
+    }
 
     let agoContent = [
         [

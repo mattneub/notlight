@@ -342,4 +342,12 @@ private struct MainProcessorTests {
         #expect(subject.state.keyPopupIndex == 0)
     }
 
+    @Test("dateChosen: sets the term to the incoming text, presents, call coordinator bring to front")
+    func dateChosen() async {
+        await subject.dateChosen("hooha")
+        #expect(subject.state.term == "hooha")
+        #expect(presenter.statesPresented == [subject.state])
+        #expect(coordinator.methodsCalled == ["bringMainToFront()"])
+    }
+
 }

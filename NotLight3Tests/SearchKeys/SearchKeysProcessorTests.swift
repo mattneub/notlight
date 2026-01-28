@@ -89,7 +89,7 @@ private struct SearchKeysProcessorTests {
     }
 }
 
-final class MockDelegate: SearchKeysDelegate {
+private final class MockDelegate: SearchKeysDelegate {
     var methodsCalled = [String]()
 
     func done() async {

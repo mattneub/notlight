@@ -38,6 +38,14 @@ private struct DateStateTests {
                 "key":"$time.now",
             ],
             [
+                "name":"Minutes",
+                "key":"$time.now",
+            ],
+            [
+                "name":"Hours",
+                "key":"$time.now",
+            ],
+            [
                 "name":"Days",
                 "key":"$time.today",
             ],
@@ -76,7 +84,7 @@ private struct DateStateTests {
     @Test("relativeKey is correctly calculated")
     func relativeKey() {
         var subject = DateState()
-        subject.relativeIndex = 1
+        subject.relativeIndex = 3
         #expect(subject.relativeKey == "$time.today")
     }
 
@@ -85,5 +93,19 @@ private struct DateStateTests {
         var subject = DateState()
         subject.agoIndex = 1
         #expect(subject.agoKey == "")
+    }
+
+    @Test("relativeQuantityAdjusted is calculated correctly")
+    func relativeQuantityAdjusted() {
+        var subject = DateState()
+        subject.relativeQuantity = 10
+        subject.relativeIndex = 0
+        #expect(subject.relativeQuantityAdjusted == 10)
+        subject.relativeIndex = 1
+        #expect(subject.relativeQuantityAdjusted == 600)
+        subject.relativeIndex = 2
+        #expect(subject.relativeQuantityAdjusted == 36000)
+        subject.relativeIndex = 3
+        #expect(subject.relativeQuantityAdjusted == 10) // ok that's enough
     }
 }

@@ -160,4 +160,10 @@ extension MainProcessor: SearchKeysDelegate {
     }
 }
 
-
+extension MainProcessor: DateDelegate {
+    func dateChosen(_ text: String) async {
+        state.term = text
+        await presenter?.present(state)
+        coordinator?.bringMainToFront()
+    }
+}

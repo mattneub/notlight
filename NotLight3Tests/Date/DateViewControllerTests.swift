@@ -57,13 +57,14 @@ private struct DateViewControllerTests {
         #expect(window.isResizable == false)
     }
 
-    @Test("present: configures the three popups")
+    @Test("present: configures the three popups, sets the date picker")
     func present() async {
         subject.loadViewIfNeeded()
-        await subject.present(.init())
+        await subject.present(.init(absoluteDate: .distantPast))
         #expect(subject.predefinedPopup.itemTitles == ["Now", "Today", "Yesterday", "This Week", "This Month", "This Year"])
-        #expect(subject.relativePopup.itemTitles == ["Seconds", "Days", "Weeks", "Months", "Years"])
+        #expect(subject.relativePopup.itemTitles == ["Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years"])
         #expect(subject.agoPopup.itemTitles == ["Ago", "From Now"])
+        #expect(subject.datePicker.dateValue == .distantPast)
     }
 
     @Test("doPredefined: sends predefinedPopup with the index")

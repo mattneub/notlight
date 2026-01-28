@@ -8,6 +8,7 @@
         <customObject id="-2" userLabel="File's Owner" customClass="DateViewController" customModule="NotLight3" customModuleProvider="target">
             <connections>
                 <outlet property="agoPopup" destination="yuQ-8l-aex" id="14Z-I3-6zp"/>
+                <outlet property="datePicker" destination="V6k-7L-QzH" id="jOS-Tm-X5f"/>
                 <outlet property="predefinedPopup" destination="J8E-Ac-fQf" id="Hdv-Hg-VAm"/>
                 <outlet property="relativePopup" destination="F8F-9n-IY2" id="hYB-KN-HnL"/>
                 <outlet property="relativeQuantityField" destination="Oui-1H-d7X" id="UHu-ee-fLb"/>

@@ -235,6 +235,19 @@ Label</string>
                         <action selector="doFinder:" target="-2" id="Vwu-lP-457"/>
                     </connections>
                 </button>
+                <button horizontalHuggingPriority="999" verticalHuggingPriority="750" horizontalCompressionResistancePriority="999" translatesAutoresizingMaskIntoConstraints="NO" id="xXE-RP-LkE">
+                    <rect key="frame" x="20" y="22" width="45" height="20"/>
+                    <buttonCell key="cell" type="push" title="Date" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="B3w-oj-dsp">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                    </buttonCell>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="20" id="Lvw-Os-w2G"/>
+                    </constraints>
+                    <connections>
+                        <action selector="doDate:" target="-2" id="sTZ-E8-jBB"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="8WQ-Yv-Abj" firstAttribute="leading" secondItem="Fmo-p1-b1H" secondAttribute="trailing" constant="12" symbolic="YES" id="2Xi-h5-qiy"/>
@@ -248,10 +261,12 @@ Label</string>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="trailing" secondItem="FIj-ed-s4j" secondAttribute="trailing" id="9kL-ZM-Iq1"/>
                 <constraint firstItem="QCS-M8-A8y" firstAttribute="top" secondItem="ugU-pF-GT8" secondAttribute="bottom" constant="6" id="AcK-4C-Jf8"/>
                 <constraint firstItem="HsY-UI-ynR" firstAttribute="top" secondItem="JVN-DG-v0s" secondAttribute="bottom" constant="10" id="DcB-as-8Bt"/>
+                <constraint firstItem="xXE-RP-LkE" firstAttribute="leading" secondItem="zSD-pS-aTF" secondAttribute="leading" id="Dfw-4q-2RU"/>
                 <constraint firstItem="y6J-dv-1OF" firstAttribute="centerY" secondItem="DTS-o5-xYT" secondAttribute="centerY" id="HE9-wF-4aG"/>
                 <constraint firstItem="Q2Z-l9-1Hh" firstAttribute="top" secondItem="8vV-U4-Dsf" secondAttribute="bottom" constant="8" id="HUm-2o-4eg"/>
                 <constraint firstItem="JVN-DG-v0s" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="IQ5-gc-nLw"/>
                 <constraint firstItem="DTS-o5-xYT" firstAttribute="leading" secondItem="y6J-dv-1OF" secondAttribute="trailing" constant="6" id="ImM-dl-eaf"/>
+                <constraint firstItem="Fmo-p1-b1H" firstAttribute="centerY" secondItem="xXE-RP-LkE" secondAttribute="centerY" id="Jwf-3w-vUX"/>
                 <constraint firstItem="FIj-ed-s4j" firstAttribute="top" secondItem="DTS-o5-xYT" secondAttribute="bottom" constant="12" id="L9h-8r-0Jz"/>
                 <constraint firstAttribute="trailing" secondItem="vs4-v2-Yso" secondAttribute="trailing" constant="19" id="NRu-ZP-DSQ"/>
                 <constraint firstItem="mqW-rA-31S" firstAttribute="top" secondItem="FIj-ed-s4j" secondAttribute="bottom" constant="10" id="Nfp-Al-3aZ"/>

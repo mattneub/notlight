@@ -75,4 +75,19 @@ private struct RootCoordinatorTests {
         subject.dismiss()
         #expect(mainViewController.presentedViewControllers?.count == 0)
     }
+
+    @Test("bringMainToFront: brings the main window key and front")
+    func bringMainToFront() async {
+        let window = MyWindow()
+        subject.mainWindow = window
+        subject.bringMainToFront()
+        #expect(window.methodsCalled == ["makeKeyAndOrderFront(_:)"])
+    }
+}
+
+private final class MyWindow: NSWindow {
+    var methodsCalled = [String]()
+    override func makeKeyAndOrderFront(_ sender: Any?) {
+        methodsCalled.append(#function)
+    }
 }

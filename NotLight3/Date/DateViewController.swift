@@ -32,6 +32,8 @@ final class DateViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    @IBOutlet weak var datePicker: NSDatePicker!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         Task {
@@ -64,6 +66,7 @@ final class DateViewController: NSViewController, ReceiverPresenter {
                 agoPopup.addItem(withTitle: item["name"] ?? "")
             }
         }
+        datePicker.dateValue = state.absoluteDate
     }
 
     // popup menu choices

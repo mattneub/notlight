@@ -6,6 +6,7 @@ protocol RootCoordinatorType: AnyObject {
     func showSearchKeys()
     func showDateAssistant()
     func dismiss()
+    func bringMainToFront()
 }
 
 final class RootCoordinator: RootCoordinatorType {
@@ -75,6 +76,7 @@ final class RootCoordinator: RootCoordinatorType {
         processor.coordinator = self
         let viewController = DateViewController()
         processor.presenter = viewController
+        processor.delegate = mainProcessor as? any DateDelegate
         viewController.processor = processor
         // deliberate "load view and delay" strategy so that things don't visibly jump around
         viewController.loadViewIfNeeded()
@@ -99,5 +101,9 @@ final class RootCoordinator: RootCoordinatorType {
         if let presented = mainViewController?.presentedViewControllers?.first {
             mainViewController?.dismiss(presented)
         }
+    }
+
+    func bringMainToFront() {
+        mainWindow?.makeKeyAndOrderFront(nil)
     }
 }
