@@ -4,6 +4,7 @@ import AppKit
 protocol WorkspaceType {
     func activateFileViewerSelecting(_: [URL])
     func icon(forFile: String) -> NSImage
+    func open(_: URL) -> Bool
 }
 
 extension NSWorkspace: WorkspaceType {}

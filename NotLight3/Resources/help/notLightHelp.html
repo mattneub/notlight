@@ -1,0 +1,307 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>NotLight Help</title>
+</head>
+<body style="font-family:Georgia;">
+<img src="notlight.tiff" alt="" align="right">
+<h1>NotLight Help</h1>
+
+<p>NotLight is a simple Spotlight GUI front end. In order to clarify what that means, perhaps I should explain what Spotlight is.</p>
+
+<h2>What Spotlight is</h2>
+
+<p>On your computer, the system maintains an invisible index, containing information about the files on your computer. This is the Spotlight “back end”. It isn’t perfect: in particular, it ignores certain kinds of file and it ignores files in certain locations, and there is no good way to change this. Plus, if you introduce a volume Spotlight has never seen before, there’s no index, so Spotlight is useless. Nevertheless, it’s a fairly cool system. The index is constantly being updated, and it includes a lot of interesting information about each file, such as its name, its type, its content (if Spotlight knows how to “read” the file), its comments, and so on.
+</p>
+
+<p>The reason this index is useful is that you can search it. And because it’s an index, maintained in some readily searchable internal format, searches on some types of information are very fast.
+</p>
+
+<p>The Spotlight search engine obeys commands called “queries”. These queries are constructed as pure text, in a well-defined syntax, and can be quite powerful. Which brings us to the problem — namely, that Apple does not give you a good way to form queries explicitly. The GUI front ends that Apple does provide actually take the power away from you, the user; you enter some words, but a word is not a query. Instead, the system forms the query for you, so you don’t really know, and you can’t really control, exactly what query you are forming. The result is often that your search doesn’t succeed and you don’t understand why.
+</p>
+
+<p>Also, the GUIs themselves are poor. A Finder search isn’t bad — in recent years, it has become quite decent, really — but what you get when you click the “magnifying glass” icon in the menu bar, or press Command-Space, is a window unlike any other Mac window. It can’t be widened, it isn’t clear what to do, and the number of matches displayed is limited. Most important, you don’t get any access to the numerous search configuration parameters.
+</p>
+
+<div align="center">
+<img src="spotlight.jpg" alt="">
+</div>
+
+<p>Behind the scenes, however, a Spotlight query is a very powerful thing, with a lot of great options:
+</p>
+<ul>
+<li>
+<p>
+A Spotlight query can be literal or it can use a wildcard (*) to indicate “any number of characters”.
+</p>
+</li>
+<li>
+<p>
+A Spotlight query can be whole-match or word-based. A whole-match is successful only if the query matches the entire key being matched. But a word-based match is successful if the query matches any word of the key.
+</p>
+</li>
+<li>
+<p>
+A Spotlight query can be sensitive or insensitive to case, and to the presence of diacritics.
+</p>
+</li>
+<li>
+<p>
+A Spotlight query can be a boolean combination of search terms. Two terms can be joined by AND or by OR, and a term can be negated with NOT.
+</p>
+</li>
+</ul>
+
+<!-- If you want to see what Spotlight searches really look like behind the scenes, in the real Spotlight query language, examine <a href="http://developer.apple.com/documentation/Carbon/Conceptual/SpotlightQuery/Concepts/QueryFormat.html">this Apple page</a>. -->
+
+<p>So, for example, you are allowed to present Spotlight with a search such as this:</p>
+
+<pre>((kMDItemAuthors == "Kevin"wc || kMDItemAuthors = "Steve"wc) &amp;&amp;
+ (kMDItemContentType == "audio"wc || kMDItemContentType = "video"wc)) &amp;&amp;
+ (kMDItemFSContentChangeDate > $time.this_week)</pre>
+ 
+<p>That expression means: An audio or video file, whose authors include Kevin or Steve, and that was modified within the past week. Wonderful — except that you can’t form and submit that search using Apple's own built-in GUI front ends! The only way you could do it would be to use <tt>mdfind</tt> in the Terminal.</p>
+
+<p>And that brings me to the purpose of NotLight. Between Apple’s Spotlight GUI front ends and the Terminal, there needs to be a simple GUI front end that helps the user form real Spotlight searches. And that’s what NotLight is intended to be.</p>
+
+<h2>NotLight</h2>
+
+<p>NotLight helps you form and execute real Spotlight queries. Its interface is deliberately simple, and is designed to inspire confidence and ease of use; for example, only a few search keys are implemented by default, and you can form only one search term at a time. Nevertheless, NotLight’s behaviour out of the box should be enough to allow most users <i>immediately</i> to form the vast majority of searches they’re interested in.</p>
+
+<p>Furthermore, NotLight has “power user” features that allow you to form <em>any</em> Spotlight query. Searches can be combined using Boolean operators. Search keys can be added to NotLight’s repertoire. <!-- Searches can be saved and reused. --> And, if you really want to, you can enter and submit your own query “by hand,” just as you would with <tt>mdfind</tt> in the Terminal.</p>
+
+<h2>Constructing a search term</h2>
+<p>To <i>construct a search term</i>, you do three things:</p>
+<ol>
+<li>
+<p>
+<b>Choose a search key.</b> The search key is the feature of the file that you want to match. By default, NotLight gives you a choice of eight keys: Display Name, Full Name, Content, Finder Comment, Extension, Type Code, Creator Code, and Modified Date. When you choose a key, the text in the middle of the window changes to describe the nature of that search key.
+</p>
+<div align="center">
+<img src="chooseKey.png" alt="" >
+</div>
+</li>
+
+<li>
+<p>
+<b>Type a search string.</b> This is the string that will be matched against the key. For example, if you type <tt>apple</tt> as your search string, and if you have chosen Display Name as your key, Spotlight will find files named <tt>apple</tt>. However, for many kinds of search you can also use a wildcard (*). So if your search string was <tt>apple*</tt>, you would also find files named <tt>applesauce</tt>, and if your search string was <tt>*apple*</tt>, you would also find files named <tt>dappled</tt>. 
+</p>
+
+<div align="center">
+<img src="typeString.png" alt="" >
+</div>
+
+</li>
+<li>
+<p>
+<b>Specify further options.</b> These options are the checkboxes beneath the search string, and they can make a big difference to the results. For example, if you type <tt>apple</tt> as your search string, and if you have chosen Display Name as your key, you won’t match a file named <tt>Apple</tt> — but you will if you check Case-insensitive. Even then you won’t match a file named <tt>Life In The Big Apple</tt> — but you will if you check Word-based.
+</p>
+<div align="center">
+<img src="checkboxes.png" alt="" >
+</div>
+</li>
+</ol>
+
+<p>I haven’t talked about the <tt>==</tt> popup menu in the middle of the window. This menu changes the search term operator from <tt>==</tt> to <tt>!=</tt> [“not”], <tt>&gt;=</tt> [“greater than or equal to”], or <tt>&lt;=</tt> [“less than or equal to”]. Don’t change this popup menu unless you know what you’re doing. Using the “not” operator can cause you to end up with a lot of results, and NotLight isn’t really prepared to handle that; plus, there are many known bugs in Spotlight’s handling of this operator. The “less than” and “greater than” operators are meaningful only for numeric and date searches; I discuss date searches later on.</p>
+
+<!--
+<blockquote>
+<b>Note:</b> Whenever you choose a search key, NotLight restores the “further options” that you used the last time you chose that search key. (The “further options” here are the Word-based, Case-insensitive, and Diacritic-insensitive checkboxes, as well as the <tt>==</tt> popup menu, and the Auto-Contains Mode checkbox, which is discussed in the next section.) This is helpful because certain “further options” are useful for some search keys but not for others.
+</blockquote>
+-->
+
+<h2>Wildcard shortcuts</h2>
+
+<p>Real-world tests indicate that some users have trouble with the notion that in order to implement a “contains” search, you have to insert an asterisk at the start and end of the search term. Apple’s Spotlight interfaces obviate the necessity for this by performing the insertion for you — without telling you. That is one of the things I <i>don’t</i> like about Apple’s Spotlight interfaces; I want to know, and to be in charge of, exactly what search I’m performing. Nevertheless, “contains” searches are a common need and are what people are accustomed to from Apple’s Spotlight interfaces, so I’ve added two features to NotLight to make doing a “contains” search easier.
+</p>
+
+<div align="center"><img src="containsFeatures2.png" alt=""></div>
+
+<ul>
+<li>
+<p>
+The <b>Insert “Contains” Wildcards</b> button does exactly that: it types an asterisk at the start and end of the search term for you. <!-- Using the keyboard shortcut (Shift-Command-C) is even faster. -->
+</p>
+</li>
+<li>
+<p>
+The <b>Auto-Contains Mode</b> checkbox goes even further: it inserts asterisks at the start and end of the search term <i>behind the scenes</i>. In other words, if you’re in Auto-Contains mode, then (for example) you might enter <tt>apple</tt> as your search term, and you will see <tt>apple</tt> as your search term, but in actual fact the search term will be <tt>*apple*</tt>. I don’t like this feature, and I don’t recommend using it. It requires that NotLight perform transformations in secret; those transformations are risky, and the whole purpose of NotLight is to avoid secrets. Nevertheless I’ve got users who rely on it, so there it is.
+</p>
+</li>
+</ul>
+
+<h2>Performing the search</h2>
+
+<p>To <i>perform the search</i> consisting of the term described in the window, click the Search button, <!-- or use the keyboard shortcut, Shift-Command-S, --> or press Return within the search string field. The search is performed. The progress of the search is shown at the top of the window, first as Spotlight gathers the results, and then as NotLight prepares those results for display; during this time, you can click Stop to cancel the search if things are taking too long or too many matches are resulting.</p>
+
+<div align="center">
+<img src="prog.png" alt="" >
+</div>
+
+<p>When the results are ready, they appear in a dialog.
+</p>
+
+<div align="center">
+<img src="results3.png" alt="" >
+</div>
+
+<p>The actual Spotlight query is displayed at the top of the dialog. You also see how many matches there were. You can sort on a column. You can resize the dialog. You can select a match to see its path at the bottom of the dialog.
+</p>
+
+<p>By default, columns for the display name and path are shown. Optionally, you can display columns for file icon, modification date, and file size. To set whether or not to display these optional columns, choose from the Option menu. (You cannot do this when the results dialog is showing; do it before performing a search.) You can choose Option &gt; Show File Icons, Option &gt; Show Mod Dates, and Option &gt; Show File Sizes.
+</p>
+
+<blockquote>
+<p>WARNING: The display of additional data requires extra time for the data to be gathered. You will notice this as an increased delay, both during the search and between the completion of the search and the display of the dialog. If this delay is bothersome, don’t ask for the additional data to be displayed (uncheck the three Option menu items).</p>
+<p>File sizes are not reported for folders — including bundles and packages, which includes most Mac OS X–native applications. That’s because this information is not reported by Spotlight. Remember, NotLight is just a Spotlight front end; if Spotlight doesn’t provide information, NotLight can’t provide it either.</p>
+</blockquote>
+
+<p>To <i>reveal a file <!-- or files --> in the Finder</i>, double-click the row in the dialog.</p> <!-- , or select the row(s) and then press Return or choose Option &gt; Reveal in Finder (Shift-Command-R) -->
+
+<!--
+<blockquote><small>
+If Cocoatech’s <a href="http://www.cocoatech.com/pf4/">Path Finder</a> is running, it will be used instead of the Finder. Path Finder users, take note: Path Finder has a Reveal preference that governs the behavior of “Reveal in Path Finder”, which is exactly what we’re doing here. If you have this preference set to “Reveal in existing window,” NotLight will be barred from revealing multiple files. <i>You have been warned.</i>
+</small>
+</blockquote>
+-->
+
+<!--
+<p>You can also select rows and choose Edit &gt; Copy to <i>copy a list of pathnames</i> to the clipboard (hold the Option key to copy a list of filenames). </p>
+-->
+
+<p>To close the dialog, click the Close button.
+<!-- or press Esc or Command-Period. -->
+<!--; alternatively, hold the Option key when you double-click a match or press Return, to reveal the selected file(s) in the Finder <i>and</i> close the dialog at the same time.
+-->
+</p>
+
+<h2>Complex Boolean searches</h2>
+
+<p>There are two ways to form Boolean searches — the easy way and the power-user way. I’ll describe the easy way first.
+</p>
+
+<p>In the <b>easy way</b>, you perform a search and then modify it by appending a further search term to it. For example, look at the previous search (above). We found 9940 items. Suppose that’s too many. We want to restrict the search to get fewer matches. So we close the dialog, and we enter another search term. Let’s say we want only those matches, among the previous set of matches, whose name also contains the word <tt>font</tt>.
+</p>
+
+<div align="center">
+<img src="searchWithin.png" alt="" >
+</div>
+
+<p>We enter the search criteria, but here’s the important thing. We <i>don’t</i> click the Search button. We want to search <i>within</i> the existing set of matches, so we click Search Within. The result is that we find files whose names contain <tt>apple</tt> and also contain <tt>font</tt>. That’s a much smaller set of matches. Notice that the result dialog shows what has really happened: we’ve done an AND search (<tt>&amp;&amp;</tt>) combining both terms.</p>
+
+<div align="center">
+<img src="results4.png" alt="" >
+</div>
+
+<p>Similarly, if you wanted to expand from the base of your previous search results, you’d form a term and click Search Also. So you’d be finding the previous results and also the matches for the new search term. Behind the scenes, what’s being formed for you is an OR search.</p>
+
+<p>The way this feature works is simple. Every time you do a search, the query is remembered, just in case you want to use it again. If you form a term and click Search, the previous search is thrown away; you’re doing a whole new search. But if you form a term and click Search Within or Search Also, the new term is combined with the previous search using an AND or an OR operator.</p>
+
+<!--
+<p>If you want to see the search that is currently being remembered after your most recent search, you can. Click the “Mary Poppins” button at the lower left of the window. A popover appears, showing the current search.</p>
+
+<div align="center">
+<img src="previousSearch.png" alt="" >
+</div>
+-->
+
+<p>That brings me to the <b>power-user way</b> for forming complex searches. The easy mode of forming a complex search simply iterates one search term at a time: you do a search, then restrict it with Search Within or expand upon it with Search Also. But let’s say you know right from the start that you want to form an AND search. Then you could do this: Create the first term, and click Search, but as you do, <i>hold down the Option key</i>. This means: “Don’t actually do the search! Just create the search term and keep it as the current search, as if you had done the search.” Then you would create the second term. At this point you could click Search Within and do the search — or, you could click Search Within while holding the Option key, causing the new term to be ANDed to the current search, still without actually doing the search.</p>
+
+<!--
+<p>At any time, you can inspect the current search that's being assembled, by clicking the “Mary Poppins” button to see the popover. If you're satisfied that this is the search you want, you can perform it. You don’t even need to dismiss the popover first; you can do the search by clicking the Do This Search button in the popover.</p>
+
+<p>
+The <b>super power-user way</b> to form a search is to type it directly. The field in the “Mary Poppins” popover that displays the current search can be made editable — just double-click it. Now, using <tt>mdfind</tt> query syntax, type a query or edit an existing query, and then perform it by clicking the Do This Search button. This way, you can construct really complex Boolean search requests involving parentheses and so forth.
+</p>
+
+<p>(Wondering about the other two buttons in the “Mary Poppins” popover? Don't worry, I'll come to them in a bit.)</p>
+
+<blockquote><p>
+WARNING: Unfortunately, <tt>mdfind</tt> query syntax is very poorly documented by Apple. There’s a somewhat useful discussion <a href="http://developer.apple.com/documentation/Carbon/Conceptual/SpotlightQuery/Concepts/QueryFormat.html">here</a>, but what it documents is not the same syntax — it’s NSPredicate syntax, which is not what NotLight (or <tt>mdfind</tt>) uses. There’s also a document <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Predicates/Articles/pSpotlightComparison.html">describing the differences</a> between NSPredicate and MDQuery syntax, and this can be used to help deduce MDQuery syntax. The <tt>mdfind</tt> man page is also a little help, but not much. If you do a Google search, you can sometimes find useful collections of examples like <a href="http://osxnotes.net/spotlight.html">this one</a>.
+</p></blockquote>
+-->
+
+<h2>Date searches</h2>
+
+<p>NotLight includes by default two commonly used date search keys, Modified Date and Created Date. Date values have to be entered according to special Spotlight query rules, so to help you with this, NotLight includes the Date Assistant. Choose Option &gt; Date Assistant to see it, or click the Date button in the main NotLight window.
+</p>
+
+<div align="center">
+<img src="dateAssistant2.png" alt="" >
+</div>
+
+<p>
+There are three ways to describe a date in Spotlight query syntax, so the Date Assistant has three sections. When you have formed the date you’re after, click the Use This button in the appropriate section, and the date will be entered into NotLight’s main window. All Spotlight dates are exact date-times (not mere days of the calendar), so you will surely <i>never</i> want to leave the operator popup set to <tt>==</tt>, since the chances of a file date matching some exact date and time are vanishingly small. So, for example, to find all files modified in the past week, change the operator popup to <tt>&gt;=</tt> (meaning that the modification date is more recent than the beginning of that one-week period).
+</p>
+
+<div align="center">
+<img src="dateSearch.png" alt="" >
+</div>
+
+<!--
+<p>
+Date searches are also natural candidates for complex Boolean searches, because you might want to find files whose date lies within a restricted range (greater than one date and less than another).</p>
+-->
+
+<h2>Search folders</h2>
+
+<p>Another feature of Spotlight searches is that you can <i>restrict the search</i> to look inside only a certain folder or folders. To use this feature, navigate to a folder in the Finder and drag it into the area that says “Drop a folder here to search in it.” You can drag an additional folder, or click the X button to remove a folder criterion, to form the set of folders you are interested in searching. </p>
+
+<div align="center">
+<img src="folderRestriction.png" alt="" >
+</div>
+
+<p>Alternatively, if the folder you want to search in is already open in the Finder as the frontmost Finder window, click the Finder button in the NotLight window <!-- (or press Shift-Command-F) --> to copy the path of the frontmost Finder window into NotLight.</p>
+
+<!--
+<blockquote><small>
+These features also work with Cocoatech’s <a href="http://www.cocoatech.com/pf4/">Path Finder</a>. Drag-and-drop from Path Finder into NotLight works, and if Path Finder is running, the Finder button in the NotLight window will fetch the frontmost folder from Path Finder instead of from the Finder.
+</small>
+</blockquote>
+-->
+
+<p>If you use the folder restriction feature, just remember that the way Spotlight works is that the restriction applies to the <i>entire</i> search, not (like everything else in the window) just to the term you are forming.</p>
+
+<!--
+<h2>Saving and loading searches</h2>
+
+<p>You can <em>save a search</em> that you are likely to use frequently, so that you can load it again later. To do so, summon the “Mary Poppins” popover and click the Save This Search button (Command-S). What is saved is what’s displayed as the current search right now, along with any folder restrictions. (In other words, the checkboxes and the search string field in the main window are irrelevant, because you have not actually formed a search with that information until you’ve either performed the search or used the Option key to move that information into the current search.)</p>
+
+<p>The saved search is very simple XML, which is cool because it means you can edit the search with any text editor.</p>
+
+<p>To <em>load a saved search</em>, summon the “Mary Poppins” popover and click the Load a Search button. The search becomes the current search, but it is not performed unless you now also click Do This Search.</p>
+-->
+
+<h2>Customizing the search key popup</h2>
+
+<p>
+If you find yourself wishing to search on a search key other than the keys provided by default in NotLight’s popup menu, you can <em>append additional search keys</em> to the menu. For example, let’s say you often do a search based on a document’s author; it would be convenient if NotLight’s popup menu had a Document’s Author item, so you could use NotLight to form such a search easily.
+</p>
+
+<p>To append search keys to the popup menu, choose Option &gt; Search Keys... to summon the dialog listing all search keys you’ve added to the popup menu. (NotLight’s default search keys are not listed.) To add a search key, click the Add button. In the first column, enter the text you want see in the popup menu. In the second column, enter the MDQuery search key. Optionally, you can add text to the Notes field; this text will appear in the middle of NotLight’s window when you choose this item from the popup menu. <!-- Search keys can be reordered by dragging and dropping them within the list. --> When you’re finished editing your appended search keys, click the Done button.
+</p>
+
+<div align="center">
+<img src="additionalAttributes2.png" alt="" >
+</div>
+
+<p>
+It is crucial to know and to enter correctly in the second column the MDQuery search key you want to use, so that NotLight will form the query correctly. (<b>Terminology warning:</b> Apple calls these search keys “metadata attributes”.) Spotlight’s default search keys are listed <a href="https://developer.apple.com/library/archive/documentation/CoreServices/Reference/MetadataAttributesRef/Reference/CommonAttrs.html">on this page</a>. Or, use the <tt>mdls</tt> command in the Terminal to see a list of all search keys attached to a given file. Or, say <tt>mdimport -A</tt> or <tt>mdimport -X</tt> in the Terminal to see a list of all search keys currently being indexed.
+</p>
+
+<h2>Acknowledgments</h2>
+<p>
+Special thanks to the users and beta testers who made suggestions and who experimented carefully and thoroughly. The honor roll:
+</p>
+<ul>
+	<li>George Machen</li>
+	<li>Bill Muench</li>
+</ul>
+<div align="right">
+<p>Matt Neuburg<br><a href="mailto:matt@tidbits.com">matt@tidbits.com</a><br><a href="https://www.apeth.net/matt/default.html">https://www.apeth.net/matt/default.html</a></p>
+</div>
+</body>
+</html>

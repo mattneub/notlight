@@ -46,6 +46,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
     }
+
+    /// Nil-targeted from menu item.
+    @IBAction func doShowHelp(_ sender: Any) {
+        if let url = services.bundle.url(forResource: "notLightHelp", withExtension: "html", subdirectory: "help") {
+            _ = services.workspace.open(url)
+        }
+    }
 }
 
 /// "Manual binding" from user defaults to menu checkmark state.

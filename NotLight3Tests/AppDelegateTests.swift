@@ -40,6 +40,23 @@ private struct AppDelegateTests {
         #expect(subject.applicationShouldTerminateAfterLastWindowClosed(NSApplication.shared) == true)
     }
 
+    @Test("doShowHelp: calls bundle for URL and workspace to open it")
+    func doShowHelp() {
+        let workspace = MockWorkspace()
+        services.workspace = workspace
+        let bundle = MockBundle()
+        services.bundle = bundle
+        bundle.urlToReturn = URL(string: "https://example.com")!
+        let subject = AppDelegate()
+        subject.doShowHelp(self)
+        #expect(bundle.methodsCalled == ["url(forResource:withExtension:subdirectory:)"])
+        #expect(bundle.name == "notLightHelp")
+        #expect(bundle.ext == "html")
+        #expect(bundle.subdirectory == "help")
+        #expect(workspace.methodsCalled == ["open(_:)"])
+        #expect(workspace.urlToOpen == URL(string: "https://example.com")!)
+    }
+
     @Test("menuWillOpen: sets state of first three Option menu items of menu")
     func menuWillOpen() {
         let menu = NSMenu(title: "Option")

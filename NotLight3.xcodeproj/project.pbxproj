@@ -21,12 +21,73 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		3FFEFDE92F2E535600DF5AE9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = help;
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		3F1EE2DC2F1415CE002D28AA /* NotLight3Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotLight3Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F23F7282F21AEF900FF0B48 /* NotLight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = NotLight.entitlements; path = NotLight3/NotLight.entitlements; sourceTree = "<group>"; };
 		3F366E722F12F5CE0010786B /* NotLight3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotLight3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F9501AA2F14674600D83369 /* NotLight3.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = NotLight3.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3FFEFDE82F2E527A00DF5AE9 /* Exceptions for "NotLight3" folder in "NotLight3" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/help/additionalAttributes2.png,
+				Resources/help/checkboxes.png,
+				Resources/help/chooseKey.png,
+				Resources/help/containsFeatures2.png,
+				Resources/help/dateAssistant2.png,
+				Resources/help/dateSearch.png,
+				Resources/help/folderRestriction.png,
+				Resources/help/notlight.tiff,
+				Resources/help/notLightHelp.html,
+				Resources/help/previousSearch.png,
+				Resources/help/prog.png,
+				Resources/help/results3.png,
+				Resources/help/spotlightWindow2.png,
+				Resources/help/typeString.png,
+			);
+			target = 3F366E712F12F5CE0010786B /* NotLight3 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		3FFEFDFA2F2E53EE00DF5AE9 /* Exceptions for "NotLight3" folder in "Copy Files" phase from "NotLight3" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 3FFEFDE92F2E535600DF5AE9 /* CopyFiles */;
+			membershipExceptions = (
+				Resources/help/additionalAttributes2.png,
+				Resources/help/checkboxes.png,
+				Resources/help/chooseKey.png,
+				Resources/help/containsFeatures2.png,
+				Resources/help/dateAssistant2.png,
+				Resources/help/dateSearch.png,
+				Resources/help/folderRestriction.png,
+				Resources/help/notlight.tiff,
+				Resources/help/notLightHelp.html,
+				Resources/help/previousSearch.png,
+				Resources/help/prog.png,
+				Resources/help/results3.png,
+				Resources/help/results4.png,
+				Resources/help/searchWithin.png,
+				Resources/help/spotlight.jpg,
+				Resources/help/spotlightWindow2.png,
+				Resources/help/typeString.png,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3F1EE2DD2F1415CE002D28AA /* NotLight3Tests */ = {
@@ -36,6 +97,10 @@
 		};
 		3F366E742F12F5CE0010786B /* NotLight3 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3FFEFDE82F2E527A00DF5AE9 /* Exceptions for "NotLight3" folder in "NotLight3" target */,
+				3FFEFDFA2F2E53EE00DF5AE9 /* Exceptions for "NotLight3" folder in "Copy Files" phase from "NotLight3" target */,
+			);
 			path = NotLight3;
 			sourceTree = "<group>";
 		};
@@ -116,6 +181,7 @@
 				3F366E6E2F12F5CE0010786B /* Sources */,
 				3F366E6F2F12F5CE0010786B /* Frameworks */,
 				3F366E702F12F5CE0010786B /* Resources */,
+				3FFEFDE92F2E535600DF5AE9 /* CopyFiles */,
 			);
 			buildRules = (
 			);
