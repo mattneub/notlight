@@ -1,3 +1,5 @@
+import UniformTypeIdentifiers
+
 protocol QueryStringBuilderType {
     func makeQuery(
         term: String,
@@ -18,6 +20,16 @@ final class QueryStringBuilder: QueryStringBuilderType {
         type: String,
         operator: String
     ) -> String {
+        var term = term
+        // special case translations
+        if type == "kMDItemFSCreatorCode" || type == "kMDItemFSTypeCode" {
+            // https://stackoverflow.com/a/31320949/341994
+            term = String(NSHFSTypeCodeFromFileType("'\(term)'"))
+        } else if type == "kMDItemContentType" {
+            if let uttype = UTType(filenameExtension: term) {
+                term = uttype.identifier
+            }
+        }
         var queryString = "\(type) \(`operator`) \"\(term)\""
         // add modifiers; NB! no space before modifiers!!!!!
         if caseInsensitive {
@@ -32,28 +44,3 @@ final class QueryStringBuilder: QueryStringBuilderType {
         return queryString
     }
 }
-
-// TODO: translate content type, type code, creator code
-/*
- case "kMDItemContentType" :
- let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
- self.term as CFString, nil)
- if let uti = uti {
- let utiString = uti.takeRetainedValue() as String
- if !(utiString.hasPrefix("dyn.")) { // "dyn." means LS had to make up something
- translatedTerm = utiString // got it
- break
- }
- }
- // if we get here, we tried and failed to convert to UTI
- let err = NSError(domain: "NotLight", code: 0, userInfo: [
- NSLocalizedDescriptionKey : "Invalid Extension",
- NSLocalizedRecoverySuggestionErrorKey : "Could not resolve extension to UTI."
- ])
- NSApp.presentError(err)
- return
- case "kMDItemFSTypeCode", "kMDItemFSCreatorCode":
- let n = NSNumber.from_fourcc(self.term) // extension, see AppDelegate
- translatedTerm = n.stringValue
-
- */

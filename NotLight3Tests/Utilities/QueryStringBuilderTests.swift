@@ -82,5 +82,42 @@ private struct QueryStringBuilderTests {
         #expect(result == "kMDItemDisplayName == \"testing\"cdw")
     }
 
+    @Test("makeQuery: if type is kMDItemFSCreatorCode, translates into number")
+    func makeQueryCreatorCode() {
+        let result = subject.makeQuery(
+            term: "MSWD",
+            caseInsensitive: false,
+            diacriticInsensitive: false,
+            wordBased: false,
+            type: "kMDItemFSCreatorCode",
+            operator: "=="
+        )
+        #expect(result == "kMDItemFSCreatorCode == \"1297307460\"")
+    }
 
+    @Test("makeQuery: if type is kMDItemFSTypeCode, translates into number")
+    func makeQueryTypeCode() {
+        let result = subject.makeQuery(
+            term: "W8BN",
+            caseInsensitive: false,
+            diacriticInsensitive: false,
+            wordBased: false,
+            type: "kMDItemFSTypeCode",
+            operator: "=="
+        )
+        #expect(result == "kMDItemFSTypeCode == \"1463304782\"")
+    }
+
+    @Test("makeQuery: if type is kMDItemContentType, translates extension into UTType identifier")
+    func makeQueryExtension() {
+        let result = subject.makeQuery(
+            term: "doc",
+            caseInsensitive: false,
+            diacriticInsensitive: false,
+            wordBased: false,
+            type: "kMDItemContentType",
+            operator: "=="
+        )
+        #expect(result == "kMDItemContentType == \"com.microsoft.word.doc\"")
+    }
 }

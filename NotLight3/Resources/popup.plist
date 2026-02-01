@@ -12,7 +12,7 @@
 	</dict>
 	<dict>
 		<key>blurb</key>
-		<string>The Full Name is opposed to the Display Name which is localized and may omit the extension. Full Name searches are automatically case-insensitive and much slower than Display Name (probably HFS+ and not indexed by Spotlight).</string>
+		<string>The Full Name is opposed to the Display Name which is localized and may omit the extension. I do not know when this might be preferable to the Display Name, but I include it just in case.</string>
 		<key>key</key>
 		<string>kMDItemFSName</string>
 		<key>title</key>
@@ -20,7 +20,7 @@
 	</dict>
 	<dict>
 		<key>blurb</key>
-		<string>Content searches are apparently case- and diacritic-insensitive by default, and they are automatically word-based, so the checkboxes are effectively ignored. You can use an asterisk (*) as a wild card.</string>
+		<string>Content searches look for text inside a document (if this is a document type that Spotlight understands). You will probably want to make your search word-based and case-insensistive. You can use an asterisk (*) as a wild card.</string>
 		<key>key</key>
 		<string>kMDItemTextContent</string>
 		<key>title</key>
@@ -42,30 +42,38 @@
 		<key>title</key>
 		<string>Extension</string>
 	</dict>
-    <dict>
-        <key>blurb</key>
-        <string>The type code is a four-character code, from the pre-Mac OS X days. The four-character code that you provide will be translated into a number (an OSType).</string>
-        <key>key</key>
-        <string>kMDItemFSTypeCode</string>
-        <key>title</key>
-        <string>Type Code</string>
-    </dict>
-    <dict>
-        <key>blurb</key>
-        <string>The creator code is a four-character code, from the pre-Mac OS X days. The four-character code that you provide will be translated into a number (an OSType).</string>
-        <key>key</key>
-        <string>kMDItemFSCreatorCode</string>
-        <key>title</key>
-        <string>Creator Code</string>
-    </dict>
-    <dict>
-        <key>blurb</key>
-        <string>Dates must be entered using special &quot;$time&quot; notation or as seconds since January, 2001; use the Date Assistant window to help. Dates are exact date-times, so you will probably want an inexact operator (e.g. &gt;=).</string>
-        <key>key</key>
-        <string>kMDItemFSContentChangeDate</string>
-        <key>title</key>
-        <string>Modified Date</string>
-    </dict>
+	<dict>
+		<key>blurb</key>
+		<string>Textual description of the kind of item; for example, &quot;Folder&quot; will find folders. Wildcard and word-based searches work, and are advisable, as you might not know the full name. For example, &quot;*Word*&quot; will find Microsoft Word Document files.</string>
+		<key>key</key>
+		<string>kMDItemKind</string>
+		<key>title</key>
+		<string>Kind</string>
+	</dict>
+	<dict>
+		<key>blurb</key>
+		<string>The type code is a four-character code, from before Mac OS X, such as &apos;W8BN&apos; for Word docs. The four-character code that you provide will be translated into a number (an OSType).</string>
+		<key>key</key>
+		<string>kMDItemFSTypeCode</string>
+		<key>title</key>
+		<string>Type Code</string>
+	</dict>
+	<dict>
+		<key>blurb</key>
+		<string>The creator code is a four-character code, from before Mac OS X, such as &apos;MSWD&apos; for Microsoft Word. The four-character code that you provide will be translated into a number (an OSType).</string>
+		<key>key</key>
+		<string>kMDItemFSCreatorCode</string>
+		<key>title</key>
+		<string>Creator Code</string>
+	</dict>
+	<dict>
+		<key>blurb</key>
+		<string>Dates must be entered using special &quot;$time&quot; notation or as seconds since January, 2001; use the Date Assistant window to help. Dates are exact date-times, so you will probably want an inexact operator (e.g. &gt;=).</string>
+		<key>key</key>
+		<string>kMDItemFSContentChangeDate</string>
+		<key>title</key>
+		<string>Modified Date</string>
+	</dict>
 	<dict>
 		<key>blurb</key>
 		<string>Dates must be entered using special &quot;$time&quot; notation or as seconds since January, 2001; use the Date Assistant window to help. Dates are exact date-times, so you will probably want an inexact operator (e.g. &gt;=).</string>
