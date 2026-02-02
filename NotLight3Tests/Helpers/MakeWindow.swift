@@ -9,7 +9,7 @@ func makeWindow(viewController: NSViewController) -> NSWindow {
         }
     }
     let window = NSWindow(
-        contentRect: NSRect(x: -10000, y: -10000, width: 480, height: 270),
+        contentRect: NSRect(x: -10000, y: -10000, width: 480, height: 272),
         styleMask: [.miniaturizable, .closable, .resizable, .titled],
         backing: .buffered,
         defer: false
@@ -28,7 +28,7 @@ func makeWindow(view: NSView) -> NSWindow {
         }
     }
     let window = NSWindow(
-        contentRect: NSRect(x: -10000, y: -10000, width: 480, height: 270),
+        contentRect: NSRect(x: -10000, y: -10000, width: 480, height: 272),
         styleMask: [.miniaturizable, .closable, .resizable, .titled],
         backing: .buffered,
         defer: false

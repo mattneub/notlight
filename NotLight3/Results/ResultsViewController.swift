@@ -43,6 +43,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
     override func viewWillAppear() {
         super.viewWillAppear()
         if let window = view.window {
+            window.setFrameAutosaveName("NotLight_Results_Window")
             window.minSize = CGSize(width: 800, height: 360)
         }
     }

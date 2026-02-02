@@ -61,6 +61,7 @@ private struct RootCoordinatorTests {
         #expect(window.contentViewController == viewController)
         #expect(window.isResizable == false)
         #expect(window.title == "Date Assistant")
+        #expect(window.frame.size == CGSize(width: 316, height: 222 + 32)) // titlebar height
         #expect(window.isReleasedWhenClosed == false)
     }
 

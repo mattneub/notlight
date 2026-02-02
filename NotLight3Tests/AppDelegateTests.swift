@@ -13,6 +13,7 @@ private struct AppDelegateTests {
         #expect(window.title == "NotLight")
         #expect(window.styleMask == [.miniaturizable, .closable, .titled])
         #expect(window.frameAutosaveName == "NotLight_Main_Window")
+        #expect(window.frame.size == CGSize(width: 480, height: 272 + 32)) // title bar height
         // I don't want to run this code even when testing bootstrap, so I've wrapped `unlessTesting` around it
         // #expect(NSApplication.shared.mainMenu != nil)
         #expect(coordinator.methodsCalled == ["createMainModule(window:)"])

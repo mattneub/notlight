@@ -59,6 +59,14 @@ class MainViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+// I was having trouble getting the main window not to resize when the results sheet appears,
+// and this seemed to fix it, but now it seems I can manage without it, so I'm leaving it here
+// commented out just in case and let's see what happens.
+//    override func viewWillLayout() {
+//        super.viewWillLayout()
+//        preferredContentSize = view.bounds.size // CGSize(width: 480, height: 272)
+//    }
+
     func present(_ state: MainState) async {
         if searchTypePopup.itemArray.map(\.title) != state.keyPopupContents.map(\.title) {
             searchTypePopup.removeAllItems()

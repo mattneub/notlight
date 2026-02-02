@@ -115,9 +115,9 @@
                         <constraint firstAttribute="width" constant="157" id="cEP-oa-Au3"/>
                     </constraints>
                     <datePickerCell key="cell" borderStyle="bezel" alignment="left" useCurrentDate="YES" id="Pd3-3F-aTx">
-                        <font key="font" metaFont="system" size="11"/>
-                        <date key="date" timeIntervalSinceReferenceDate="791235660.63673103">
-                            <!--2026-01-27 19:41:00 +0000-->
+                        <font key="font" metaFont="smallSystem"/>
+                        <date key="date" timeIntervalSinceReferenceDate="791686536.47922003">
+                            <!--2026-02-02 00:55:36 +0000-->
                         </date>
                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>

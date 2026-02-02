@@ -50,6 +50,7 @@ private struct ResultsViewControllerTests {
         window.contentView = subject.view
         subject.viewWillAppear()
         #expect(window.minSize == CGSize(width: 800, height: 360))
+        #expect(window.frameAutosaveName == "NotLight_Results_Window")
     }
 
     @Test("viewWillDisappear: gathers table column info, sends tableColumns to processor")

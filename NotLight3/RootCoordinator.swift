@@ -83,7 +83,7 @@ final class RootCoordinator: RootCoordinatorType {
         Task {
             try? await Task.sleep(for: .seconds(0.2))
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 480, height: 270),
+                contentRect: NSRect(x: 0, y: 0, width: 316, height: 222),
                 styleMask: [.miniaturizable, .closable, .titled],
                 backing: .buffered,
                 defer: false

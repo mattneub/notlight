@@ -23,7 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         // create the window _after_ loading the menu, so that it gets registered into the window menu
         window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 480, height: 270),
+            contentRect: NSRect(x: 0, y: 0, width: 480, height: 272),
             styleMask: [.miniaturizable, .closable, .titled],
             backing: .buffered,
             defer: false
