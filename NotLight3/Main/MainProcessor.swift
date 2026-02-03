@@ -121,6 +121,8 @@ final class MainProcessor: Processor {
         case .showFileSizes:
             let oldValue = services.persistence.loadShowFileSizes()
             services.persistence.saveShowFileSizes(!oldValue)
+        case .showImportExport(let view, let rect):
+            coordinator?.showImportExport(sourceRect: rect, sourceView: view, edge: .maxX)
         case .showModDates:
             let oldValue = services.persistence.loadShowModDates()
             services.persistence.saveShowModDates(!oldValue)
@@ -179,3 +181,24 @@ extension MainProcessor: DateDelegate {
         coordinator?.bringMainToFront()
     }
 }
+
+extension MainProcessor: ImportExportDelegate {
+    func doSearch() async {
+        
+    }
+
+    func loadSearch() async {
+        if let result = try? services.importer.loadSearch() {
+            print(result)
+            // TODO: what?
+        }
+    }
+
+    func saveSearch() async {
+        services.exporter.saveSearch(
+            search: services.persistence.loadCurrentSearch(),
+            paths: state.scopes
+        )
+    }
+}
+

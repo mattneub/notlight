@@ -1,0 +1,4 @@
+<!ELEMENT search (query,paths?)>
+<!ELEMENT query (#PCDATA)>
+<!ELEMENT paths (path+)>
+<!ELEMENT path (#PCDATA)>

@@ -5,6 +5,7 @@ protocol RootCoordinatorType: AnyObject {
     func showResults(state: ResultsState)
     func showSearchKeys()
     func showDateAssistant()
+    func showImportExport(sourceRect rect: NSRect, sourceView view: NSView, edge: NSRectEdge)
     func dismiss()
     func bringMainToFront()
     func showAlert(title: String, message: String) async
@@ -23,6 +24,7 @@ final class RootCoordinator: RootCoordinatorType {
     var resultsProcessor: (any Processor<ResultsAction, ResultsState, ResultsEffect>)?
     var searchKeysProcessor: (any Processor<SearchKeysAction, SearchKeysState, SearchKeysEffect>)?
     var dateProcessor: (any Processor<DateAction, DateState, Void>)?
+    var importExportProcessor: (any Processor<ImportExportAction, ImportExportState, Void>)?
 
     func createMainModule(window: NSWindow) {
         let processor = MainProcessor()
@@ -95,6 +97,28 @@ final class RootCoordinator: RootCoordinatorType {
             window.isReleasedWhenClosed = false // memory management dance
             window.makeKeyAndOrderFront(nil)
             self.dateAssistantWindow = window
+        }
+    }
+
+    func showImportExport(sourceRect rect: NSRect, sourceView view: NSView, edge: NSRectEdge) {
+        let processor = ImportExportProcessor()
+        self.importExportProcessor = processor
+        processor.coordinator = self
+        let viewController = ImportExportViewController()
+        processor.presenter = viewController
+        viewController.processor = processor
+        processor.delegate = (mainProcessor as? any ImportExportDelegate)
+        // deliberate "load view and delay" strategy so that things don't visibly jump around
+        viewController.loadViewIfNeeded()
+        Task {
+            try? await Task.sleep(for: .seconds(0.2))
+            mainViewController?.present(
+                viewController,
+                asPopoverRelativeTo: rect,
+                of: view,
+                preferredEdge: edge,
+                behavior: .transient
+            )
         }
     }
 
