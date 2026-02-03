@@ -84,6 +84,21 @@ private struct RootCoordinatorTests {
         subject.bringMainToFront()
         #expect(window.methodsCalled == ["makeKeyAndOrderFront(_:)"])
     }
+
+    @Test("showAlert: puts up alert")
+    func showAlert() async {
+        let window = makeWindow(viewController: NSViewController())
+        subject.mainWindow = window
+        let count = NSApplication.shared.windows.count
+        Task {
+            await subject.showAlert(title: "Title", message: "Message")
+        }
+        await #while(NSApplication.shared.windows.count < count + 1)
+        let alert = NSApplication.shared.windows.last!
+        #expect(NSStringFromClass(type(of: alert)) == "_NSAlertPanel")
+        // I don't know how to test anything else about an alert
+        alert.close()
+    }
 }
 
 private final class MyWindow: NSWindow {

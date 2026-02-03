@@ -71,7 +71,9 @@ final class MainProcessor: Processor {
                 services.beeper.beep()
                 return
             }
-            state.progressSpinner = true
+            state.progress = 0
+            state.progressTotal = nil
+            state.progressVisible = true
             await presenter?.present(state)
             watchProgress()
             let queryString = services.queryStringBuilder.makeQuery(
@@ -82,24 +84,31 @@ final class MainProcessor: Processor {
                 type: state.currentKey.key,
                 operator: state.searchOperator
             )
-            if let result = try? await services.searcher.doSearch(
-                queryString,
-                scopes: state.scopes,
-                joiner: joiner
-            ), !result.results.isEmpty {
-                let resultsState = ResultsState(
-                    queryString: result.queryString,
-                    results: result.results
+            do {
+                let result = try await services.searcher.doSearch(
+                    queryString,
+                    scopes: state.scopes,
+                    joiner: joiner
                 )
-                coordinator?.showResults(state: resultsState)
-                services.persistence.saveTerm(term)
-                services.persistence.saveCurrentSearch(queryString)
-            } else {
-                services.beeper.beep()
-            }
+                if !result.results.isEmpty {
+                    let resultsState = ResultsState(
+                        queryString: result.queryString,
+                        results: result.results
+                    )
+                    coordinator?.showResults(state: resultsState)
+                    services.persistence.saveTerm(term)
+                    services.persistence.saveCurrentSearch(queryString)
+                } else {
+                    services.beeper.beep() // no results
+                }
+            } catch SearcherError.badQuery {
+                Task {
+                    await coordinator?.showAlert(title: "Error", message: "The search query was invalid.")
+                }
+            } catch {}
             progressWatchingTask?.cancel()
-            state.progress = 0
-            state.progressSpinner = false
+            state.progressVisible = false
+            state.progress = 0 // hides text
             await presenter?.present(state)
         case .scopes(let urls):
             state.scopes = urls
@@ -131,7 +140,9 @@ final class MainProcessor: Processor {
     /// of gathered results, so that we can show the user.
     func watchProgress() {
         let progresses = Observations {
-            services.searcher.searchProgress.count
+            let count = services.searcher.searchProgress.count
+            let total = services.searcher.searchProgress.total
+            return (count, total)
         }
         progressWatchingTask?.cancel()
         progressWatchingTask = Task {
@@ -139,7 +150,8 @@ final class MainProcessor: Processor {
                 if Task.isCancelled {
                     break
                 }
-                state.progress = progress
+                state.progress = progress.0
+                state.progressTotal = progress.1
                 await presenter?.present(state)
             }
         }

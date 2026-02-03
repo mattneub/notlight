@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F7F42902F311B0800035087 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 3F7F428F2F311B0800035087 /* AppIcon.icon */; };
 		3F9247322F1D8E7E005AB207 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 3F9247312F1D8E7E005AB207 /* SnapshotTesting */; };
 		3F9501932F1449BD00D83369 /* WaitWhile in Frameworks */ = {isa = PBXBuildFile; productRef = 3F9501922F1449BD00D83369 /* WaitWhile */; };
 /* End PBXBuildFile section */
@@ -37,6 +38,7 @@
 		3F1EE2DC2F1415CE002D28AA /* NotLight3Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotLight3Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F23F7282F21AEF900FF0B48 /* NotLight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = NotLight.entitlements; path = NotLight3/NotLight.entitlements; sourceTree = "<group>"; };
 		3F366E722F12F5CE0010786B /* NotLight3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotLight3.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F7F428F2F311B0800035087 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		3F9501AA2F14674600D83369 /* NotLight3.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = NotLight3.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -129,6 +131,7 @@
 		3F366E692F12F5CE0010786B = {
 			isa = PBXGroup;
 			children = (
+				3F7F428F2F311B0800035087 /* AppIcon.icon */,
 				3F23F7282F21AEF900FF0B48 /* NotLight.entitlements */,
 				3F9501AA2F14674600D83369 /* NotLight3.xctestplan */,
 				3F366E742F12F5CE0010786B /* NotLight3 */,
@@ -254,6 +257,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F7F42902F311B0800035087 /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

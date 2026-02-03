@@ -37,6 +37,7 @@ private struct SearcherTests {
         NotificationCenter.default.post(name: .NSMetadataQueryGatheringProgress, object: query)
         await #while(subject.searchProgress.count == 0)
         #expect(subject.searchProgress.count == 1)
+        #expect(subject.searchProgress.total == nil)
         // part three: the search ends
         query.methodsCalled = []
         NotificationCenter.default.post(NSMetadataQuery.DidFinishGatheringMessage(), subject: query)
@@ -48,6 +49,32 @@ private struct SearcherTests {
         #expect(searchInfo?.results[0].path == "path")
         #expect(searchInfo?.results[0].date == .distantPast)
         #expect(searchInfo?.results[0].size == 10)
+        #expect(subject.searchProgress.count == 1)
+        #expect(subject.searchProgress.total == 1)
+        #expect(subject.continuation == nil)
+    }
+
+    @Test("if more than 1000 results, progress count is set at 1000 and again at end")
+    func doSearchResults() async {
+        query._resultCount = 1001
+        query._results = Array(repeating: MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10), count: 1001)
+        var searchInfo: SearchInfo?
+        Task {
+            searchInfo = try await subject.doSearch(
+                "kMDItemDisplayName == \"testing\"cdw",
+                scopes: [],
+                joiner: .noJoiner
+            )
+        }
+        await #while(query.methodsCalled.isEmpty)
+        NotificationCenter.default.post(name: .NSMetadataQueryGatheringProgress, object: query)
+        await #while(subject.searchProgress.count != 1001)
+        NotificationCenter.default.post(NSMetadataQuery.DidFinishGatheringMessage(), subject: query)
+        await #while(subject.searchProgress.total == nil)
+        #expect(subject.searchProgress.count == 1000)
+        #expect(subject.searchProgress.total == 1001)
+        await #while(subject.searchProgress.count != 1001)
+        #expect(subject.searchProgress.count == 1001)
     }
 
     @Test("doSearch: if option key is down, constructs previous query string but stops before searching")
@@ -125,6 +152,7 @@ private struct SearcherTests {
                 joiner: .noJoiner
             )
         }
+        #expect(subject.continuation == nil)
     }
 
     @Test("stop: stops search, throws into continuation")
@@ -148,6 +176,7 @@ private struct SearcherTests {
         await #while(searchError == nil)
         #expect(searchError as? SearcherError == .userStopped)
         #expect(query.methodsCalled == ["stop()"])
+        #expect(subject.continuation == nil)
     }
 
     @Test("setPreviousQueryString: sets previous query string")

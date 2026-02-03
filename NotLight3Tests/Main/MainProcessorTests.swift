@@ -204,20 +204,31 @@ private struct MainProcessorTests {
         try? await Task.sleep(for: .seconds(0.1))
         searcher.searchProgress.count = 2
         try? await Task.sleep(for: .seconds(0.1))
-        searcher.searchProgress.count = 3
+        searcher.searchProgress.count = 1
+        searcher.searchProgress.total = 2
         try? await Task.sleep(for: .seconds(0.1))
         #expect(presenter.statesPresented.count == 5)
         #expect(presenter.statesPresented[0].progress == 0)
-        #expect(presenter.statesPresented[0].progressSpinner == true)
+        #expect(presenter.statesPresented[0].progressTotal == nil)
+        #expect(presenter.statesPresented[0].progressVisible == true)
         #expect(presenter.statesPresented[1].progress == 0)
+        #expect(presenter.statesPresented[1].progressTotal == nil)
+        #expect(presenter.statesPresented[1].progressVisible == true)
         #expect(presenter.statesPresented[2].progress == 1)
+        #expect(presenter.statesPresented[2].progressTotal == nil)
+        #expect(presenter.statesPresented[2].progressVisible == true)
         #expect(presenter.statesPresented[3].progress == 2)
-        #expect(presenter.statesPresented[4].progress == 3)
+        #expect(presenter.statesPresented[3].progressTotal == nil)
+        #expect(presenter.statesPresented[3].progressVisible == true)
+        #expect(presenter.statesPresented[4].progress == 1)
+        #expect(presenter.statesPresented[4].progressTotal == 2)
+        #expect(presenter.statesPresented[4].progressVisible == true)
         await #while(subject.progressWatchingTask?.isCancelled == false)
         #expect(subject.progressWatchingTask?.isCancelled == true)
         #expect(presenter.statesPresented.count == 6)
         #expect(presenter.statesPresented[5].progress == 0)
-        #expect(presenter.statesPresented[5].progressSpinner == false)
+        #expect(presenter.statesPresented[5].progressTotal == 2)
+        #expect(presenter.statesPresented[5].progressVisible == false)
     }
 
     @Test("receive performSearch: if term is empty, beeps")
@@ -230,15 +241,27 @@ private struct MainProcessorTests {
         #expect(beeper.methodsCalled == ["beep()"])
     }
 
-    @Test("receive performSearch: if search throws, beeps")
-    func performSearchThrow() async {
+    @Test("receive performSearch: if search throws bad query, shows alert")
+    func performSearchThrowBadQuery() async {
         searcher.errorToThrow = .badQuery
+        await subject.receive(.performSearch("howdy", .noJoiner))
+        #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
+        #expect(searcher.term == "")
+        await #while(coordinator.methodsCalled.isEmpty)
+        #expect(coordinator.methodsCalled == ["showAlert(title:message:)"])
+        #expect(persistence.methodsCalled.isEmpty)
+        #expect(beeper.methodsCalled.isEmpty)
+    }
+
+    @Test("receive performSearch: if search throws user stopped, does nothing")
+    func performSearchThrowUserStopped() async {
+        searcher.errorToThrow = .userStopped
         await subject.receive(.performSearch("howdy", .noJoiner))
         #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
         #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
         #expect(persistence.methodsCalled.isEmpty)
-        #expect(beeper.methodsCalled == ["beep()"])
+        #expect(beeper.methodsCalled.isEmpty)
     }
 
     @Test("receive performSearch: if search returns empty results, beeps")

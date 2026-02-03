@@ -20,7 +20,11 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     @IBOutlet var operatorPopup: NSPopUpButton!
 
-    @IBOutlet var progressSpinner: NSProgressIndicator!
+    @IBOutlet var progressSpinner: NSProgressIndicator! {
+        didSet {
+            progressSpinner?.isHidden = true
+        }
+    }
 
     @IBOutlet var progressLabel: NSTextField! {
         didSet {
@@ -98,14 +102,19 @@ class MainViewController: NSViewController, ReceiverPresenter {
         autoContainsModeCheckbox.state = state.autoContainsMode ? .on : .off
         configureAutoContainsMode(state.autoContainsMode)
 
-        if state.progressSpinner {
-            progressSpinner.startAnimation(self)
-        } else {
-            progressSpinner.stopAnimation(self)
-        }
+        progressSpinner.isHidden = !state.progressVisible
 
         if state.progress > 0 {
-            progressLabel.stringValue = "\(String(state.progress)) results found..."
+            if var total = state.progressTotal {
+                total = max(1, total) // let's not risk dividing by zero
+                progressLabel.stringValue = "\(String(state.progress)) results processed..."
+                progressSpinner.isIndeterminate = false
+                progressSpinner.doubleValue = Double(state.progress) / Double(total) * 100
+            } else {
+                progressLabel.stringValue = "\(String(state.progress)) results found..."
+                progressSpinner.isIndeterminate = true
+                progressSpinner.startAnimation(self)
+            }
             stopButton.isEnabled = true
         } else {
             progressLabel.stringValue = ""

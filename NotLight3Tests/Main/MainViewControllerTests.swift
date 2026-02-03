@@ -22,11 +22,29 @@ private struct MainViewControllerTests {
         #expect(subject.termField.delegate === subject)
     }
 
+    @Test("progressSpinner: is correctly prepared")
+    func progressSpinner() {
+        subject.loadViewIfNeeded()
+        #expect(subject.progressSpinner.isHidden)
+    }
+
+    @Test("progressLabel: is correctly prepared")
+    func progressLabel() {
+        subject.loadViewIfNeeded()
+        #expect(subject.progressLabel.stringValue == "")
+    }
+
     @Test("blurbLabel: is correctly prepared")
     func blurbLabel() {
         subject.loadViewIfNeeded()
         #expect(subject.blurbLabel.stringValue == "")
         #expect(subject.blurbLabel.maximumNumberOfLines == 3)
+    }
+
+    @Test("stopButton: is correctly prepared")
+    func stopButton() {
+        subject.loadViewIfNeeded()
+        #expect(subject.stopButton.isEnabled == false)
     }
 
     @Test("viewDidLoad: sends initialState")
@@ -164,28 +182,45 @@ private struct MainViewControllerTests {
         #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
     }
 
-    @Test("present: sets progress label and stop button")
-    func presentProgressLabel() async throws {
+    @Test("present: with progress and total sets progress label, spinner, and stop button")
+    func presentProgressAndTotal() async {
         subject.loadViewIfNeeded()
         #expect(subject.progressLabel.stringValue == "")
         #expect(subject.stopButton.isEnabled == false)
-        await subject.present(MainState(progress: 2))
-        #expect(subject.progressLabel.stringValue == "2 results found...")
+        await subject.present(MainState(progress: 2, progressTotal: 4))
+        #expect(subject.progressLabel.stringValue == "2 results processed...")
+        #expect(subject.progressSpinner.isIndeterminate == false)
+        #expect(subject.progressSpinner.doubleValue == 50) // percentage
         #expect(subject.stopButton.isEnabled == true)
-        await subject.present(MainState(progress: 0))
+        await subject.present(MainState(progress: 0, progressTotal: 4))
         #expect(subject.progressLabel.stringValue == "")
         #expect(subject.stopButton.isEnabled == false)
     }
 
-    @Test("present: sets progress spinner")
-    func presentProgressSpinner() async throws {
+    @Test("present: sets progress and nil total sets progress label, spinner, and stop button")
+    func presentProgressLabel() async throws {
         subject.loadViewIfNeeded()
-        let spinner = try #require(subject.progressSpinner as? MyProgressIndicator) // purely to give it an `isAnimating` property!
-        #expect(spinner.isAnimating == false)
-        await subject.present(MainState(progressSpinner: true))
+        let spinner = try #require(subject.progressSpinner as? MyProgressIndicator)
+        #expect(subject.progressLabel.stringValue == "")
+        #expect(subject.stopButton.isEnabled == false)
+        await subject.present(MainState(progress: 2, progressTotal: nil))
+        #expect(subject.progressLabel.stringValue == "2 results found...")
+        #expect(spinner.isIndeterminate == true)
         #expect(spinner.isAnimating == true)
-        await subject.present(MainState(progressSpinner: false))
-        #expect(spinner.isAnimating == false)
+        #expect(subject.stopButton.isEnabled == true)
+        await subject.present(MainState(progress: 0, progressTotal: nil))
+        #expect(subject.progressLabel.stringValue == "")
+        #expect(subject.stopButton.isEnabled == false)
+    }
+
+    @Test("present: progressVisible sets progress spinner visibility")
+    func presentProgressVisible() async throws {
+        subject.loadViewIfNeeded()
+        #expect(subject.progressSpinner.isHidden == true)
+        await subject.present(MainState(progressVisible: true))
+        #expect(subject.progressSpinner.isHidden == false)
+        await subject.present(MainState(progressVisible: false))
+        #expect(subject.progressSpinner.isHidden == true)
     }
 
     @Test("present: sets folder text field quantity and values")

@@ -5,6 +5,8 @@ final class MockRootCoordinator: RootCoordinatorType {
     var methodsCalled = [String]()
     var window: NSWindow?
     var resultsState: ResultsState?
+    var title: String?
+    var message: String?
 
     func createMainModule(window: NSWindow) {
         methodsCalled.append(#function)
@@ -32,5 +34,10 @@ final class MockRootCoordinator: RootCoordinatorType {
         methodsCalled.append(#function)
     }
 
+    func showAlert(title: String, message: String) {
+        methodsCalled.append(#function)
+        self.title = title
+        self.message = message
+    }
 
 }

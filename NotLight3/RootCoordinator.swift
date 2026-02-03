@@ -7,6 +7,7 @@ protocol RootCoordinatorType: AnyObject {
     func showDateAssistant()
     func dismiss()
     func bringMainToFront()
+    func showAlert(title: String, message: String) async
 }
 
 final class RootCoordinator: RootCoordinatorType {
@@ -106,4 +107,16 @@ final class RootCoordinator: RootCoordinatorType {
     func bringMainToFront() {
         mainWindow?.makeKeyAndOrderFront(nil)
     }
+
+    func showAlert(title: String, message: String) async {
+        guard let mainWindow else {
+            return
+        }
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = title
+        alert.informativeText = message
+        await alert.beginSheetModal(for: mainWindow)
+    }
+
 }

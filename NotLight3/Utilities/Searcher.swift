@@ -35,6 +35,7 @@ final class Searcher: SearcherType {
     func doSearch(_ queryString: String, scopes: [URL], joiner: SearchJoiner) async throws -> SearchInfo {
         let stopBeforeSearching = services.application.optionKeyDown
         searchProgress.count = 0
+        searchProgress.total = nil
         let query = services.queryFactory.makeQuery()
         self.query = query
         var queryString = queryString
@@ -65,15 +66,16 @@ final class Searcher: SearcherType {
         gatheringObserver = NotificationCenter.default.addObserver(
             forName: .NSMetadataQueryGatheringProgress, object: query, queue: nil
         ) { [unowned self] _ in
-            Task {
-                await updateProgress()
+            MainActor.assumeIsolated {
+                updateProgress()
             }
         }
         finishedObserver = NotificationCenter.default.addObserver(
             // of: query,
             for: NSMetadataQuery.DidFinishGatheringMessage.self
         ) { [unowned self] _ in
-            await continuation?.resume(returning: await gatherResults())
+            let results = await gatherResults()
+            await continuation?.resume(returning: results)
         }
         // ...Expose a continuation, start the query, and wait for the continuation to resume
         let results = try await withCheckedThrowingContinuation { continuation in
@@ -91,10 +93,15 @@ final class Searcher: SearcherType {
     func gatherResults() async -> [SearchResult] {
         var searchResults = [SearchResult]()
         guard let query else {
-            return searchResults
+            return []
         }
+        let total = query.resultCount
+        searchProgress.count = total // give total a moment to display to user
+        try? await Task.sleep(for: .seconds(0.2))
+        searchProgress.count = 0
+        searchProgress.total = total
         // how to cycle; do _not_ retain the `results` property
-        for index in 0..<query.resultCount {
+        for index in 0..<total {
             if let result = query.result(at: index) as? any QueryItemType {
                 guard let displayName = result.displayName else {
                     continue
@@ -110,6 +117,13 @@ final class Searcher: SearcherType {
                         size: result.size
                     )
                 )
+                if index % 1000 == 999 || index == total - 1 {
+                    searchProgress.count = index + 1
+                    try? await Task.sleep(for: .seconds(0.05)) // allow a chance to display and for user to cancel
+                    if continuation == nil { // user may have cancelled
+                        return []
+                    }
+                }
             }
         }
         return searchResults
@@ -135,6 +149,7 @@ final class Searcher: SearcherType {
             NotificationCenter.default.removeObserver(gatheringObserver)
         }
         query?.stop()
+        continuation = nil
     }
 
     func setPreviousQueryString(_ value: String) {
@@ -156,4 +171,5 @@ enum SearchJoiner {
 @Observable
 final class SearchProgress {
     var count: Int = 0
+    var total: Int? // nil if unknown
 }
