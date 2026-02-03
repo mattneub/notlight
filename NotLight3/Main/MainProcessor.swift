@@ -71,11 +71,7 @@ final class MainProcessor: Processor {
                 services.beeper.beep()
                 return
             }
-            state.progress = 0
-            state.progressTotal = nil
-            state.progressVisible = true
-            await presenter?.present(state)
-            watchProgress()
+            services.persistence.saveTerm(term)
             let queryString = services.queryStringBuilder.makeQuery(
                 term: term,
                 caseInsensitive: state.caseInsensitive,
@@ -84,32 +80,7 @@ final class MainProcessor: Processor {
                 type: state.currentKey.key,
                 operator: state.searchOperator
             )
-            do {
-                let result = try await services.searcher.doSearch(
-                    queryString,
-                    scopes: state.scopes,
-                    joiner: joiner
-                )
-                if !result.results.isEmpty {
-                    let resultsState = ResultsState(
-                        queryString: result.queryString,
-                        results: result.results
-                    )
-                    coordinator?.showResults(state: resultsState)
-                    services.persistence.saveTerm(term)
-                    services.persistence.saveCurrentSearch(queryString)
-                } else {
-                    services.beeper.beep() // no results
-                }
-            } catch SearcherError.badQuery {
-                Task {
-                    await coordinator?.showAlert(title: "Error", message: "The search query was invalid.")
-                }
-            } catch {}
-            progressWatchingTask?.cancel()
-            state.progressVisible = false
-            state.progress = 0 // hides text
-            await presenter?.present(state)
+            await performSearch(queryString: queryString, joiner: joiner)
         case .scopes(let urls):
             state.scopes = urls
             await presenter?.present(state)
@@ -122,7 +93,7 @@ final class MainProcessor: Processor {
             let oldValue = services.persistence.loadShowFileSizes()
             services.persistence.saveShowFileSizes(!oldValue)
         case .showImportExport(let view, let rect):
-            coordinator?.showImportExport(sourceRect: rect, sourceView: view, edge: .maxX)
+            coordinator?.showImportExport(sourceRect: rect, sourceView: view, edge: .maxY)
         case .showModDates:
             let oldValue = services.persistence.loadShowModDates()
             services.persistence.saveShowModDates(!oldValue)
@@ -136,6 +107,38 @@ final class MainProcessor: Processor {
             state.wordBased = on
             services.persistence.saveWordBased(on)
         }
+    }
+
+    func performSearch(queryString: String, joiner: SearchJoiner) async {
+        state.progress = 0
+        state.progressTotal = nil
+        state.progressVisible = true
+        await presenter?.present(state)
+        watchProgress()
+        do {
+            let result = try await services.searcher.doSearch(
+                queryString,
+                scopes: state.scopes,
+                joiner: joiner
+            )
+            if !result.results.isEmpty {
+                let resultsState = ResultsState(
+                    queryString: result.queryString,
+                    results: result.results
+                )
+                coordinator?.showResults(state: resultsState)
+            } else {
+                services.beeper.beep() // no results
+            }
+        } catch SearcherError.badQuery {
+            Task {
+                await coordinator?.showAlert(title: "Error", message: "The search query was invalid.")
+            }
+        } catch {}
+        progressWatchingTask?.cancel()
+        state.progressVisible = false
+        state.progress = 0 // hides text
+        await presenter?.present(state)
     }
 
     /// Method which, while a search is ongoing, keeps us apprised periodically of the number
@@ -183,20 +186,21 @@ extension MainProcessor: DateDelegate {
 }
 
 extension MainProcessor: ImportExportDelegate {
-    func doSearch() async {
-        
+    func doSearch(_ queryString: String) async {
+        await performSearch(queryString: queryString, joiner: .noJoiner)
     }
 
     func loadSearch() async {
         if let result = try? services.importer.loadSearch() {
-            print(result)
-            // TODO: what?
+            services.searcher.setPreviousQueryString(result.0)
+            state.scopes = result.1.map { URL(filePath: $0, directoryHint: .isDirectory, relativeTo: nil) }
+            await presenter?.present(state)
         }
     }
 
-    func saveSearch() async {
-        services.exporter.saveSearch(
-            search: services.persistence.loadCurrentSearch(),
+    func saveSearch(_ searchString: String) async {
+        await services.exporter.saveSearch(
+            search: searchString,
             paths: state.scopes
         )
     }

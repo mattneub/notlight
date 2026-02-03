@@ -9,24 +9,24 @@ final class ImportExportProcessor: Processor {
 
     func receive(_ action: ImportExportAction) async {
         switch action {
-        case .doSearch:
+        case .doSearch(let searchString):
             coordinator?.dismiss()
-            await delegate?.doSearch()
+            await delegate?.doSearch(searchString)
         case .initialData:
             state.currentSearch = services.persistence.loadCurrentSearch()
             await presenter?.present(state)
         case .loadSearch:
             coordinator?.dismiss()
             await delegate?.loadSearch()
-        case .saveSearch:
+        case .saveSearch(let searchString):
             coordinator?.dismiss()
-            await delegate?.saveSearch()
+            await delegate?.saveSearch(searchString)
         }
     }
 }
 
 protocol ImportExportDelegate: AnyObject {
-    func doSearch() async
+    func doSearch(_: String) async
     func loadSearch() async
-    func saveSearch() async
+    func saveSearch(_: String) async
 }

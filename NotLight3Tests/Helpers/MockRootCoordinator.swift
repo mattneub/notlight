@@ -7,6 +7,9 @@ final class MockRootCoordinator: RootCoordinatorType {
     var resultsState: ResultsState?
     var title: String?
     var message: String?
+    var sourceRect: CGRect?
+    var sourceView: NSView?
+    var edge: NSRectEdge?
 
     func createMainModule(window: NSWindow) {
         methodsCalled.append(#function)
@@ -24,6 +27,17 @@ final class MockRootCoordinator: RootCoordinatorType {
 
     func showDateAssistant() {
         methodsCalled.append(#function)
+    }
+
+    func showImportExport(
+        sourceRect rect: NSRect,
+        sourceView view: NSView,
+        edge: NSRectEdge
+    ) {
+        methodsCalled.append(#function)
+        self.sourceRect = rect
+        self.sourceView = view
+        self.edge = edge
     }
 
     func dismiss() {

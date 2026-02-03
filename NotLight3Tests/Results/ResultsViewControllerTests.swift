@@ -45,12 +45,10 @@ private struct ResultsViewControllerTests {
 
     @Test("viewWillAppear: sets window's minSize")
     func viewWillAppear() {
-        let window = NSWindow()
-        subject.loadViewIfNeeded()
-        window.contentView = subject.view
-        subject.viewWillAppear()
+        let window = makeWindow(viewController: subject)
         #expect(window.minSize == CGSize(width: 800, height: 360))
         #expect(window.frameAutosaveName == "NotLight_Results_Window")
+        window.close()
     }
 
     @Test("viewWillDisappear: gathers table column info, sends tableColumns to processor")

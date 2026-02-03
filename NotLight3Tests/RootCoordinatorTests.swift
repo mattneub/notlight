@@ -8,7 +8,7 @@ private struct RootCoordinatorTests {
 
     @Test("createMainModule: creates the main module")
     func createMainModule() throws {
-        let window = NSWindow()
+        let window = makeWindow(viewController: NSViewController())
         subject.createMainModule(window: window)
         let processor = try #require(subject.mainProcessor as? MainProcessor)
         #expect(processor.coordinator === subject)
@@ -16,13 +16,14 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         #expect(subject.mainViewController === viewController)
         #expect(window.contentViewController === viewController)
+        window.close()
     }
 
     @Test("showResults: assembles the results module, sets the state, presents the view controller")
     func showResults() async throws {
         let state = ResultsState(results: [.init(displayName: "name", path: "path", date: .distantPast, size: 10)])
         let mainViewController = NSViewController()
-        makeWindow(viewController: mainViewController)
+        let window = makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         subject.showResults(state: state)
         let processor = try #require(subject.resultsProcessor as? ResultsProcessor)
@@ -31,13 +32,14 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         await #while(mainViewController.presentedViewControllers?.first == nil)
         #expect(mainViewController.presentedViewControllers?.first === viewController)
+        window.close()
     }
 
     @Test("showSearchKeys: assembles the search keys module, presents the view controller")
     func showSearchKeys() async throws {
         subject.mainProcessor = MainProcessor()
         let mainViewController = NSViewController()
-        makeWindow(viewController: mainViewController)
+        let window = makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         subject.showSearchKeys()
         let processor = try #require(subject.searchKeysProcessor as? SearchKeysProcessor)
@@ -47,6 +49,7 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         await #while(mainViewController.presentedViewControllers?.first == nil)
         #expect(mainViewController.presentedViewControllers?.first === viewController)
+        window.close()
     }
 
     @Test("showDateAssistant: assembles the date module, creates window and shows it")
@@ -63,41 +66,63 @@ private struct RootCoordinatorTests {
         #expect(window.title == "Date Assistant")
         #expect(window.frame.size == CGSize(width: 316, height: 222 + 32)) // titlebar height
         #expect(window.isReleasedWhenClosed == false)
+        window.close()
+    }
+
+    @Test("showImportExport: assembles import export module, presents as popover")
+    func showImportExport() async throws {
+        subject.mainProcessor = MainProcessor()
+        let mainViewController = NSViewController()
+        let window = makeWindow(viewController: mainViewController)
+        subject.mainViewController = mainViewController
+        let rect = NSRect(x: 0, y: 0, width: 100, height: 200)
+        subject.showImportExport(sourceRect: rect, sourceView: mainViewController.view, edge: .minY)
+        let processor = try #require(subject.importExportProcessor as? ImportExportProcessor)
+        #expect(processor.coordinator === subject)
+        #expect(processor.delegate === subject.mainProcessor)
+        let viewController = try #require(processor.presenter as? ImportExportViewController)
+        #expect(viewController.processor === processor)
+        await #while(mainViewController.presentedViewControllers?.first == nil)
+        #expect(mainViewController.presentedViewControllers?.first === viewController)
+        window.close()
     }
 
     @Test("dismiss: dismisses the presented view controller")
     func dismiss() throws {
         let mainViewController = NSViewController()
-        makeWindow(viewController: mainViewController)
+        let window = makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         let presented = NSViewController()
         mainViewController.presentAsSheet(presented)
         #expect(mainViewController.presentedViewControllers?.count == 1)
         subject.dismiss()
         #expect(mainViewController.presentedViewControllers?.count == 0)
+        window.close()
     }
 
     @Test("bringMainToFront: brings the main window key and front")
     func bringMainToFront() async {
         let window = MyWindow()
+        window.isReleasedWhenClosed = false
         subject.mainWindow = window
         subject.bringMainToFront()
         #expect(window.methodsCalled == ["makeKeyAndOrderFront(_:)"])
+        window.close()
     }
 
     @Test("showAlert: puts up alert")
     func showAlert() async {
+        let alert = MockAlert()
+        services.alertFactory = MockAlertFactory(mockAlert: alert)
         let window = makeWindow(viewController: NSViewController())
         subject.mainWindow = window
-        let count = NSApplication.shared.windows.count
-        Task {
-            await subject.showAlert(title: "Title", message: "Message")
-        }
-        await #while(NSApplication.shared.windows.count < count + 1)
-        let alert = NSApplication.shared.windows.last!
-        #expect(NSStringFromClass(type(of: alert)) == "_NSAlertPanel")
-        // I don't know how to test anything else about an alert
-        alert.close()
+        await subject.showAlert(title: "Title", message: "Message")
+        #expect(alert.alertStyle == .informational)
+        #expect(alert.messageText == "Title")
+        #expect(alert.informativeText == "Message")
+        #expect(alert.methodsCalled == ["beginSheetModal(for:)"])
+        #expect(alert.forWindow === window)
+        window.close()
     }
 }
 
@@ -105,5 +130,17 @@ private final class MyWindow: NSWindow {
     var methodsCalled = [String]()
     override func makeKeyAndOrderFront(_ sender: Any?) {
         methodsCalled.append(#function)
+    }
+}
+
+private final class MockAlertFactory: AlertFactoryType {
+    let mockAlert: NSAlert
+
+    init(mockAlert: NSAlert) {
+        self.mockAlert = mockAlert
+    }
+
+    func makeAlert() -> NSAlert {
+        mockAlert
     }
 }

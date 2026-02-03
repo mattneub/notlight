@@ -6,7 +6,13 @@ final class ImportExportViewController: NSViewController, ReceiverPresenter {
 
     override var nibName: String { "ImportExport" }
 
-    @IBOutlet weak var currentSearchLabel: NSTextField!
+    @IBOutlet weak var currentSearchLabel: NSTextField! {
+        didSet {
+            let gestureRecognizer = NSClickGestureRecognizer(target: self, action: #selector(doubleClick))
+            gestureRecognizer.numberOfClicksRequired = 2
+            currentSearchLabel?.addGestureRecognizer(gestureRecognizer)
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,14 +37,29 @@ final class ImportExportViewController: NSViewController, ReceiverPresenter {
     }
 
     @IBAction func doSaveThisSearch(_: NSButton) {
+        view.window?.endEditing(for: currentSearchLabel)
         Task {
-            await processor?.receive(.saveSearch)
+            await processor?.receive(.saveSearch(currentSearchLabel.stringValue))
         }
     }
 
     @IBAction func doDoThisSearch(_: NSButton) {
+        view.window?.endEditing(for: currentSearchLabel)
         Task {
-            await processor?.receive(.doSearch)
+            await processor?.receive(.doSearch(currentSearchLabel.stringValue))
         }
     }
+
+    @objc func doubleClick(_ sender: NSGestureRecognizer) {
+        if let textField = sender.view as? NSTextField {
+            textField.isEditable = true
+            textField.isBordered = true
+            textField.drawsBackground = true
+            textField.backgroundColor = .textBackgroundColor
+            textField.focusRingType = .none
+            textField.becomeFirstResponder()
+            sender.isEnabled = false // thanks for the g.r. but now your job is over
+        }
+    }
+
 }

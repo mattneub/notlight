@@ -1,6 +1,6 @@
 enum ImportExportAction: Equatable {
-    case doSearch
+    case doSearch(String)
     case initialData
     case loadSearch
-    case saveSearch
+    case saveSearch(String)
 }

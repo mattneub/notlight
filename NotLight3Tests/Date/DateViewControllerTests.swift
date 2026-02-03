@@ -55,6 +55,7 @@ private struct DateViewControllerTests {
         let window = makeWindow(viewController: subject)
         #expect(window.minSize == CGSize(width: 316, height: 222))
         #expect(window.isResizable == false)
+        window.close()
     }
 
     @Test("present: configures the three popups, sets the date picker")

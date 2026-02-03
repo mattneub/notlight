@@ -3,11 +3,6 @@ import AppKit
 
 @discardableResult
 func makeWindow(viewController: NSViewController) -> NSWindow {
-    for window in NSApplication.shared.windows {
-        if !window.isReleasedWhenClosed {
-            window.close()
-        }
-    }
     let window = NSWindow(
         contentRect: NSRect(x: -10000, y: -10000, width: 480, height: 272),
         styleMask: [.miniaturizable, .closable, .resizable, .titled],
@@ -22,11 +17,6 @@ func makeWindow(viewController: NSViewController) -> NSWindow {
 
 @discardableResult
 func makeWindow(view: NSView) -> NSWindow {
-    for window in NSApplication.shared.windows {
-        if !window.isReleasedWhenClosed {
-            window.close()
-        }
-    }
     let window = NSWindow(
         contentRect: NSRect(x: -10000, y: -10000, width: 480, height: 272),
         styleMask: [.miniaturizable, .closable, .resizable, .titled],

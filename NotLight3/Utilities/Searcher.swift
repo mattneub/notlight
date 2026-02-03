@@ -17,7 +17,13 @@ final class Searcher: SearcherType {
 
     /// Query string most recently submitted. This persists between searches, allowing us to
     /// build successive cumulative queries with AND and OR.
-    var previousQueryString: String?
+    var previousQueryString: String? {
+        didSet {
+            if let queryString = previousQueryString {
+                services.persistence.saveCurrentSearch(queryString)
+            }
+        }
+    }
 
     /// Public observable object that publishes the growing count of found results.
     let searchProgress = SearchProgress()

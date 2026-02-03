@@ -7,24 +7,31 @@ protocol ImporterType {
 
 final class Importer: ImporterType {
     func loadSearch() throws -> (String, [String]) {
-        let open = NSOpenPanel()
+        let open = services.openPanelFactory.makeOpenPanel()
         open.allowedContentTypes = [.xml]
+        open.title = "Load Search"
+        open.message = "Load a saved search (an XML file):"
         let result = open.runModal()
         do {
             if result == .OK {
                 if let path = open.url {
                     let xmlDoc = try XMLDocument(contentsOf: path, options: [])
-                    return try validateSearch(xmlDoc)
+                    let output = try validateSearch(xmlDoc)
+                    return output
                 }
+            } else {
+                throw XMLAnalysisError.cancelled
             }
         } catch {
-            NSApp.presentError(error)
+            let errorToThrow = error as? XMLAnalysisError ?? XMLAnalysisError.general
+            _ = services.application.presentError(errorToThrow)
         }
         throw XMLAnalysisError.general
     }
 
     func validateSearch(_ xmlDoc: XMLDocument) throws(XMLAnalysisError) -> (String, [String]) {
         // hey, I've got a DTD!
+        // none of these .general errors should actually occur
         guard let url = services.bundle.url(forResource: "search", withExtension: "dtd") else {
             throw .general
         }
@@ -55,6 +62,7 @@ final class Importer: ImporterType {
 enum XMLAnalysisError: LocalizedError {
     case dtd
     case general
+    case cancelled
     var errorDescription: String? { // the bold title of the alert
         "Could not open the XML file."
     }
@@ -64,6 +72,7 @@ enum XMLAnalysisError: LocalizedError {
             "The XML document does not appear to be a saved search."
         case .general:
             "There was a problem analyzing the XML."
+        default: nil
         }
     }
 }

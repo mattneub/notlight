@@ -18,10 +18,12 @@ private struct AppDelegateTests {
         // #expect(NSApplication.shared.mainMenu != nil)
         #expect(coordinator.methodsCalled == ["createMainModule(window:)"])
         #expect(coordinator.window === window)
+        window.isReleasedWhenClosed = false
+        window.close()
     }
 
     @Test("bootstrap: if there is an Option menu in the app's main menu, makes app delegate its submenu's delegate")
-    func bootstrapOptionMenu() {
+    func bootstrapOptionMenu() throws {
         let menu = NSMenu()
         let option = NSMenuItem(title: "Option", action: nil, keyEquivalent: "")
         menu.addItem(option)
@@ -33,12 +35,9 @@ private struct AppDelegateTests {
         subject.rootCoordinator = coordinator
         subject.bootstrap()
         #expect(submenu.delegate === subject)
-    }
-
-    @Test("applicationShouldTerminateAfterLastWindowClosed is true")
-    func applicationShouldTerminateAfterLastWindowClosed() {
-        let subject = AppDelegate()
-        #expect(subject.applicationShouldTerminateAfterLastWindowClosed(NSApplication.shared) == true)
+        let window = try #require(subject.window)
+        window.isReleasedWhenClosed = false
+        window.close()
     }
 
     @Test("doShowHelp: calls bundle for URL and workspace to open it")
@@ -47,7 +46,7 @@ private struct AppDelegateTests {
         services.workspace = workspace
         let bundle = MockBundle()
         services.bundle = bundle
-        bundle.urlToReturn = URL(string: "https://example.com")!
+        bundle.urlToReturn = URL(string: "file:///testing")!
         let subject = AppDelegate()
         subject.doShowHelp(self)
         #expect(bundle.methodsCalled == ["url(forResource:withExtension:subdirectory:)"])
@@ -55,7 +54,7 @@ private struct AppDelegateTests {
         #expect(bundle.ext == "html")
         #expect(bundle.subdirectory == "help")
         #expect(workspace.methodsCalled == ["open(_:)"])
-        #expect(workspace.urlToOpen == URL(string: "https://example.com")!)
+        #expect(workspace.urlToOpen == URL(string: "file:///testing")!)
     }
 
     @Test("menuWillOpen: sets state of first three Option menu items of menu")

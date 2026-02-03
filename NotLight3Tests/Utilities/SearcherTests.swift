@@ -7,15 +7,18 @@ private struct SearcherTests {
     let subject = Searcher()
     let query = MockMetadataQuery()
     let application = MockApplication()
+    let persistence = MockPersistence()
 
     init() {
         services.queryFactory.factory = { [self] in return query }
         services.application = application
+        services.persistence = persistence
     }
 
     @Test("doSearch: constructs query from given term, starts it; when finished notif arrives, stops it and returns results")
     func doSearch() async throws {
         subject.previousQueryString = "dummy"
+        persistence.methodsCalled = []
         query._resultCount = 1
         query._results = [MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10)]
         // part one: the search begins
@@ -29,6 +32,8 @@ private struct SearcherTests {
         }
         await #while(query.methodsCalled.isEmpty)
         #expect(subject.previousQueryString == "kMDItemDisplayName == \"testing\"cdw")
+        #expect(persistence.methodsCalled == ["saveCurrentSearch(_:)"])
+        #expect(persistence.search == subject.previousQueryString)
         let predicate = try #require(query._predicate)
         #expect(predicate.description == "kMDItemDisplayName ==[cdlw] \"testing\"") // I have no idea what the "l" is
         #expect(query._searchScopes as? [String] == [NSMetadataQueryLocalComputerScope])
@@ -58,9 +63,8 @@ private struct SearcherTests {
     func doSearchResults() async {
         query._resultCount = 1001
         query._results = Array(repeating: MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10), count: 1001)
-        var searchInfo: SearchInfo?
         Task {
-            searchInfo = try await subject.doSearch(
+            _ = try await subject.doSearch(
                 "kMDItemDisplayName == \"testing\"cdw",
                 scopes: [],
                 joiner: .noJoiner
@@ -80,6 +84,7 @@ private struct SearcherTests {
     @Test("doSearch: if option key is down, constructs previous query string but stops before searching")
     func doSearchOptionKeyDown() async throws {
         subject.previousQueryString = "dummy"
+        persistence.methodsCalled = []
         Task {
             _ = try await subject.doSearch(
                 "kMDItemDisplayName == \"testing\"cdw",
@@ -91,6 +96,8 @@ private struct SearcherTests {
         await #while(subject.previousQueryString == "dummy")
         #expect(subject.previousQueryString == "kMDItemDisplayName == \"testing\"cdw")
         #expect(query.methodsCalled.isEmpty)
+        #expect(persistence.methodsCalled == ["saveCurrentSearch(_:)"])
+        #expect(persistence.search == subject.previousQueryString)
     }
 
     @Test("doSearch: with scopes, uses scopes")
@@ -112,6 +119,7 @@ private struct SearcherTests {
     @Test("doSearch: with joiner, uses joiner .and")
     func doSearchJoinerAnd() async throws {
         subject.previousQueryString = "kMDItemDisplayName == \"previous\""
+        persistence.methodsCalled = []
         query._resultCount = 1
         query._results = [MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10)]
         Task {
@@ -123,12 +131,15 @@ private struct SearcherTests {
         }
         await #while(query.methodsCalled.isEmpty)
         #expect(subject.previousQueryString == "(kMDItemDisplayName == \"previous\") && (kMDItemDisplayName == \"testing\"cdw)") // *
+        #expect(persistence.methodsCalled == ["saveCurrentSearch(_:)"])
+        #expect(persistence.search == subject.previousQueryString)
         subject.stop()
     }
 
     @Test("doSearch: with joiner, uses joiner .or")
     func doSearchJoinerOr() async throws {
         subject.previousQueryString = "kMDItemDisplayName == \"previous\""
+        persistence.methodsCalled = []
         query._resultCount = 1
         query._results = [MockQueryItem(displayName: "name", path: "path", date: .distantPast, size: 10)]
         Task {
@@ -140,6 +151,8 @@ private struct SearcherTests {
         }
         await #while(query.methodsCalled.isEmpty)
         #expect(subject.previousQueryString == "(kMDItemDisplayName == \"previous\") || (kMDItemDisplayName == \"testing\"cdw)") // *
+        #expect(persistence.methodsCalled == ["saveCurrentSearch(_:)"])
+        #expect(persistence.search == subject.previousQueryString)
         subject.stop()
     }
 
@@ -183,6 +196,8 @@ private struct SearcherTests {
     func setPreviousQueryString() {
         subject.setPreviousQueryString("string")
         #expect(subject.previousQueryString == "string")
+        #expect(persistence.methodsCalled == ["saveCurrentSearch(_:)"])
+        #expect(persistence.search == "string")
     }
 
 }

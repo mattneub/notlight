@@ -58,7 +58,7 @@ private struct SearchKeysDatasourceTests {
 
     @Test("receive blurb: updates the data and table view while keeping the selection")
     func receiveBlurb() async throws {
-        makeWindow(view: tableView)
+        let window = makeWindow(view: tableView)
         let key = SearchKey(key: "key", title: "title", blurb: "blurb")
         let state = SearchKeysState(keys: [key], selectedRow: 0)
         await subject.present(state)
@@ -74,6 +74,7 @@ private struct SearchKeysDatasourceTests {
             let view = try #require(tableView.view(atColumn: 2, row: 0, makeIfNecessary: false) as? NSTableCellView)
             #expect(view.textField?.stringValue == "howdy")
         }
+        window.close()
     }
 
     @Test("receive changed: updates the data")
@@ -87,7 +88,7 @@ private struct SearchKeysDatasourceTests {
 
     @Test("receive editLastRow: edits the first column of the last row")
     func editLastRow() async throws {
-        makeWindow(view: tableView)
+        let window = makeWindow(view: tableView)
         let key = SearchKey(key: "key", title: "title", blurb: "blurb")
         let state = SearchKeysState(keys: [key])
         await subject.present(state)
@@ -96,6 +97,7 @@ private struct SearchKeysDatasourceTests {
         let field = try #require(view.textField)
         #expect(field.currentEditor() != nil)
         #expect(field.currentEditor()?.selectedRange == .init(location: 0, length: 5))
+        window.close()
     }
 
     @Test("rows are correctly constructed")

@@ -14,7 +14,7 @@ private struct MyURLFormatterTests {
 
     @Test("getObjectValue: turns path string into file URL")
     func getObjectValue() throws {
-        var result: AnyObject? = URL(string: "https://www.example.com")! as NSURL
+        var result: AnyObject? = URL(string: "http://www.example.com")! as NSURL
         let ok = subject.getObjectValue(&result, for: "/testing", errorDescription: nil)
         #expect(ok == true)
         let realResult = try #require(result! as? NSURL)

@@ -1,6 +1,6 @@
 import Testing
 @testable import NotLight3
-import Foundation
+import AppKit
 import WaitWhile
 
 private struct MainProcessorTests {
@@ -11,6 +11,8 @@ private struct MainProcessorTests {
     let persistence = MockPersistence()
     let appleScripter = MockAppleScripter()
     let beeper = MockBeeper()
+    let importer = MockImporter()
+    let exporter = MockExporter()
     let coordinator = MockRootCoordinator()
     let presenter = MockReceiverPresenter<Void, MainState>()
 
@@ -23,6 +25,8 @@ private struct MainProcessorTests {
         services.queryStringBuilder = builder
         services.persistence = persistence
         services.beeper = beeper
+        services.importer = importer
+        services.exporter = exporter
     }
 
     @Test("receive autoContainsMode: sets the state autoContainsMode and presents, and persists")
@@ -185,9 +189,8 @@ private struct MainProcessorTests {
         #expect(coordinator.methodsCalled == ["showResults(state:)"])
         #expect(coordinator.resultsState?.queryString == result.queryString)
         #expect(coordinator.resultsState?.results == result.results)
-        #expect(persistence.methodsCalled == ["saveTerm(_:)", "saveCurrentSearch(_:)"])
+        #expect(persistence.methodsCalled == ["saveTerm(_:)"])
         #expect(persistence.term == "howdy")
-        #expect(persistence.search == "queryString")
     }
 
     @Test("receive performSearch: if searcher searchProgress publishes, updates state progress, presents")
@@ -241,7 +244,7 @@ private struct MainProcessorTests {
         #expect(beeper.methodsCalled == ["beep()"])
     }
 
-    @Test("receive performSearch: if search throws bad query, shows alert")
+    @Test("receive performSearch: if search throws bad query, shows alert, still saves term")
     func performSearchThrowBadQuery() async {
         searcher.errorToThrow = .badQuery
         await subject.receive(.performSearch("howdy", .noJoiner))
@@ -249,18 +252,18 @@ private struct MainProcessorTests {
         #expect(searcher.term == "")
         await #while(coordinator.methodsCalled.isEmpty)
         #expect(coordinator.methodsCalled == ["showAlert(title:message:)"])
-        #expect(persistence.methodsCalled.isEmpty)
+        #expect(persistence.methodsCalled == ["saveTerm(_:)"])
         #expect(beeper.methodsCalled.isEmpty)
     }
 
-    @Test("receive performSearch: if search throws user stopped, does nothing")
+    @Test("receive performSearch: if search throws user stopped, does nothing, saves term")
     func performSearchThrowUserStopped() async {
         searcher.errorToThrow = .userStopped
         await subject.receive(.performSearch("howdy", .noJoiner))
         #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
         #expect(searcher.term == "")
         #expect(coordinator.methodsCalled.isEmpty)
-        #expect(persistence.methodsCalled.isEmpty)
+        #expect(persistence.methodsCalled == ["saveTerm(_:)"])
         #expect(beeper.methodsCalled.isEmpty)
     }
 
@@ -300,6 +303,16 @@ private struct MainProcessorTests {
         await subject.receive(.showFileSizes)
         #expect(persistence.methodsCalled == ["loadShowFileSizes()", "saveShowFileSizes(_:)"])
         #expect(persistence.boolSaved == false)
+    }
+
+    @Test("receive showImportExport: calls coordinator showImportExport")
+    func showImportExport() async {
+        let view = NSView()
+        await subject.receive(.showImportExport(view, NSRect(x: 0, y: 0, width: 10, height: 20)))
+        #expect(coordinator.methodsCalled == ["showImportExport(sourceRect:sourceView:edge:)"])
+        #expect(coordinator.sourceView === view)
+        #expect(coordinator.sourceRect == NSRect(x: 0, y: 0, width: 10, height: 20))
+        #expect(coordinator.edge == .maxY)
     }
 
     @Test("receive showModDates: toggles persistence showModDates")
@@ -373,4 +386,45 @@ private struct MainProcessorTests {
         #expect(coordinator.methodsCalled == ["bringMainToFront()"])
     }
 
+    @Test("import export delegate doSearch: does second part of performSearch")
+    func doSearch() async {
+        let result = SearchInfo(queryString: "query", results: [SearchResult(displayName: "name", path: "path", date: .distantPast, size: 10)])
+        searcher.resultToReturn = result
+        subject.state.scopes = [URL(string: "file:///testing")!]
+        await subject.doSearch("hooha")
+        #expect(searcher.methodsCalled == ["doSearch(_:scopes:joiner:)"])
+        #expect(searcher.term == "hooha")
+        #expect(searcher.scopes == [URL(string: "file:///testing")!])
+        #expect(searcher.joiner == .noJoiner)
+        #expect(coordinator.methodsCalled == ["showResults(state:)"])
+        #expect(coordinator.resultsState?.queryString == result.queryString)
+        #expect(coordinator.resultsState?.results == result.results)
+        #expect(presenter.statesPresented.count == 2)
+        #expect(presenter.statesPresented[0].progress == 0)
+        #expect(presenter.statesPresented[0].progressTotal == nil)
+        #expect(presenter.statesPresented[0].progressVisible == true)
+        #expect(presenter.statesPresented[1].progress == 0)
+        #expect(presenter.statesPresented[1].progressTotal == nil)
+        #expect(presenter.statesPresented[1].progressVisible == false)
+    }
+
+    @Test("loadSearch: calls import loadSearch, calls searcher setPrevious, sets state scopes and presents")
+    func loadSearch() async {
+        importer.term = "howdy"
+        importer.paths = ["/a/b/c/"]
+        await subject.loadSearch()
+        #expect(searcher.methodsCalled == ["setPreviousQueryString(_:)"])
+        #expect(searcher.queryString == "howdy")
+        #expect(subject.state.scopes == [URL(string: "file:///a/b/c/")!])
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("saveSearch: calls exporter saveSearch")
+    func saveSearch() async {
+        subject.state.scopes = [URL(string: "file:///a/b/c/")!]
+        await subject.saveSearch("howdy")
+        #expect(exporter.methodsCalled == ["saveSearch(search:paths:)"])
+        #expect(exporter.term == "howdy")
+        #expect(exporter.paths == [URL(string: "file:///a/b/c/")!])
+    }
 }

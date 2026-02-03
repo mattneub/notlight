@@ -2,12 +2,12 @@ import AppKit
 import UniformTypeIdentifiers
 
 protocol ExporterType {
-    func saveSearch(search: String, paths: [URL])
+    func saveSearch(search: String, paths: [URL]) async
 }
 
 final class Exporter: ExporterType {
-    func saveSearch(search: String, paths: [URL]) {
-        let save = NSSavePanel()
+    func saveSearch(search: String, paths: [URL]) async {
+        let save = services.savePanelFactory.makeSavePanel()
         save.allowedContentTypes = [.xml]
         save.title = "Save Search"
         save.message = "Save the current search as an XML file:"
@@ -19,7 +19,7 @@ final class Exporter: ExporterType {
                     let xmlData = try self.currentSearchAsXML(search: search, paths: paths)
                     try xmlData.write(to: path, options: .atomic)
                 } catch {
-                    NSApplication.shared.presentError(error)
+                    _ = services.application.presentError(error)
                 }
             }
         }

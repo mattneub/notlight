@@ -136,11 +136,10 @@ final class RootCoordinator: RootCoordinatorType {
         guard let mainWindow else {
             return
         }
-        let alert = NSAlert()
+        let alert = services.alertFactory.makeAlert()
         alert.alertStyle = .informational
         alert.messageText = title
         alert.informativeText = message
         await alert.beginSheetModal(for: mainWindow)
     }
-
 }
