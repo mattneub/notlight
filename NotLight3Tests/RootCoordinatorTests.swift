@@ -54,6 +54,8 @@ private struct RootCoordinatorTests {
 
     @Test("showDateAssistant: assembles the date module, creates window and shows it")
     func showDateAssistant() async throws {
+        let application = MockApplication()
+        services.application = application
         subject.showDateAssistant()
         let processor = try #require(subject.dateProcessor as? DateProcessor)
         #expect(processor.coordinator === subject)
@@ -61,11 +63,16 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         await #while(subject.dateAssistantWindow == nil)
         let window = try #require(subject.dateAssistantWindow)
+        #expect(window is NSPanel)
         #expect(window.contentViewController == viewController)
         #expect(window.isResizable == false)
         #expect(window.title == "Date Assistant")
-        #expect(window.frame.size == CGSize(width: 316, height: 222 + 32)) // titlebar height
+        #expect(window.frame.size == CGSize(width: 316, height: 222 + 24)) // titlebar height
         #expect(window.isReleasedWhenClosed == false)
+        #expect(application.methodsCalled == ["addWindowsItem(_:title:filename:)"])
+        #expect(application.window === window)
+        #expect(application.title == window.title)
+        #expect(application.filename == false)
         window.close()
     }
 

@@ -30,6 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         rootCoordinator.createMainModule(window: window)
         window.center()
+        window.isReleasedWhenClosed = false
         window.title = "NotLight"
         window.makeKeyAndOrderFront(nil)
         window.setFrameAutosaveName("NotLight_Main_Window")

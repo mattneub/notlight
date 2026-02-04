@@ -4,6 +4,7 @@ import AppKit
 protocol ApplicationType {
     var optionKeyDown: Bool { get }
     func presentError(_ error: any Error) -> Bool
+    func addWindowsItem(_: NSWindow, title: String, filename: Bool)
 }
 
 extension NSApplication: ApplicationType {

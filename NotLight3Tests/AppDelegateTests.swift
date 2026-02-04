@@ -11,6 +11,7 @@ private struct AppDelegateTests {
         subject.bootstrap()
         let window = try #require(subject.window)
         #expect(window.title == "NotLight")
+        #expect(window.isReleasedWhenClosed == false)
         #expect(window.styleMask == [.miniaturizable, .closable, .titled])
         #expect(window.frameAutosaveName == "NotLight_Main_Window")
         #expect(window.frame.size == CGSize(width: 480, height: 272 + 32)) // title bar height

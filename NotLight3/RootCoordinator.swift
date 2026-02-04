@@ -85,16 +85,17 @@ final class RootCoordinator: RootCoordinatorType {
         viewController.loadViewIfNeeded()
         Task {
             try? await Task.sleep(for: .seconds(0.2))
-            let window = NSWindow(
+            let window = NSPanel(
                 contentRect: NSRect(x: 0, y: 0, width: 316, height: 222),
-                styleMask: [.miniaturizable, .closable, .titled],
+                styleMask: [.utilityWindow, .closable, .titled],
                 backing: .buffered,
                 defer: false
             )
+            services.application.addWindowsItem(window, title: "Date Assistant", filename: false)
             window.center()
             window.title = "Date Assistant"
             window.contentViewController = viewController
-            window.isReleasedWhenClosed = false // memory management dance
+            window.isReleasedWhenClosed = false
             window.makeKeyAndOrderFront(nil)
             self.dateAssistantWindow = window
         }
