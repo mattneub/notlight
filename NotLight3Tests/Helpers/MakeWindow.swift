@@ -28,3 +28,12 @@ func makeWindow(view: NSView) -> NSWindow {
     window.isReleasedWhenClosed = false
     return window
 }
+
+nonisolated
+func closeWindows() {
+    Task { @MainActor in
+        for window in NSApplication.shared.windows {
+            window.close()
+        }
+    }
+}

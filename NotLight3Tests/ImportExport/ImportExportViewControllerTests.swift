@@ -3,12 +3,16 @@ import Testing
 import AppKit
 import WaitWhile
 
-private struct ImportExportViewControllerTests {
+private struct ImportExportViewControllerTests: ~Copyable {
     let subject = ImportExportViewController()
     let processor = MockProcessor<ImportExportAction, ImportExportState, Void>()
 
     init() {
         subject.processor = processor
+    }
+
+    deinit {
+        closeWindows()
     }
 
     @Test("nibName is correct")
@@ -36,7 +40,6 @@ private struct ImportExportViewControllerTests {
     func viewDidAppear() {
         let window = makeWindow(viewController: subject)
         #expect(window.isResizable == false)
-        window.close()
     }
 
     @Test("present: sets currentSearchLabel text")
@@ -55,7 +58,7 @@ private struct ImportExportViewControllerTests {
 
     @Test("doSaveThisSearch: stops editing, sends saveSearch")
     func doSaveThisSearch() async {
-        let window = makeWindow(viewController: subject)
+        makeWindow(viewController: subject)
         subject.loadViewIfNeeded()
         subject.currentSearchLabel.isEditable = true
         subject.currentSearchLabel.becomeFirstResponder()
@@ -65,12 +68,11 @@ private struct ImportExportViewControllerTests {
         #expect(subject.currentSearchLabel.currentEditor() == nil)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .saveSearch("howdy"))
-        window.close()
     }
 
     @Test("doDoThisSearch: stops editing, sends doSearch")
     func doDoThisSearch() async {
-        let window = makeWindow(viewController: subject)
+        makeWindow(viewController: subject)
         subject.loadViewIfNeeded()
         subject.currentSearchLabel.isEditable = true
         subject.currentSearchLabel.becomeFirstResponder()
@@ -80,12 +82,11 @@ private struct ImportExportViewControllerTests {
         #expect(subject.currentSearchLabel.currentEditor() == nil)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .doSearch("howdy"))
-        window.close()
     }
 
     @Test("doubleClick: makes search label editable")
     func doubleClick() throws {
-        let window = makeWindow(viewController: subject)
+        makeWindow(viewController: subject)
         subject.loadViewIfNeeded()
         let tapper = try #require(subject.currentSearchLabel.gestureRecognizers.first)
         subject.doubleClick(tapper)
@@ -96,6 +97,5 @@ private struct ImportExportViewControllerTests {
         #expect(subject.currentSearchLabel.focusRingType == .none)
         #expect(subject.currentSearchLabel.currentEditor() != nil)
         #expect(tapper.isEnabled == false)
-        window.close()
     }
 }

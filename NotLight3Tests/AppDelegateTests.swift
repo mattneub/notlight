@@ -2,7 +2,11 @@ import Testing
 @testable import NotLight3
 import AppKit
 
-private struct AppDelegateTests {
+private struct AppDelegateTests: ~Copyable {
+    deinit {
+        closeWindows()
+    }
+
     @Test("bootstrap: creates and configures the main window; calls root coordinator createMainModule")
     func bootstrap() throws {
         let coordinator = MockRootCoordinator()
@@ -19,8 +23,6 @@ private struct AppDelegateTests {
         // #expect(NSApplication.shared.mainMenu != nil)
         #expect(coordinator.methodsCalled == ["createMainModule(window:)"])
         #expect(coordinator.window === window)
-        window.isReleasedWhenClosed = false
-        window.close()
     }
 
     @Test("bootstrap: if there is an Option menu in the app's main menu, makes app delegate its submenu's delegate")
@@ -36,9 +38,6 @@ private struct AppDelegateTests {
         subject.rootCoordinator = coordinator
         subject.bootstrap()
         #expect(submenu.delegate === subject)
-        let window = try #require(subject.window)
-        window.isReleasedWhenClosed = false
-        window.close()
     }
 
     @Test("doShowHelp: calls bundle for URL and workspace to open it")
@@ -49,7 +48,7 @@ private struct AppDelegateTests {
         services.bundle = bundle
         bundle.urlToReturn = URL(string: "file:///testing")!
         let subject = AppDelegate()
-        subject.doShowHelp(self)
+        subject.doShowHelp(subject)
         #expect(bundle.methodsCalled == ["url(forResource:withExtension:subdirectory:)"])
         #expect(bundle.name == "notLightHelp")
         #expect(bundle.ext == "html")

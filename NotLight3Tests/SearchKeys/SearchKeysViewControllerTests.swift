@@ -3,7 +3,7 @@ import Testing
 import AppKit
 import WaitWhile
 
-private struct SearchKeysViewControllerTests {
+private struct SearchKeysViewControllerTests: ~Copyable {
     let subject = SearchKeysViewController()
     let processor = MockProcessor<SearchKeysAction, SearchKeysState, SearchKeysEffect>()
     let datasource = MockSearchKeysDatasource()
@@ -11,6 +11,10 @@ private struct SearchKeysViewControllerTests {
     init() {
         subject.processor = processor
         subject.datasource = datasource
+    }
+
+    deinit {
+        closeWindows()
     }
 
     @Test("nibName: is correct")
@@ -54,7 +58,6 @@ private struct SearchKeysViewControllerTests {
         subject.viewDidAppear()
         #expect(window.isResizable == false)
         #expect(window.minSize == CGSize(width: 480, height: 272))
-        window.close()
     }
 
     @Test("present: based on state selected row, configures blurbField")
@@ -98,12 +101,11 @@ private struct SearchKeysViewControllerTests {
         #expect(window.firstResponder == window)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .add)
-        window.close()
     }
 
     @Test("doDelete: deletes selected row, ends editing, sends delete")
     func doDelete() async throws {
-        let window = makeWindow(viewController: subject)
+        makeWindow(viewController: subject)
         let textField = NSTextField()
         subject.view.addSubview(textField)
         textField.becomeFirstResponder()
@@ -115,12 +117,11 @@ private struct SearchKeysViewControllerTests {
         #expect(textField.currentEditor() == nil)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .delete(10))
-        window.close()
     }
 
     @Test("doDelete: if no selected row, does nothing")
     func doDeleteNoSelection() async throws {
-        let window = makeWindow(viewController: subject)
+        makeWindow(viewController: subject)
         let textField = NSTextField()
         subject.view.addSubview(textField)
         textField.becomeFirstResponder()
@@ -132,12 +133,11 @@ private struct SearchKeysViewControllerTests {
         try? await Task.sleep(for: .seconds(0.1))
         #expect(textField.currentEditor() != nil)
         #expect(processor.thingsReceived == [.initialData])
-        window.close()
     }
 
     @Test("doDone: ends editing, sends done")
     func doDone() async throws {
-        let window = makeWindow(viewController: subject)
+        makeWindow(viewController: subject)
         let textField = NSTextField()
         subject.view.addSubview(textField)
         textField.becomeFirstResponder()
@@ -146,7 +146,6 @@ private struct SearchKeysViewControllerTests {
         #expect(textField.currentEditor() == nil)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .done)
-        window.close()
     }
 
     @Test("didEndEditing: sends changed with row of sender, column of sender, text of sender")

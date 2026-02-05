@@ -3,8 +3,12 @@ import Testing
 import AppKit
 import WaitWhile
 
-private struct RootCoordinatorTests {
+private struct RootCoordinatorTests: ~Copyable {
     let subject = RootCoordinator()
+
+    deinit {
+        closeWindows()
+    }
 
     @Test("createMainModule: creates the main module")
     func createMainModule() throws {
@@ -16,14 +20,13 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         #expect(subject.mainViewController === viewController)
         #expect(window.contentViewController === viewController)
-        window.close()
     }
 
     @Test("showResults: assembles the results module, sets the state, presents the view controller")
     func showResults() async throws {
         let state = ResultsState(results: [.init(displayName: "name", path: "path", date: .distantPast, size: 10)])
         let mainViewController = NSViewController()
-        let window = makeWindow(viewController: mainViewController)
+        makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         subject.showResults(state: state)
         let processor = try #require(subject.resultsProcessor as? ResultsProcessor)
@@ -32,14 +35,13 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         await #while(mainViewController.presentedViewControllers?.first == nil)
         #expect(mainViewController.presentedViewControllers?.first === viewController)
-        window.close()
     }
 
     @Test("showSearchKeys: assembles the search keys module, presents the view controller")
     func showSearchKeys() async throws {
         subject.mainProcessor = MainProcessor()
         let mainViewController = NSViewController()
-        let window = makeWindow(viewController: mainViewController)
+        makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         subject.showSearchKeys()
         let processor = try #require(subject.searchKeysProcessor as? SearchKeysProcessor)
@@ -49,7 +51,6 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         await #while(mainViewController.presentedViewControllers?.first == nil)
         #expect(mainViewController.presentedViewControllers?.first === viewController)
-        window.close()
     }
 
     @Test("showDateAssistant: assembles the date module, creates window and shows it")
@@ -73,14 +74,13 @@ private struct RootCoordinatorTests {
         #expect(application.window === window)
         #expect(application.title == window.title)
         #expect(application.filename == false)
-        window.close()
     }
 
     @Test("showImportExport: assembles import export module, presents as popover")
     func showImportExport() async throws {
         subject.mainProcessor = MainProcessor()
         let mainViewController = NSViewController()
-        let window = makeWindow(viewController: mainViewController)
+        makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         let rect = NSRect(x: 0, y: 0, width: 100, height: 200)
         subject.showImportExport(sourceRect: rect, sourceView: mainViewController.view, edge: .minY)
@@ -91,20 +91,18 @@ private struct RootCoordinatorTests {
         #expect(viewController.processor === processor)
         await #while(mainViewController.presentedViewControllers?.first == nil)
         #expect(mainViewController.presentedViewControllers?.first === viewController)
-        window.close()
     }
 
     @Test("dismiss: dismisses the presented view controller")
     func dismiss() throws {
         let mainViewController = NSViewController()
-        let window = makeWindow(viewController: mainViewController)
+        makeWindow(viewController: mainViewController)
         subject.mainViewController = mainViewController
         let presented = NSViewController()
         mainViewController.presentAsSheet(presented)
         #expect(mainViewController.presentedViewControllers?.count == 1)
         subject.dismiss()
         #expect(mainViewController.presentedViewControllers?.count == 0)
-        window.close()
     }
 
     @Test("bringMainToFront: brings the main window key and front")
@@ -114,7 +112,6 @@ private struct RootCoordinatorTests {
         subject.mainWindow = window
         subject.bringMainToFront()
         #expect(window.methodsCalled == ["makeKeyAndOrderFront(_:)"])
-        window.close()
     }
 
     @Test("showAlert: puts up alert")
@@ -129,7 +126,6 @@ private struct RootCoordinatorTests {
         #expect(alert.informativeText == "Message")
         #expect(alert.methodsCalled == ["beginSheetModal(for:)"])
         #expect(alert.forWindow === window)
-        window.close()
     }
 }
 

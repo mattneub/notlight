@@ -3,12 +3,16 @@ import Testing
 import AppKit
 import WaitWhile
 
-private struct MainViewControllerTests {
+private struct MainViewControllerTests: ~Copyable {
     let subject = MainViewController()
     let processor = MockProcessor<MainAction, MainState, Void>()
 
     init() {
         subject.processor = processor
+    }
+
+    deinit {
+        closeWindows()
     }
 
     @Test("nibName: is correct")
@@ -225,7 +229,7 @@ private struct MainViewControllerTests {
 
     @Test("present: sets folder text field quantity and values")
     func presentFolderTextField() async throws {
-        let window = makeWindow(viewController: subject)
+        makeWindow(viewController: subject)
         let scopes = [URL(string: "file:///testing")!, URL(string: "file:///testing2")!]
         await subject.present(MainState(scopes: scopes))
         await #while(subject.folderTextFields.count < 3)
@@ -235,7 +239,6 @@ private struct MainViewControllerTests {
         #expect(fields[0].objectValue as? URL == URL(string: "file:///testing")!)
         #expect(fields[1].objectValue as? URL == URL(string: "file:///testing2")!)
         #expect(fields[2].objectValue as? URL == nil)
-        window.close()
     }
 
     @Test("doSearchTextField: sends processor performSearch with text field object value and no joiner")
@@ -397,7 +400,6 @@ private struct MainViewControllerTests {
         subject.controlTextDidChange(notification)
         await #while(processor.thingsReceived.count < 2)
         #expect(processor.thingsReceived.last == .termChanged("howdy"))
-        window.close()
     }
 
     @Test("showFileIcons: sends showFileIcons")

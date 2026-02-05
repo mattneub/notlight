@@ -3,12 +3,16 @@ import Testing
 import AppKit
 import WaitWhile
 
-private struct DateViewControllerTests {
+private struct DateViewControllerTests: ~Copyable {
     let subject = DateViewController()
     let processor = MockReceiver<DateAction>()
 
     init() {
         subject.processor = processor
+    }
+
+    deinit {
+        closeWindows()
     }
 
     @Test("nibName is correct")
@@ -55,7 +59,6 @@ private struct DateViewControllerTests {
         let window = makeWindow(viewController: subject)
         #expect(window.minSize == CGSize(width: 316, height: 222))
         #expect(window.isResizable == false)
-        window.close()
     }
 
     @Test("present: configures the three popups, sets the date picker")

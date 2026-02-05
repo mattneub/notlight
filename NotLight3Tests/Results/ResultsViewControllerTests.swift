@@ -3,7 +3,7 @@ import Testing
 import AppKit
 import WaitWhile
 
-private struct ResultsViewControllerTests {
+private struct ResultsViewControllerTests: ~Copyable {
     let subject = ResultsViewController()
     let processor = MockProcessor<ResultsAction, ResultsState, Void>()
     let datasource = MockResultsDatasource()
@@ -11,6 +11,10 @@ private struct ResultsViewControllerTests {
     init() {
         subject.processor = processor
         subject.datasource = datasource
+    }
+
+    deinit {
+        closeWindows()
     }
 
     @Test("nibName: is correct")
@@ -48,7 +52,6 @@ private struct ResultsViewControllerTests {
         let window = makeWindow(viewController: subject)
         #expect(window.minSize == CGSize(width: 800, height: 360))
         #expect(window.frameAutosaveName == "NotLight_Results_Window")
-        window.close()
     }
 
     @Test("viewWillDisappear: gathers table column info, sends tableColumns to processor")
@@ -126,7 +129,7 @@ private struct ResultsViewControllerTests {
 
     @Test("doClose: sends processor close")
     func close() async {
-        subject.doClose(self)
+        subject.doClose(subject)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.close])
     }
