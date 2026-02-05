@@ -63,7 +63,7 @@ A Spotlight query can be a boolean combination of search terms. Two terms can be
  (kMDItemContentType == "audio"wc || kMDItemContentType = "video"wc)) &amp;&amp;
  (kMDItemFSContentChangeDate > $time.this_week)</pre>
  
-<p>That expression means: An audio or video file, whose authors include Kevin or Steve, and that was modified within the past week. Wonderful — except that you can’t form and submit that search using Apple's own built-in GUI front ends! The only way you could do it would be to use <tt>mdfind</tt> in the Terminal.</p>
+<p>That expression means: An audio or video file, whose authors include Kevin or Steve, and that was modified within the past week. Wonderful — except that you can’t form and submit that search using Apple’s own built-in GUI front ends! The only way you could do it would be to use <tt>mdfind</tt> in the Terminal.</p>
 
 <p>And that brings me to the purpose of NotLight. Between Apple’s Spotlight GUI front ends and the Terminal, there needs to be a simple GUI front end that helps the user form real Spotlight searches. And that’s what NotLight is intended to be.</p>
 
@@ -210,14 +210,18 @@ If Cocoatech’s <a href="http://www.cocoatech.com/pf4/">Path Finder</a> is runn
 
 <p>That brings me to the <b>power-user way</b> for forming complex searches. The easy mode of forming a complex search simply iterates one search term at a time: you do a search, then restrict it with Search Within or expand upon it with Search Also. But let’s say you know right from the start that you want to form an AND search. Then you could do this: Create the first term, and click Search, but as you do, <i>hold down the Option key</i>. This means: “Don’t actually do the search! Just create the search term and keep it as the current search, as if you had done the search.” Then you would create the second term. At this point you could click Search Within and do the search — or, you could click Search Within while holding the Option key, causing the new term to be ANDed to the current search, still without actually doing the search.</p>
 
-<!--
-<p>At any time, you can inspect the current search that's being assembled, by clicking the “Mary Poppins” button to see the popover. If you're satisfied that this is the search you want, you can perform it. You don’t even need to dismiss the popover first; you can do the search by clicking the Do This Search button in the popover.</p>
+<p>But wait, there’s more! At any time, you can <b>inspect</b> the current search that’s being assembled, by clicking the “Mary Poppins” button at the lower left of the window to see the current search in a popover. If you’re satisfied that this is the search you want, you can perform it. You don’t even need to dismiss the popover first; you can do the search by clicking the Do This Search button in the popover.</p>
+
+<div align="center">
+<img src="previousSearch.png" alt="" >
+</div>
 
 <p>
-The <b>super power-user way</b> to form a search is to type it directly. The field in the “Mary Poppins” popover that displays the current search can be made editable — just double-click it. Now, using <tt>mdfind</tt> query syntax, type a query or edit an existing query, and then perform it by clicking the Do This Search button. This way, you can construct really complex Boolean search requests involving parentheses and so forth.
+The field in the “Mary Poppins” popover that displays the current search can be made editable — just double-click it. That gives you an even <b>more powerful power-user way</b> to enter a search: you can type it directly, and then perform it by clicking the Do This Search button. That way, you can construct really complex Boolean search requests involving parentheses and so forth. However, you also have to really know what you’re doing.
 </p>
 
-<p>(Wondering about the other two buttons in the “Mary Poppins” popover? Don't worry, I'll come to them in a bit.)</p>
+<!--
+<p>(Wondering about the other two buttons in the “Mary Poppins” popover? Don’t worry, I’ll come to them in a bit.)</p>
 
 <blockquote><p>
 WARNING: Unfortunately, <tt>mdfind</tt> query syntax is very poorly documented by Apple. There’s a somewhat useful discussion <a href="http://developer.apple.com/documentation/Carbon/Conceptual/SpotlightQuery/Concepts/QueryFormat.html">here</a>, but what it documents is not the same syntax — it’s NSPredicate syntax, which is not what NotLight (or <tt>mdfind</tt>) uses. There’s also a document <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Predicates/Articles/pSpotlightComparison.html">describing the differences</a> between NSPredicate and MDQuery syntax, and this can be used to help deduce MDQuery syntax. The <tt>mdfind</tt> man page is also a little help, but not much. If you do a Google search, you can sometimes find useful collections of examples like <a href="http://osxnotes.net/spotlight.html">this one</a>.
@@ -265,16 +269,6 @@ These features also work with Cocoatech’s <a href="http://www.cocoatech.com/pf
 
 <p>If you use the folder restriction feature, just remember that the way Spotlight works is that the restriction applies to the <i>entire</i> search, not (like everything else in the window) just to the term you are forming.</p>
 
-<!--
-<h2>Saving and loading searches</h2>
-
-<p>You can <em>save a search</em> that you are likely to use frequently, so that you can load it again later. To do so, summon the “Mary Poppins” popover and click the Save This Search button (Command-S). What is saved is what’s displayed as the current search right now, along with any folder restrictions. (In other words, the checkboxes and the search string field in the main window are irrelevant, because you have not actually formed a search with that information until you’ve either performed the search or used the Option key to move that information into the current search.)</p>
-
-<p>The saved search is very simple XML, which is cool because it means you can edit the search with any text editor.</p>
-
-<p>To <em>load a saved search</em>, summon the “Mary Poppins” popover and click the Load a Search button. The search becomes the current search, but it is not performed unless you now also click Do This Search.</p>
--->
-
 <h2>Customizing the search key popup</h2>
 
 <p>
@@ -291,6 +285,20 @@ If you find yourself wishing to search on a search key other than the keys provi
 <p>
 It is crucial to know and to enter correctly in the second column the MDQuery search key you want to use, so that NotLight will form the query correctly. (<b>Terminology warning:</b> Apple calls these search keys “metadata attributes”.) Spotlight’s default search keys are listed <a href="https://developer.apple.com/library/archive/documentation/CoreServices/Reference/MetadataAttributesRef/Reference/CommonAttrs.html">on this page</a>. Or, use the <tt>mdls</tt> command in the Terminal to see a list of all search keys attached to a given file. Or, say <tt>mdimport -A</tt> or <tt>mdimport -X</tt> in the Terminal to see a list of all search keys currently being indexed.
 </p>
+
+<h2>Saving and loading searches</h2>
+
+<p>You can <em>save a search</em> that you are likely to use frequently, so that you can load it again later. To do so, summon the “Mary Poppins” popover and click the Save This Search button.</p> <!-- (Command-S) -->
+
+<div align="center">
+<img src="saveSearch.png" alt="" >
+</div>
+
+<p>What is saved is what’s displayed as the current search right now, along with any folder restrictions. (In other words, the checkboxes and the search string field in the main window are irrelevant, because you have not actually formed a search with that information until you’ve either performed the search or used the Option key to move that information into the current search.)</p>
+
+<p>The saved search is very simple XML, which is cool because it means you can edit the search with any text editor.</p>
+
+<p>To <em>load a saved search</em>, summon the “Mary Poppins” popover and click the Load a Search button. The search becomes the current search, but it is not performed unless you now also click Do This Search.</p>
 
 <h2>Acknowledgments</h2>
 <p>
