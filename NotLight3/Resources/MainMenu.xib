@@ -142,6 +142,12 @@
                                     <action selector="copy:" target="-1" id="G1f-GL-Joy"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Copy" alternate="YES" keyEquivalent="c" id="iB9-Nn-wE8">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="copy:" target="-1" id="8zS-TF-7cG"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Paste" keyEquivalent="v" id="gVA-U4-sdL">
                                 <connections>
                                     <action selector="paste:" target="-1" id="UvS-8e-Qdg"/>
@@ -359,6 +365,12 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Uwj-9d-ROx"/>
+                            <menuItem title="Reveal In Finder" keyEquivalent="R" id="tKq-bc-O0O" userLabel="Reveal In Finder">
+                                <connections>
+                                    <action selector="revealInFinder:" target="-1" id="TMu-vu-0zp"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="8N9-3V-gbe"/>
                             <menuItem title="Search Keys..." id="Fng-XR-pSg">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>

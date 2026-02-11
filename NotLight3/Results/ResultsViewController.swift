@@ -27,6 +27,10 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    lazy var contextualMenu = NSMenu().applying {
+        $0.delegate = self
+    }
+
     lazy var datasource: (any TableViewDatasourceType<Void, ResultsState>) = ResultsDatasource(
         tableView: tableView,
         processor: processor
@@ -35,6 +39,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.doubleAction = #selector(doDoubleAction) // target is found via nil-targeting
+        tableView.menu = contextualMenu
         Task {
             await processor?.receive(.initialData)
         }
@@ -114,9 +119,48 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
         guard row != -1 else { // e.g. maybe user double clicked a column header
             return
         }
-        let selectedRows = sender.selectedRowIndexes
+        let selectedRow = sender.selectedRow // there can be Only One
         Task {
-            await processor?.receive(.revealItems(forRows: selectedRows))
+            await processor?.receive(.revealItem(forRow: selectedRow))
         }
+    }
+}
+
+extension ResultsViewController: NSUserInterfaceValidations {
+    func validateUserInterfaceItem(_ item: any NSValidatedUserInterfaceItem) -> Bool {
+        if let action = item.action {
+            switch action {
+            case #selector(copy(_:)), #selector(revealInFinder(_:)):
+                return self.tableView.selectedRowIndexes.count > 0
+            default: break
+            }
+        }
+        return true
+    }
+
+    @objc func copy(_ sender: NSMenuItem) {
+        let forceDisplayName = sender.title.contains("Display Name")
+        Task {
+            await processor?.receive(.copy(tableView.selectedRowIndexes, forceDisplayName))
+        }
+    }
+
+    @objc func revealInFinder(_ sender: NSMenuItem) {
+        let selectedRow = tableView.selectedRow // there can be Only One
+        Task {
+            await processor?.receive(.revealItem(forRow: selectedRow))
+        }
+    }
+}
+
+extension ResultsViewController: NSMenuDelegate {
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        menu.removeAllItems()
+        if tableView.clickedRow < 0 || tableView.selectedRow < 0 {
+            return
+        }
+        menu.addItem(withTitle: "Copy Paths", action: #selector(copy(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Copy Display Names", action: #selector(copy(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "Reveal In Finder", action: #selector(revealInFinder(_:)), keyEquivalent: "")
     }
 }

@@ -3,14 +3,14 @@ import Cocoa
 class FolderTextField: NSTextField {
     override init(frame: NSRect) {
         super.init(frame: frame)
-        registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
+        registerForDraggedTypes([.fileURL])
         drawsBackground = true
         formatter = MyURLFormatter()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
+        registerForDraggedTypes([.fileURL])
         drawsBackground = true
         formatter = MyURLFormatter()
     }

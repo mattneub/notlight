@@ -11,6 +11,12 @@ final class ResultsProcessor: Processor {
             coordinator?.dismiss()
         case .columnWidths(let array):
             services.persistence.saveColumns(array)
+        case .copy(let indexSet, let forceDisplayName):
+            let items = indexSet.map { state.results[$0] }
+            let displayName: Bool = services.application.optionKeyDown || forceDisplayName
+            let keypath = displayName ? \SearchResult.displayName : \SearchResult.path
+            let itemsForPasteboard = items.map { $0[keyPath: keypath] }
+            services.pasteboarder.putOnPasteboard(itemsForPasteboard.joined(separator: "\n"))
         case .initialData:
             if services.persistence.loadShowFileIcons() {
                 // the searcher didn't fetch icons, so to display them we must fetch them now
@@ -26,14 +32,13 @@ final class ResultsProcessor: Processor {
             if let columns = services.persistence.loadColumns(array) {
                 await presenter?.receive(.columnWidths(columns))
             }
-        case .revealItems(let rows):
-            let paths = rows.map { state.results[$0] }.map(\.path)
-            // TODO: deal with possible multiple selection being too large
+        case .revealItem(let row):
+            let path = state.results[row].path
             services.workspace.activateFileViewerSelecting(
-                paths.map { URL(filePath: $0, directoryHint: .inferFromPath, relativeTo: nil) }
+                [URL(filePath: path, directoryHint: .inferFromPath, relativeTo: nil)]
             )
         case .selectedRow(let row):
-            state.selectedPath = state.results[row].path
+            state.selectedPath = row < 0 ? "" : state.results[row].path
             await presenter?.present(state)
         case .updateResults(let sortDescriptors):
             state.results = updatedResults(sortDescriptors)

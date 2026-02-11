@@ -8,12 +8,16 @@ private struct ResultsProcessorTests {
     let presenter = MockReceiverPresenter<ResultsEffect, ResultsState>()
     let workspace = MockWorkspace()
     let persistence = MockPersistence()
+    let application = MockApplication()
+    let pasteboarder = MockPasteboarder()
 
     init() {
         subject.coordinator = coordinator
         subject.presenter = presenter
         services.workspace = workspace
         services.persistence = persistence
+        services.application = application
+        services.pasteboarder = pasteboarder
     }
 
     @Test("receive close: calls coordinator dismiss()")
@@ -28,6 +32,28 @@ private struct ResultsProcessorTests {
         await subject.receive(.columnWidths(columns))
         #expect(persistence.methodsCalled == ["saveColumns(_:)"])
         #expect(persistence.columnWidthsSaved == columns)
+    }
+
+    @Test("receive copy: copies paths or display names for index set, obeying Bool and optionKeyDown")
+    func copy() async {
+        subject.state.results = [
+            .init(displayName: "name", path: "path", date: .distantPast, size: 10),
+            .init(displayName: "name2", path: "path2", date: .distantPast, size: 10),
+        ]
+        await subject.receive(.copy([0, 1], false))
+        #expect(pasteboarder.methodsCalled == ["putOnPasteboard(_:)"])
+        #expect(pasteboarder.text == "path\npath2")
+        //
+        pasteboarder.methodsCalled = []
+        await subject.receive(.copy([0, 1], true))
+        #expect(pasteboarder.methodsCalled == ["putOnPasteboard(_:)"])
+        #expect(pasteboarder.text == "name\nname2")
+        //
+        pasteboarder.methodsCalled = []
+        application.optionKeyDownToReturn = true
+        await subject.receive(.copy([0, 1], false))
+        #expect(pasteboarder.methodsCalled == ["putOnPasteboard(_:)"])
+        #expect(pasteboarder.text == "name\nname2")
     }
 
     @Test("receive initialData: consults persistence, gets icons from workspace if needed, configures column visibility, presents")
@@ -81,14 +107,13 @@ private struct ResultsProcessorTests {
         #expect(presenter.thingsReceived == [])
     }
 
-    @Test("receive revealItems: calls workspace activate with urls for paths")
+    @Test("receive revealItem: calls workspace activate with url for path")
     func revealItems() async {
         subject.state.results = [
             .init(displayName: "name1", path: "/container1/path1", date: .distantPast, size: 10),
             .init(displayName: "name2", path: "/container2/path2", date: .distantPast, size: 10),
         ]
-        let indexSet = IndexSet([0])
-        await subject.receive(.revealItems(forRows: indexSet))
+        await subject.receive(.revealItem(forRow: 0))
         #expect(workspace.methodsCalled == ["activateFileViewerSelecting(_:)"])
         #expect(workspace.urls == [URL(string: "file:///container1/path1")])
     }
@@ -98,6 +123,15 @@ private struct ResultsProcessorTests {
         subject.state.results = [.init(displayName: "name", path: "path", date: .distantPast, size: 10)]
         await subject.receive(.selectedRow(0))
         #expect(subject.state.selectedPath == "path")
+        #expect(presenter.statesPresented == [subject.state])
+    }
+
+    @Test("receive selectedRow: for -1 sets state selectedPath to empty string, presents")
+    func selectedRowMinusOne() async {
+        subject.state.selectedPath = "yoho"
+        subject.state.results = [.init(displayName: "name", path: "path", date: .distantPast, size: 10)]
+        await subject.receive(.selectedRow(-1))
+        #expect(subject.state.selectedPath == "")
         #expect(presenter.statesPresented == [subject.state])
     }
 

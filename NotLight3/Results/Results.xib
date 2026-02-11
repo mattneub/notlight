@@ -22,13 +22,13 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <scrollView autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xe0-pt-m1g">
-                    <rect key="frame" x="30" y="50" width="700" height="201"/>
+                    <rect key="frame" x="30" y="50" width="660" height="143"/>
                     <clipView key="contentView" drawsBackground="NO" id="w1i-qM-3RV">
-                        <rect key="frame" x="1" y="1" width="698" height="199"/>
+                        <rect key="frame" x="1" y="1" width="658" height="141"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="22" headerView="2wC-c1-heV" viewBased="YES" id="DYA-F7-mxn">
-                                <rect key="frame" x="0.0" y="0.0" width="812" height="171"/>
+                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" autosaveColumns="NO" typeSelect="NO" rowHeight="22" headerView="2wC-c1-heV" viewBased="YES" id="DYA-F7-mxn">
+                                <rect key="frame" x="0.0" y="0.0" width="812" height="113"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="17" height="0.0"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -217,7 +217,7 @@
                         <nil key="backgroundColor"/>
                     </clipView>
                     <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="89P-Gx-xmb">
-                        <rect key="frame" x="1" y="183" width="698" height="17"/>
+                        <rect key="frame" x="1" y="125" width="658" height="17"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="rKD-67-5ff">
@@ -230,7 +230,7 @@
                     </tableHeaderView>
                 </scrollView>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xlW-Xn-0d6">
-                    <rect key="frame" x="649" y="13" width="58" height="24"/>
+                    <rect key="frame" x="609" y="13" width="58" height="24"/>
                     <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fwL-JV-H1T">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -240,7 +240,7 @@
                     </connections>
                 </button>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="WvR-wr-Efm" userLabel="Items found">
-                    <rect key="frame" x="28" y="259" width="95" height="14"/>
+                    <rect key="frame" x="28" y="201" width="95" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="clipping" title="Items found label" usesSingleLineMode="YES" id="ip8-6M-9rF">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -248,7 +248,7 @@
                     </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="qcn-yc-O0W" userLabel="Query string">
-                    <rect key="frame" x="28" y="283" width="684" height="36"/>
+                    <rect key="frame" x="28" y="225" width="644" height="36"/>
                     <textFieldCell key="cell" selectable="YES" title="Query string label" id="Q4a-AR-ef6">
                         <font key="font" metaFont="smallSystem"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -256,7 +256,7 @@
                     </textFieldCell>
                 </textField>
                 <textField focusRingType="none" horizontalHuggingPriority="249" verticalHuggingPriority="750" horizontalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="OZ0-ow-YMD">
-                    <rect key="frame" x="28" y="12" width="593" height="28"/>
+                    <rect key="frame" x="28" y="12" width="553" height="28"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="28" id="aI7-ej-15s"/>
                     </constraints>

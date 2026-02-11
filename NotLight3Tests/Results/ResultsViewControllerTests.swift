@@ -34,6 +34,11 @@ private struct ResultsViewControllerTests: ~Copyable {
         #expect(datasource.tableView === subject.tableView)
     }
 
+    @Test("contextual menu: is correctly set up")
+    func contextualMenu() {
+        #expect(subject.contextualMenu.delegate === subject)
+    }
+
     @Test("viewDidLoad: sets things up, sends processor initialData")
     func viewDidLoad() async {
         subject.loadViewIfNeeded()
@@ -43,6 +48,7 @@ private struct ResultsViewControllerTests: ~Copyable {
         #expect(subject.pathLabel?.stringValue == "")
         #expect(subject.pathLabel?.maximumNumberOfLines == 2)
         #expect(subject.tableView.doubleAction == #selector(subject.doDoubleAction))
+        #expect(subject.tableView.menu === subject.contextualMenu)
         await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
     }
@@ -134,12 +140,13 @@ private struct ResultsViewControllerTests: ~Copyable {
         #expect(processor.thingsReceived == [.close])
     }
 
-    @Test("doDoubleAction: sends table selected rows to revealItems")
+    @Test("doDoubleAction: sends table selected row to revealItem")
     func doDoubleAction() async {
         let tableView = MockTableView()
+        tableView._selectedRow = 0
         subject.doDoubleAction(tableView)
         await #while(processor.thingsReceived.isEmpty)
-        #expect(processor.thingsReceived == [.revealItems(forRows: [0, 1, 2])])
+        #expect(processor.thingsReceived == [.revealItem(forRow: 0)])
     }
 
     @Test("doDoubleAction: if table clicked row is -1, does nothing")
@@ -150,11 +157,87 @@ private struct ResultsViewControllerTests: ~Copyable {
         try? await Task.sleep(for: .seconds(0.1))
         #expect(processor.thingsReceived.isEmpty)
     }
+
+    @Test("validateUserInterfaceItem: for copy and revealInFinder, depends on table selection count")
+    func validate() {
+        let tableView = MockTableView()
+        tableView._selectedRowIndexes = []
+        subject.tableView = tableView
+        let item1 = NSMenuItem(title: "dummy", action: #selector(subject.copy(_:)), keyEquivalent: "")
+        var result = subject.validateUserInterfaceItem(item1)
+        #expect(result == false)
+        let item2 = NSMenuItem(title: "dummy", action: #selector(subject.revealInFinder(_:)), keyEquivalent: "")
+        result = subject.validateUserInterfaceItem(item2)
+        #expect(result == false)
+        tableView._selectedRowIndexes = [1]
+        result = subject.validateUserInterfaceItem(item1)
+        #expect(result == true)
+        result = subject.validateUserInterfaceItem(item2)
+        #expect(result == true)
+    }
+
+    @Test("copy: sends copy with selected row indexes and whether menu title contains Display Name")
+    func copy() async {
+        let tableView = MockTableView()
+        subject.tableView = tableView
+        let item = NSMenuItem(title: "dummy", action: #selector(subject.copy(_:)), keyEquivalent: "")
+        subject.copy(item)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.copy([0, 1, 2], false)])
+        processor.thingsReceived = []
+        item.title = "The Display Name Please"
+        subject.copy(item)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.copy([0, 1, 2], true)])
+    }
+
+    @Test("revealInFinder: sends revealItem for table view selected row")
+    func revealInFinder() async {
+        let tableView = MockTableView()
+        tableView._selectedRow = 42
+        subject.tableView = tableView
+        let item = NSMenuItem(title: "dummy", action: #selector(subject.revealInFinder(_:)), keyEquivalent: "")
+        subject.revealInFinder(item)
+        await #while(processor.thingsReceived.isEmpty)
+        #expect(processor.thingsReceived == [.revealItem(forRow: 42)])
+    }
+
+    @Test("menuNeedsUpdate: empties the table view menu and constructs it unless clickedRow or selectedRow is -1")
+    func menuNeedsUpdate() async {
+        let tableView = MockTableView()
+        tableView._clickedRow = 42
+        tableView._selectedRow = 42
+        subject.tableView = tableView
+        let menu = NSMenu()
+        subject.menuNeedsUpdate(menu)
+        #expect(menu.items.count == 3)
+        let item1 = menu.item(at: 0)!
+        #expect(item1.title == "Copy Paths")
+        #expect(item1.action == #selector(subject.copy(_:)))
+        let item2 = menu.item(at: 1)!
+        #expect(item2.title == "Copy Display Names")
+        #expect(item2.action == #selector(subject.copy(_:)))
+        let item3 = menu.item(at: 2)!
+        #expect(item3.title == "Reveal In Finder")
+        #expect(item3.action == #selector(subject.revealInFinder(_:)))
+        //
+        tableView._clickedRow = -1
+        tableView._selectedRow = 42
+        subject.menuNeedsUpdate(menu)
+        #expect(menu.items.count == 0)
+        //
+        tableView._clickedRow = 42
+        tableView._selectedRow = -1
+        subject.menuNeedsUpdate(menu)
+        #expect(menu.items.count == 0)
+    }
 }
 
 private final class MockTableView: NSTableView {
     var _clickedRow = 0
     var _selectedRowIndexes: IndexSet = [0, 1, 2]
+    var _selectedRow: Int = -1
     override var clickedRow: Int { _clickedRow }
+    override var selectedRow: Int { _selectedRow }
     override var selectedRowIndexes: IndexSet { _selectedRowIndexes }
 }

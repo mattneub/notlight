@@ -8,6 +8,7 @@ final class Services {
     var exporter: any ExporterType = Exporter()
     var importer: any ImporterType = Importer()
     var openPanelFactory: any OpenPanelFactoryType = OpenPanelFactory()
+    var pasteboarder: any PasteboarderType = Pasteboarder()
     var persistence: any PersistenceType = Persistence()
     var queryFactory = QueryFactory()
     var queryStringBuilder: any QueryStringBuilderType = QueryStringBuilder()
