@@ -37,7 +37,7 @@
 /* Begin PBXFileReference section */
 		3F1EE2DC2F1415CE002D28AA /* NotLight3Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotLight3Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F23F7282F21AEF900FF0B48 /* NotLight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = NotLight.entitlements; path = NotLight3/NotLight.entitlements; sourceTree = "<group>"; };
-		3F366E722F12F5CE0010786B /* NotLight3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotLight3.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F366E722F12F5CE0010786B /* NotLight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotLight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F7F428F2F311B0800035087 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		3F9501AA2F14674600D83369 /* NotLight3.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = NotLight3.xctestplan; sourceTree = "<group>"; };
 		3FC537E32F3E0A680039DF06 /* MD query syntax story.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "MD query syntax story.md"; sourceTree = "<group>"; };
@@ -145,7 +145,7 @@
 		3F366E732F12F5CE0010786B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3F366E722F12F5CE0010786B /* NotLight3.app */,
+				3F366E722F12F5CE0010786B /* NotLight.app */,
 				3F1EE2DC2F1415CE002D28AA /* NotLight3Tests.xctest */,
 			);
 			name = Products;
@@ -199,7 +199,7 @@
 			packageProductDependencies = (
 			);
 			productName = NotLight3;
-			productReference = 3F366E722F12F5CE0010786B /* NotLight3.app */;
+			productReference = 3F366E722F12F5CE0010786B /* NotLight.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -503,7 +503,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.neuburg.matt.NotLight3;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = NotLight;
 				REGISTER_APP_GROUPS = YES;
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
 				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
@@ -566,7 +566,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.neuburg.matt.NotLight3;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = NotLight;
 				REGISTER_APP_GROUPS = YES;
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
 				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
