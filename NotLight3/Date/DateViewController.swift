@@ -19,6 +19,10 @@ final class DateViewController: NSViewController, ReceiverPresenter {
         }
     }
 
+    /// In earlier versions of this app, this field was editable by the user and I had attached
+    /// a rather complicated formatter to it, to insure that the user was entering a valid
+    /// number. In this version, I solve the problem by making it non-editable; the user must
+    /// use the stepper to set the quantity.
     @IBOutlet weak var relativeQuantityField: NSTextField! {
         didSet {
             relativeQuantityField?.integerValue = 1
