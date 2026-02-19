@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3F366E712F12F5CE0010786B"
-               BuildableName = "NotLight3.app"
+               BuildableName = "NotLight.app"
                BlueprintName = "NotLight3"
                ReferencedContainer = "container:NotLight3.xcodeproj">
             </BuildableReference>
@@ -63,7 +63,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3F366E712F12F5CE0010786B"
-            BuildableName = "NotLight3.app"
+            BuildableName = "NotLight.app"
             BlueprintName = "NotLight3"
             ReferencedContainer = "container:NotLight3.xcodeproj">
          </BuildableReference>
@@ -80,7 +80,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3F366E712F12F5CE0010786B"
-            BuildableName = "NotLight3.app"
+            BuildableName = "NotLight.app"
             BlueprintName = "NotLight3"
             ReferencedContainer = "container:NotLight3.xcodeproj">
          </BuildableReference>
