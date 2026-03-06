@@ -54,6 +54,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             _ = services.workspace.open(url)
         }
     }
+
+    deinit {
+        print("farewell from app delegate")
+    }
 }
 
 /// "Manual binding" from user defaults to menu checkmark state.

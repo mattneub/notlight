@@ -4,11 +4,15 @@ import AppKit
 final class MyProgressIndicator: NSProgressIndicator {
     var isAnimating = false
     override func startAnimation(_ sender: Any?) {
-        super.startAnimation(sender)
-        isAnimating = true
+        if !isAnimating {
+            super.startAnimation(sender)
+            isAnimating = true
+        }
     }
     override func stopAnimation(_ sender: Any?) {
-        super.stopAnimation(sender)
-        isAnimating = false
+        if isAnimating {
+            super.stopAnimation(sender)
+            isAnimating = false
+        }
     }
 }

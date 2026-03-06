@@ -30,6 +30,8 @@ private struct MainViewControllerTests: ~Copyable {
     func progressSpinner() {
         subject.loadViewIfNeeded()
         #expect(subject.progressSpinner.isHidden)
+        #expect(subject.progressSpinner.isDisplayedWhenStopped == true)
+        #expect(subject.progressSpinner.usesThreadedAnimation == false)
     }
 
     @Test("progressLabel: is correctly prepared")
@@ -204,7 +206,7 @@ private struct MainViewControllerTests: ~Copyable {
     @Test("present: sets progress and nil total sets progress label, spinner, and stop button")
     func presentProgressLabel() async throws {
         subject.loadViewIfNeeded()
-        let spinner = try #require(subject.progressSpinner as? MyProgressIndicator)
+        let spinner = try #require(subject.progressSpinner)
         #expect(subject.progressLabel.stringValue == "")
         #expect(subject.stopButton.isEnabled == false)
         await subject.present(MainState(progress: 2, progressTotal: nil))

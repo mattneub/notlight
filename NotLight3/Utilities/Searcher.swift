@@ -102,6 +102,7 @@ final class Searcher: SearcherType {
             return []
         }
         let total = query.resultCount
+        searchProgress.total = nil
         searchProgress.count = total // give total a moment to display to user
         try? await Task.sleep(for: .seconds(0.2))
         searchProgress.count = 0
@@ -125,6 +126,7 @@ final class Searcher: SearcherType {
                 )
                 if index % 1000 == 999 || index == total - 1 {
                     searchProgress.count = index + 1
+                    searchProgress.total = total
                     try? await Task.sleep(for: .seconds(0.05)) // allow a chance to display and for user to cancel
                     if continuation == nil { // user may have cancelled
                         return []
@@ -137,6 +139,7 @@ final class Searcher: SearcherType {
 
     /// Method called periodically during a search, to update our observable progress.
     func updateProgress() {
+        searchProgress.total = nil
         searchProgress.count = query?.resultCount ?? 0
     }
 
