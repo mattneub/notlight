@@ -1,7 +1,6 @@
 import Testing
 @testable import NotLight3
 import AppKit
-import WaitWhile
 
 private struct ResultsViewControllerTests: ~Copyable {
     let subject = ResultsViewController()
@@ -40,7 +39,7 @@ private struct ResultsViewControllerTests: ~Copyable {
     }
 
     @Test("viewDidLoad: sets things up, sends processor initialData")
-    func viewDidLoad() async {
+    func viewDidLoad() {
         subject.loadViewIfNeeded()
         #expect(subject.itemsFoundLabel?.stringValue == "")
         #expect(subject.itemsFoundLabel?.maximumNumberOfLines == 1)
@@ -49,7 +48,6 @@ private struct ResultsViewControllerTests: ~Copyable {
         #expect(subject.pathLabel?.maximumNumberOfLines == 2)
         #expect(subject.tableView.doubleAction == #selector(subject.doDoubleAction))
         #expect(subject.tableView.menu === subject.contextualMenu)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
     }
 
@@ -61,7 +59,7 @@ private struct ResultsViewControllerTests: ~Copyable {
     }
 
     @Test("viewWillDisappear: gathers table column info, sends tableColumns to processor")
-    func viewWillDisappear() async {
+    func viewWillDisappear() {
         subject.loadViewIfNeeded()
         subject.tableView.tableColumn(withIdentifier: .init("icon"))?.isHidden = true
         subject.tableView.tableColumn(withIdentifier: .init("displayName"))?.isHidden = true
@@ -69,7 +67,6 @@ private struct ResultsViewControllerTests: ~Copyable {
         subject.tableView.tableColumn(withIdentifier: .init("date"))?.isHidden = true
         subject.tableView.tableColumn(withIdentifier: .init("path"))?.width = 250
         subject.viewWillDisappear()
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .columnWidths([ColumnWidth(name: "path", width: 250)]))
     }
 
@@ -126,26 +123,23 @@ private struct ResultsViewControllerTests: ~Copyable {
         subject.loadViewIfNeeded()
         let state = ResultsState(columnVisibility: ["icon": false, "size": false, "date": false])
         await subject.present(state)
-        await #while(processor.thingsReceived.isEmpty)
-        #expect(processor.thingsReceived.first == .requestColumnWidths(["displayName", "path"]))
+        #expect(processor.thingsReceived.last == .requestColumnWidths(["displayName", "path"]))
         await subject.present(state)
         try? await Task.sleep(for: .seconds(0.1))
         #expect(processor.thingsReceived.filter { $0 == .requestColumnWidths(["displayName", "path"]) }.count == 1)
     }
 
     @Test("doClose: sends processor close")
-    func close() async {
+    func close() {
         subject.doClose(subject)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.close])
     }
 
     @Test("doDoubleAction: sends table selected row to revealItem")
-    func doDoubleAction() async {
+    func doDoubleAction() {
         let tableView = MockTableView()
         tableView._selectedRow = 0
         subject.doDoubleAction(tableView)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.revealItem(forRow: 0)])
     }
 
@@ -177,33 +171,30 @@ private struct ResultsViewControllerTests: ~Copyable {
     }
 
     @Test("copy: sends copy with selected row indexes and whether menu title contains Display Name")
-    func copy() async {
+    func copy() {
         let tableView = MockTableView()
         subject.tableView = tableView
         let item = NSMenuItem(title: "dummy", action: #selector(subject.copy(_:)), keyEquivalent: "")
         subject.copy(item)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.copy([0, 1, 2], false)])
         processor.thingsReceived = []
         item.title = "The Display Name Please"
         subject.copy(item)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.copy([0, 1, 2], true)])
     }
 
     @Test("revealInFinder: sends revealItem for table view selected row")
-    func revealInFinder() async {
+    func revealInFinder() {
         let tableView = MockTableView()
         tableView._selectedRow = 42
         subject.tableView = tableView
         let item = NSMenuItem(title: "dummy", action: #selector(subject.revealInFinder(_:)), keyEquivalent: "")
         subject.revealInFinder(item)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.revealItem(forRow: 42)])
     }
 
     @Test("menuNeedsUpdate: empties the table view menu and constructs it unless clickedRow or selectedRow is -1")
-    func menuNeedsUpdate() async {
+    func menuNeedsUpdate() {
         let tableView = MockTableView()
         tableView._clickedRow = 42
         tableView._selectedRow = 42

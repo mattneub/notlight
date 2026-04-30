@@ -1,7 +1,6 @@
 import Testing
 @testable import NotLight3
 import AppKit
-import WaitWhile
 
 private struct MainViewControllerTests: ~Copyable {
     let subject = MainViewController()
@@ -54,9 +53,8 @@ private struct MainViewControllerTests: ~Copyable {
     }
 
     @Test("viewDidLoad: sends initialState")
-    func viewDidLoad() async {
+    func viewDidLoad() {
         subject.loadViewIfNeeded()
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialState])
     }
 
@@ -159,7 +157,6 @@ private struct MainViewControllerTests: ~Copyable {
         }
         #expect(subject.termField.objectValue as? String == "*howdy*")
         #expect(subject.termField.stringValue == "howdy")
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
         // and now, the other way
         processor.thingsReceived = []
@@ -170,7 +167,6 @@ private struct MainViewControllerTests: ~Copyable {
         #expect(subject.termField.formatter == nil)
         #expect(subject.termField.objectValue as? String == "*howdy*")
         #expect(subject.termField.stringValue == "*howdy*")
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
         // and now, the _other_ other way
         processor.thingsReceived = []
@@ -184,7 +180,6 @@ private struct MainViewControllerTests: ~Copyable {
         }
         #expect(subject.termField.objectValue as? String == "*howdy*")
         #expect(subject.termField.stringValue == "howdy")
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .termChanged("*howdy*"))
     }
 
@@ -234,8 +229,6 @@ private struct MainViewControllerTests: ~Copyable {
         makeWindow(viewController: subject)
         let scopes = [URL(string: "file:///testing")!, URL(string: "file:///testing2")!]
         await subject.present(MainState(scopes: scopes))
-        await #while(subject.folderTextFields.count < 3)
-        try #require(subject.folderTextFields.count == 3)
         let fields = subject.folderTextFields
         #expect(fields.count == 3)
         #expect(fields[0].objectValue as? URL == URL(string: "file:///testing")!)
@@ -244,136 +237,120 @@ private struct MainViewControllerTests: ~Copyable {
     }
 
     @Test("doSearchTextField: sends processor performSearch with text field object value and no joiner")
-    func doSearchTextField() async {
+    func doSearchTextField() {
         let field = NSTextField()
         field.objectValue = "howdy"
         subject.doSearchTextField(field)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.performSearch("howdy", .noJoiner)])
     }
 
     @Test("doSearchButton: sends processor performSearch with text field object value and no joiner")
-    func doSearchButton() async {
+    func doSearchButton() {
         subject.loadViewIfNeeded()
         subject.termField.objectValue = "howdy"
         subject.doSearchButton(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .performSearch("howdy", .noJoiner))
     }
 
     @Test("doSearchWithButton: sends processor performSearch with text field object value and .and joiner")
-    func doSearchWithinButton() async {
+    func doSearchWithinButton() {
         subject.loadViewIfNeeded()
         subject.termField.objectValue = "howdy"
         subject.doSearchWithinButton(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .performSearch("howdy", .and))
     }
 
     @Test("doSearchAlsoButton: sends processor performSearch with text field object value and .or joiner")
-    func doSearchAlsoButton() async {
+    func doSearchAlsoButton() {
         subject.loadViewIfNeeded()
         subject.termField.objectValue = "howdy"
         subject.doSearchAlsoButton(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .performSearch("howdy", .or))
     }
 
     @Test("doStop: sends processor stop")
-    func doStop() async {
+    func doStop() {
         subject.doStop(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.stop])
     }
 
     @Test("doCaseInsensitive: sends caseInsensitive")
-    func caseInsensitive() async {
+    func caseInsensitive() {
         let button = NSButton()
         button.state = .off
         subject.doCaseInsensitive(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.caseInsensitive(false)])
         processor.thingsReceived = []
         button.state = .on
         subject.doCaseInsensitive(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.caseInsensitive(true)])
     }
 
     @Test("doDiacriticInsensitive: sends diacriticInsensitive")
-    func diacriticInsensitive() async {
+    func diacriticInsensitive() {
         let button = NSButton()
         button.state = .off
         subject.doDiacriticInsensitive(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.diacriticInsensitive(false)])
         processor.thingsReceived = []
         button.state = .on
         subject.doDiacriticInsensitive(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.diacriticInsensitive(true)])
     }
 
     @Test("doWordBased: sends wordBased")
-    func wordBased() async {
+    func wordBased() {
         let button = NSButton()
         button.state = .off
         subject.doWordBased(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.wordBased(false)])
         processor.thingsReceived = []
         button.state = .on
         subject.doWordBased(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.wordBased(true)])
     }
 
     @Test("doAutoContainsMode: sends autoContainsMode")
-    func autoContainsMode() async {
+    func autoContainsMode() {
         let button = NSButton()
         button.state = .off
         subject.doAutoContainsMode(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.autoContainsMode(false)])
         processor.thingsReceived = []
         button.state = .on
         subject.doAutoContainsMode(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.autoContainsMode(true)])
     }
 
     @Test("doSearchTypePopup: sends keyPopupIndex")
-    func searchTypePopup() async {
+    func searchTypePopup() {
         let button = NSPopUpButton()
         button.addItem(withTitle: "hey")
         button.addItem(withTitle: "ho")
         button.selectItem(at: 1)
         subject.doSearchTypePopup(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.keyPopupIndex(1)])
     }
 
     @Test("doOperatorPopup: sends operator")
-    func operatorPopup() async {
+    func operatorPopup() {
         let button = NSPopUpButton()
         button.addItem(withTitle: "hey")
         button.addItem(withTitle: "ho")
         button.selectItem(at: 1)
         subject.doOperatorPopup(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.operator("ho")])
     }
 
     @Test("insertContains: sends insertContains")
-    func insertContains() async {
+    func insertContains() {
         let button = NSButton()
         subject.insertContains(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.insertContains])
     }
 
     @Test("folderTextFieldChanged: sends scopes with file URLs from paths of FolderTextFields")
-    func folderTextFieldChanged() async {
+    func folderTextFieldChanged() {
         subject.loadViewIfNeeded()
         let field1 = FolderTextField(frame: .zero)
         let field2 = FolderTextField(frame: .zero)
@@ -385,7 +362,6 @@ private struct MainViewControllerTests: ~Copyable {
         field2.stringValue = "/top/testing"
         field3.stringValue = "/top/testing with space"
         subject.folderTextFieldChanged(field1)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .scopes([
             URL(string: "file:///top/testing/")!, // file path, and in particular a directory
             URL(string: "file:///top/testing%20with%20space/")!,
@@ -393,72 +369,63 @@ private struct MainViewControllerTests: ~Copyable {
     }
 
     @Test("controlTextDidChange: sends termChanged")
-    func controlTextDidChange() async {
+    func controlTextDidChange() {
         let window = makeWindow(viewController: subject)
         subject.termField.stringValue = "howdy"
         subject.termField.becomeFirstResponder()
         let textView = window.firstResponder
         let notification = Notification(name: NSText.didChangeNotification, userInfo: ["NSFieldEditor": textView as Any])
         subject.controlTextDidChange(notification)
-        await #while(processor.thingsReceived.count < 2)
         #expect(processor.thingsReceived.last == .termChanged("howdy"))
     }
 
     @Test("showFileIcons: sends showFileIcons")
-    func showFileIcons() async {
+    func showFileIcons() {
         subject.showFileIcons(NSMenuItem())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showFileIcons])
     }
 
     @Test("showFileSizes: sends showFileSizes")
-    func showFileSizes() async {
+    func showFileSizes() {
         subject.showFileSizes(NSMenuItem())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showFileSizes])
     }
 
     @Test("showModDates: sends showModDates")
-    func showModDates() async {
+    func showModDates() {
         subject.showModDates(NSMenuItem())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showModDates])
     }
 
     @Test("doFinder: sends finder")
-    func doFinder() async {
+    func doFinder() {
         subject.doFinder(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.finder])
     }
 
     @Test("doDate: sends showDateAssistant")
-    func doDate() async {
+    func doDate() {
         subject.doDate(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showDateAssistant])
     }
 
     @Test("showSearchKeys: sends showSearchKeys")
-    func showSearchKeys() async {
+    func showSearchKeys() {
         subject.showSearchKeys(NSMenuItem())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showSearchKeys])
     }
 
     @Test("showDateAssistant: sends showDateAssistant")
-    func showDateAssistant() async {
+    func showDateAssistant() {
         subject.showDateAssistant(NSMenuItem())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showDateAssistant])
     }
 
     @Test("showImportExport: sends showImportExport with sender and its bounds")
-    func showImportExport() async {
+    func showImportExport() {
         let button = NSButton()
         button.frame = NSRect(x: 10, y: 10, width: 100, height: 200)
         subject.showImportExport(button)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.showImportExport(button, NSRect(x: 0, y: 0, width: 100, height: 200))])
     }
 }

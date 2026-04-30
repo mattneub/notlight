@@ -22,7 +22,7 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        Task {
+        Task .immediate{
             await processor?.receive(.initialData)
         }
     }
@@ -51,7 +51,7 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
 
     @IBAction func doAdd(_ sender: NSButton) {
         view.window?.endEditing(for: nil)
-        Task {
+        Task.immediate {
             await processor?.receive(.add)
         }
     }
@@ -62,14 +62,14 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
             return
         }
         view.window?.endEditing(for: nil)
-        Task {
+        Task.immediate {
             await processor?.receive(.delete(row))
         }
     }
 
     @IBAction func doDone(_ sender: NSButton) {
         view.window?.endEditing(for: nil)
-        Task {
+        Task.immediate {
             await processor?.receive(.done)
         }
     }
@@ -78,7 +78,7 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
         let row = tableView.row(for: sender)
         let column = tableView.column(for: sender)
         let text = sender.stringValue
-        Task {
+        Task.immediate {
             await processor?.receive(.changed(row: row, column: column, text: text))
         }
     }
@@ -86,7 +86,7 @@ final class SearchKeysViewController: NSViewController, ReceiverPresenter {
 
 extension SearchKeysViewController: NSTextFieldDelegate {
     func controlTextDidChange(_ obj: Notification) {
-        Task {
+        Task.immediate {
             await processor?.receive(.blurb(blurbField.stringValue))
         }
     }

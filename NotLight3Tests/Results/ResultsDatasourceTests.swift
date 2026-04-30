@@ -1,7 +1,6 @@
 @testable import NotLight3
 import Testing
 import AppKit
-import WaitWhile
 
 private struct ResultsDatasourceTests {
     let subject: ResultsDatasource!
@@ -38,7 +37,6 @@ private struct ResultsDatasourceTests {
         let image = NSImage(systemSymbolName: "1.calendar", accessibilityDescription: nil)!
         let result = SearchResult(image: image, displayName: "name", path: "path", date: .init(timeIntervalSince1970: 0), size: 1024)
         await subject.present(ResultsState(results: [result]))
-        await #while(tableView.numberOfRows < 1)
         do {
             let view = try #require(tableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? NSTableCellView)
             #expect(view.imageView?.image == image)
@@ -62,17 +60,16 @@ private struct ResultsDatasourceTests {
     }
 
     @Test("selectionChanged: sends selectedRow to processor")
-    func selectionChanged() async {
+    func selectionChanged() {
         let tableView = MockTableView()
         tableView._selectedRow = 3
         subject.tableView = tableView
         subject.tableViewSelectionDidChange(Notification(name: .init("dummy")))
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.selectedRow(3)])
     }
 
     @Test("datasource sortDescriptorsDidChange: sends updateResults to processor")
-    func sortDescriptorsDidChange() async throws {
+    func sortDescriptorsDidChange() throws {
         let tableView = MockTableView()
         let sortDescriptor = NSSortDescriptor(key: "howdy", ascending: false)
         tableView._sortDescriptors = [sortDescriptor]
@@ -80,7 +77,6 @@ private struct ResultsDatasourceTests {
         let datasourceProcessor = try #require(datasource.processor)
         #expect(datasourceProcessor === processor)
         datasource.tableView(tableView, sortDescriptorsDidChange: [])
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.updateResults([sortDescriptor])])
     }
 }

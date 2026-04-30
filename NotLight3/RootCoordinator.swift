@@ -48,7 +48,7 @@ final class RootCoordinator: RootCoordinatorType {
         viewController.processor = processor
         // deliberate "load view and delay" strategy so that things don't visibly jump around
         viewController.loadViewIfNeeded()
-        Task {
+        Task.immediate {
             try? await Task.sleep(for: .seconds(0.2))
             mainViewController?.presentAsSheet(viewController)
         }
@@ -64,7 +64,7 @@ final class RootCoordinator: RootCoordinatorType {
         processor.delegate = (mainProcessor as? any SearchKeysDelegate)
         // deliberate "load view and delay" strategy so that things don't visibly jump around
         viewController.loadViewIfNeeded()
-        Task {
+        Task.immediate {
             try? await Task.sleep(for: .seconds(0.2))
             mainViewController?.presentAsSheet(viewController)
         }
@@ -83,7 +83,7 @@ final class RootCoordinator: RootCoordinatorType {
         viewController.processor = processor
         // deliberate "load view and delay" strategy so that things don't visibly jump around
         viewController.loadViewIfNeeded()
-        Task {
+        Task.immediate {
             try? await Task.sleep(for: .seconds(0.2))
             let window = NSPanel(
                 contentRect: NSRect(x: 0, y: 0, width: 316, height: 222),
@@ -111,7 +111,7 @@ final class RootCoordinator: RootCoordinatorType {
         processor.delegate = (mainProcessor as? any ImportExportDelegate)
         // deliberate "load view and delay" strategy so that things don't visibly jump around
         viewController.loadViewIfNeeded()
-        Task {
+        Task.immediate {
             try? await Task.sleep(for: .seconds(0.2))
             mainViewController?.present(
                 viewController,

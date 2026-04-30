@@ -85,7 +85,7 @@ final class ResultsDatasource: NSObject, @MainActor TableViewDatasourceType {
 
 extension ResultsDatasource { // table view delegate methods
     func tableViewSelectionDidChange(_ notification: Notification) {
-        Task {
+        Task.immediate {
             await processor?.receive(.selectedRow(tableView?.selectedRow ?? -1))
         }
     }
@@ -102,7 +102,7 @@ final class SortableDiffableDataSource: NSTableViewDiffableDataSource<String, UU
 
     /// NSTableViewDataSource optional method.
     @objc func tableView(_ tableView: NSTableView, sortDescriptorsDidChange _: [NSSortDescriptor]) {
-        Task {
+        Task.immediate {
             await processor?.receive(.updateResults(tableView.sortDescriptors))
         }
     }

@@ -1,7 +1,6 @@
 @testable import NotLight3
 import Testing
 import AppKit
-import WaitWhile
 
 private struct SearchKeysDatasourceTests: ~Copyable {
     let subject: SearchKeysDatasource!
@@ -106,7 +105,6 @@ private struct SearchKeysDatasourceTests: ~Copyable {
     func rows() async throws {
         let key = SearchKey(key: "key", title: "title", blurb: "blurb")
         await subject.present(SearchKeysState(keys: [key]))
-        await #while(tableView.numberOfRows < 1)
         do {
             let view = try #require(tableView.view(atColumn: 0, row: 0, makeIfNecessary: false) as? NSTableCellView)
             #expect(view.textField?.stringValue == "title")
@@ -132,7 +130,6 @@ private struct SearchKeysDatasourceTests: ~Copyable {
         let state = SearchKeysState(keys: [key])
         await subject.present(state)
         tableView.selectRowIndexes([0], byExtendingSelection: false) // calls selectionDidChange!
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.selectedRow(0)])
     }
 }

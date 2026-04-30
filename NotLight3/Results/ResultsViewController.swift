@@ -40,7 +40,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
         super.viewDidLoad()
         tableView.doubleAction = #selector(doDoubleAction) // target is found via nil-targeting
         tableView.menu = contextualMenu
-        Task {
+        Task.immediate {
             await processor?.receive(.initialData)
         }
     }
@@ -62,7 +62,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
                 width: tableView.tableColumn(withIdentifier: column)?.width ?? 100
             ))
         }
-        Task {
+        Task.immediate {
             await processor?.receive(.columnWidths(array))
         }
     }
@@ -101,7 +101,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
     }
 
     @IBAction func doClose(_ sender: Any) {
-        Task {
+        Task.immediate {
             await processor?.receive(.close)
         }
     }
@@ -120,7 +120,7 @@ class ResultsViewController: NSViewController, ReceiverPresenter {
             return
         }
         let selectedRow = sender.selectedRow // there can be Only One
-        Task {
+        Task.immediate {
             await processor?.receive(.revealItem(forRow: selectedRow))
         }
     }
@@ -140,14 +140,14 @@ extension ResultsViewController: NSUserInterfaceValidations {
 
     @objc func copy(_ sender: NSMenuItem) {
         let forceDisplayName = sender.title.contains("Display Name")
-        Task {
+        Task.immediate {
             await processor?.receive(.copy(tableView.selectedRowIndexes, forceDisplayName))
         }
     }
 
     @objc func revealInFinder(_ sender: NSMenuItem) {
         let selectedRow = tableView.selectedRow // there can be Only One
-        Task {
+        Task.immediate {
             await processor?.receive(.revealItem(forRow: selectedRow))
         }
     }

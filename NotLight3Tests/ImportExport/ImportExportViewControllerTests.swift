@@ -1,7 +1,6 @@
 import Testing
 @testable import NotLight3
 import AppKit
-import WaitWhile
 
 private struct ImportExportViewControllerTests: ~Copyable {
     let subject = ImportExportViewController()
@@ -30,9 +29,8 @@ private struct ImportExportViewControllerTests: ~Copyable {
     }
 
     @Test("viewDidLoad: sends initialData")
-    func viewDidLoad() async {
+    func viewDidLoad() {
         subject.viewDidLoad()
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
     }
 
@@ -50,14 +48,13 @@ private struct ImportExportViewControllerTests: ~Copyable {
     }
 
     @Test("doLoadSearch: sends loadSearch")
-    func doLoadSearch() async {
+    func doLoadSearch() {
         subject.doLoadSearch(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.loadSearch])
     }
 
     @Test("doSaveThisSearch: stops editing, sends saveSearch")
-    func doSaveThisSearch() async {
+    func doSaveThisSearch() {
         makeWindow(viewController: subject)
         subject.loadViewIfNeeded()
         subject.currentSearchLabel.isEditable = true
@@ -66,12 +63,11 @@ private struct ImportExportViewControllerTests: ~Copyable {
         subject.currentSearchLabel.stringValue = "howdy"
         subject.doSaveThisSearch(NSButton())
         #expect(subject.currentSearchLabel.currentEditor() == nil)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .saveSearch("howdy"))
     }
 
     @Test("doDoThisSearch: stops editing, sends doSearch")
-    func doDoThisSearch() async {
+    func doDoThisSearch() {
         makeWindow(viewController: subject)
         subject.loadViewIfNeeded()
         subject.currentSearchLabel.isEditable = true
@@ -80,7 +76,6 @@ private struct ImportExportViewControllerTests: ~Copyable {
         subject.currentSearchLabel.stringValue = "howdy"
         subject.doDoThisSearch(NSButton())
         #expect(subject.currentSearchLabel.currentEditor() == nil)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .doSearch("howdy"))
     }
 

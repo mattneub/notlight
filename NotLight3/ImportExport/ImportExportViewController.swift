@@ -16,7 +16,7 @@ final class ImportExportViewController: NSViewController, ReceiverPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        Task {
+        Task.immediate {
             await processor?.receive(.initialData)
         }
     }
@@ -31,21 +31,21 @@ final class ImportExportViewController: NSViewController, ReceiverPresenter {
     }
 
     @IBAction func doLoadSearch(_: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.loadSearch)
         }
     }
 
     @IBAction func doSaveThisSearch(_: NSButton) {
         view.window?.endEditing(for: currentSearchLabel)
-        Task {
+        Task.immediate {
             await processor?.receive(.saveSearch(currentSearchLabel.stringValue))
         }
     }
 
     @IBAction func doDoThisSearch(_: NSButton) {
         view.window?.endEditing(for: currentSearchLabel)
-        Task {
+        Task.immediate {
             await processor?.receive(.doSearch(currentSearchLabel.stringValue))
         }
     }

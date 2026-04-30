@@ -40,7 +40,7 @@ final class DateViewController: NSViewController, ReceiverPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        Task {
+        Task.immediate {
             await processor?.receive(.initialData)
         }
     }
@@ -76,17 +76,17 @@ final class DateViewController: NSViewController, ReceiverPresenter {
     // popup menu choices
 
     @objc func doPredefined(_ sender: NSPopUpButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.predefinedPopup(sender.indexOfSelectedItem))
         }
     }
     @objc func doRelative(_ sender: NSPopUpButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.relativePopup(sender.indexOfSelectedItem))
         }
     }
     @objc func doAgo(_ sender: NSPopUpButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.agoPopup(sender.indexOfSelectedItem))
         }
     }
@@ -95,7 +95,7 @@ final class DateViewController: NSViewController, ReceiverPresenter {
 
     @IBAction func doRelativeQuantity(_ sender: NSStepper) {
         relativeQuantityField.integerValue = sender.integerValue
-        Task {
+        Task.immediate {
             await processor?.receive(.relativeQuantity(sender.integerValue))
         }
     }
@@ -103,7 +103,7 @@ final class DateViewController: NSViewController, ReceiverPresenter {
     // date picker
 
     @IBAction func doDatePicker(_ sender: NSDatePicker) {
-        Task {
+        Task.immediate {
             await processor?.receive(.datePicker(sender.dateValue))
         }
     }
@@ -111,19 +111,19 @@ final class DateViewController: NSViewController, ReceiverPresenter {
     // "use this" button clicks
 
     @IBAction func usePredefined(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.usePredefined)
         }
     }
 
     @IBAction func useRelative(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.useRelative)
         }
     }
 
     @IBAction func useAbsolute(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.useAbsolute)
         }
     }

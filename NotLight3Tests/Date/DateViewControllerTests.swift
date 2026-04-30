@@ -1,7 +1,6 @@
 import Testing
 @testable import NotLight3
 import AppKit
-import WaitWhile
 
 private struct DateViewControllerTests: ~Copyable {
     let subject = DateViewController()
@@ -48,9 +47,8 @@ private struct DateViewControllerTests: ~Copyable {
     }
 
     @Test("viewDidLoad: sends initialData")
-    func viewDidLoad() async {
+    func viewDidLoad() {
         subject.loadViewIfNeeded()
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
     }
 
@@ -72,73 +70,65 @@ private struct DateViewControllerTests: ~Copyable {
     }
 
     @Test("doPredefined: sends predefinedPopup with the index")
-    func doPredefined() async {
+    func doPredefined() {
         let menu = NSPopUpButton()
         menu.addItems(withTitles: ["manny", "moe", "jack"])
         menu.selectItem(at: 2)
         subject.doPredefined(menu)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.predefinedPopup(2)])
     }
 
     @Test("doRelative: sends relativePopup with the index")
-    func doRelative() async {
+    func doRelative() {
         let menu = NSPopUpButton()
         menu.addItems(withTitles: ["manny", "moe", "jack"])
         menu.selectItem(at: 2)
         subject.doRelative(menu)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.relativePopup(2)])
     }
 
     @Test("doAgo: sends agoPopup with the index")
-    func doAgo() async {
+    func doAgo() {
         let menu = NSPopUpButton()
         menu.addItems(withTitles: ["manny", "moe", "jack"])
         menu.selectItem(at: 2)
         subject.doAgo(menu)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.agoPopup(2)])
     }
 
     @Test("doRelativeQuantity: sets relativeQuantityField, sends relativeQuantity with the integer value")
-    func doRelativeQuantity() async {
+    func doRelativeQuantity() {
         subject.loadViewIfNeeded()
         let stepper = NSStepper()
         stepper.integerValue = 42
         subject.doRelativeQuantity(stepper)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .relativeQuantity(42))
         #expect(subject.relativeQuantityField.integerValue == 42)
     }
 
     @Test("doDatePicker: sends datePicker with the date")
-    func doDatePicker() async {
+    func doDatePicker() {
         let picker = NSDatePicker()
         picker.dateValue = .distantPast
         subject.doDatePicker(picker)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .datePicker(.distantPast))
     }
 
     @Test("usePredefined: sends usePredefined")
-    func usePredefined() async {
+    func usePredefined() {
         subject.usePredefined(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.usePredefined])
     }
 
     @Test("useRelative: sends useRelative")
-    func useRelative() async {
+    func useRelative() {
         subject.useRelative(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.useRelative])
     }
 
     @Test("useAbsolute: sends useAbsolute")
-    func useAbsolute() async {
+    func useAbsolute() {
         subject.useAbsolute(NSButton())
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.useAbsolute])
     }
 }

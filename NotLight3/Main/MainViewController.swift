@@ -60,7 +60,7 @@ class MainViewController: NSViewController, ReceiverPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        Task {
+        Task.immediate {
             await processor?.receive(.initialState)
         }
     }
@@ -134,14 +134,14 @@ class MainViewController: NSViewController, ReceiverPresenter {
             let currentValue = termField.objectValue as? String ?? ""
             termField.formatter = MyStarFormatter()
             termField.stringValue = currentValue
-            Task {
+            Task.immediate {
                 await processor?.receive(.termChanged(termField.objectValue as? String ?? ""))
             }
         } else if !isOn && termField.formatter != nil {
             let currentValue = termField.objectValue as? String ?? ""
             termField.formatter = nil
             termField.stringValue = currentValue
-            Task {
+            Task.immediate {
                 await processor?.receive(.termChanged(termField.objectValue as? String ?? ""))
             }
         }
@@ -172,85 +172,85 @@ class MainViewController: NSViewController, ReceiverPresenter {
     }
 
     @IBAction func doSearchTextField(_ sender: NSTextField) {
-        Task {
+        Task.immediate {
             await processor?.receive(.performSearch(sender.objectValue as? String ?? "", .noJoiner))
         }
     }
 
     @IBAction func doSearchButton(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.performSearch(termField.objectValue as? String ?? "", .noJoiner))
         }
     }
 
     @IBAction func doSearchWithinButton(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.performSearch(termField.objectValue as? String ?? "", .and))
         }
     }
 
     @IBAction func doSearchAlsoButton(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.performSearch(termField.objectValue as? String ?? "", .or))
         }
     }
 
     @IBAction func doStop(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.stop)
         }
     }
 
     @IBAction func doCaseInsensitive(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.caseInsensitive(sender.state == .on))
         }
     }
 
     @IBAction func doDiacriticInsensitive(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.diacriticInsensitive(sender.state == .on))
         }
     }
 
     @IBAction func doWordBased(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.wordBased(sender.state == .on))
         }
     }
 
     @IBAction func doAutoContainsMode(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.autoContainsMode(sender.state == .on))
         }
     }
 
     @IBAction func doSearchTypePopup(_ sender: NSPopUpButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.keyPopupIndex(sender.indexOfSelectedItem))
         }
     }
 
     @IBAction func doOperatorPopup(_ sender: NSPopUpButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.operator(sender.titleOfSelectedItem ?? "=="))
         }
     }
 
     @IBAction func insertContains(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.insertContains)
         }
     }
 
     @IBAction func doFinder(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.finder)
         }
     }
 
     @IBAction func doDate(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.showDateAssistant)
         }
     }
@@ -258,43 +258,43 @@ class MainViewController: NSViewController, ReceiverPresenter {
     /// nil-targeted from MyContainerView!
     @objc func folderTextFieldChanged(_ sender: NSTextField) {
         let urls = folderTextFields.compactMap { $0.objectValue as? URL }
-        Task {
+        Task.immediate {
             await processor?.receive(.scopes(urls))
         }
     }
 
     @objc func showFileIcons(_ sender: NSMenuItem) {
-        Task {
+        Task.immediate {
             await processor?.receive(.showFileIcons)
         }
     }
 
     @objc func showModDates(_ sender: NSMenuItem) {
-        Task {
+        Task.immediate {
             await processor?.receive(.showModDates)
         }
     }
 
     @objc func showFileSizes(_ sender: NSMenuItem) {
-        Task {
+        Task.immediate {
             await processor?.receive(.showFileSizes)
         }
     }
 
     @IBAction func showSearchKeys(_ sender: NSMenuItem) {
-        Task {
+        Task.immediate {
             await processor?.receive(.showSearchKeys)
         }
     }
 
     @objc func showDateAssistant(_ sender: NSMenuItem) {
-        Task {
+        Task.immediate {
             await processor?.receive(.showDateAssistant)
         }
     }
 
     @IBAction func showImportExport(_ sender: NSButton) {
-        Task {
+        Task.immediate {
             await processor?.receive(.showImportExport(sender, sender.bounds))
         }
     }
@@ -308,7 +308,7 @@ extension MainViewController: NSTextFieldDelegate {
         guard (editor as? NSTextView)?.delegate === termField else {
             return
         }
-        Task {
+        Task.immediate {
             await processor?.receive(.termChanged(termField.objectValue as? String ?? ""))
         }
     }

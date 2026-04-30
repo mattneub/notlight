@@ -1,7 +1,6 @@
 import Testing
 @testable import NotLight3
 import AppKit
-import WaitWhile
 
 private struct SearchKeysViewControllerTests: ~Copyable {
     let subject = SearchKeysViewController()
@@ -43,9 +42,8 @@ private struct SearchKeysViewControllerTests: ~Copyable {
     }
 
     @Test("viewDidLoad: sets things up, sends processor initialData")
-    func viewDidLoad() async {
+    func viewDidLoad() {
         subject.loadViewIfNeeded()
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived == [.initialData])
     }
 
@@ -90,7 +88,7 @@ private struct SearchKeysViewControllerTests: ~Copyable {
     }
 
     @Test("doAdd: ends editing, sends add")
-    func doAdd() async throws {
+    func doAdd() throws {
         let window = makeWindow(viewController: subject)
         let textField = NSTextField()
         subject.view.addSubview(textField)
@@ -99,12 +97,11 @@ private struct SearchKeysViewControllerTests: ~Copyable {
         #expect(window.firstResponder === editor)
         subject.doAdd(NSButton())
         #expect(window.firstResponder == window)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .add)
     }
 
     @Test("doDelete: deletes selected row, ends editing, sends delete")
-    func doDelete() async throws {
+    func doDelete() throws {
         makeWindow(viewController: subject)
         let textField = NSTextField()
         subject.view.addSubview(textField)
@@ -115,7 +112,6 @@ private struct SearchKeysViewControllerTests: ~Copyable {
         subject.tableView = tableView
         subject.doDelete(NSButton())
         #expect(textField.currentEditor() == nil)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .delete(10))
     }
 
@@ -136,7 +132,7 @@ private struct SearchKeysViewControllerTests: ~Copyable {
     }
 
     @Test("doDone: ends editing, sends done")
-    func doDone() async throws {
+    func doDone() throws {
         makeWindow(viewController: subject)
         let textField = NSTextField()
         subject.view.addSubview(textField)
@@ -144,12 +140,11 @@ private struct SearchKeysViewControllerTests: ~Copyable {
         #expect(textField.currentEditor() != nil)
         subject.doDone(NSButton())
         #expect(textField.currentEditor() == nil)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .done)
     }
 
     @Test("didEndEditing: sends changed with row of sender, column of sender, text of sender")
-    func didEndEditing() async throws {
+    func didEndEditing() throws {
         subject.loadViewIfNeeded()
         let tableView = MockTableView()
         tableView._rowForView = 20
@@ -158,16 +153,14 @@ private struct SearchKeysViewControllerTests: ~Copyable {
         let textField = NSTextField()
         textField.stringValue = "howdy"
         subject.didEndEditing(textField)
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .changed(row: 20, column: 30, text: "howdy"))
     }
 
     @Test("controlTextDidChange: sends blurb with contents of blurb field")
-    func controlTextDidChange() async {
+    func controlTextDidChange() {
         subject.loadViewIfNeeded()
         subject.blurbField.stringValue = "howdy"
         subject.controlTextDidChange(Notification(name: .init("dummy")))
-        await #while(processor.thingsReceived.isEmpty)
         #expect(processor.thingsReceived.last == .blurb("howdy"))
     }
 }

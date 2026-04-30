@@ -102,7 +102,7 @@ final class SearchKeysDatasource: NSObject, @MainActor TableViewDatasourceType {
 
 extension SearchKeysDatasource { // table view delegate methods
     func tableViewSelectionDidChange(_ notification: Notification) {
-        Task {
+        Task.immediate {
             await processor?.receive(.selectedRow(tableView?.selectedRow ?? -1))
         }
     }
