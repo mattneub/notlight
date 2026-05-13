@@ -52,9 +52,11 @@ private struct MainViewControllerTests: ~Copyable {
         #expect(subject.stopButton.isEnabled == false)
     }
 
-    @Test("viewDidLoad: sends initialState")
-    func viewDidLoad() {
-        subject.loadViewIfNeeded()
+    @Test("viewWillAppear: sends initialState, only once")
+    func viewWillAppear() {
+        subject.viewWillAppear()
+        #expect(processor.thingsReceived == [.initialState])
+        subject.viewWillAppear()
         #expect(processor.thingsReceived == [.initialState])
     }
 

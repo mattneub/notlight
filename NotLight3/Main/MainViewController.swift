@@ -58,8 +58,15 @@ class MainViewController: NSViewController, ReceiverPresenter {
         view.subviews(ofType: FolderTextField.self, recursing: true)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    /// Flag so that we ask for initial state only once.
+    var didInitialState = false
+
+    override func viewWillAppear() {
+        super.viewWillAppear()
+        guard !didInitialState else {
+            return
+        }
+        didInitialState = true
         Task.immediate {
             await processor?.receive(.initialState)
         }
